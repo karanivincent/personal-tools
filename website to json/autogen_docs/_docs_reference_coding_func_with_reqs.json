@@ -1,0 +1,32 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/coding/func_with_reqs",
+    "title": "coding.func_with_reqs",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Decorate a function with package and import requirements\n\nArguments\n:\n\nReturns\n:\n\nCallable[[Callable[P, T]], FunctionWithRequirements[T, P]]: The decorated function"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "to_stub\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nto_stub\n(\nfunc\n:\nUnion\n[\nCallable\n[\n.\n.\n.\n,\nAny\n]\n,\nFunctionWithRequirementsStr\n]\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Generate a stub for a function as a string\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

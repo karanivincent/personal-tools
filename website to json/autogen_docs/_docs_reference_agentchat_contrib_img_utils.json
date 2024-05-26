@@ -1,0 +1,107 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/img_utils",
+    "title": "agentchat.contrib.img_utils",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Loads an image from a file and returns a PIL Image object.\n\nArguments\n:\n\nReturns\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "get_image_data\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_image_data\n(\nimage_file\n:\nUnion\n[\nstr\n,\nImage\n.\nImage\n]\n,\nuse_b64\n=\nTrue\n)\n-\n>\nbytes"
+                            }
+                        },
+                        {
+                            "text": "Loads an image and returns its data either as raw bytes or in base64-encoded format.\n\nThis function first loads an image from the specified file, URL, or base64 string using\nthe\nget_pil_image\nfunction. It then saves this image in memory in PNG format and\nretrieves its binary content. Depending on the\nuse_b64\nflag, this binary content is\neither returned directly or as a base64-encoded string.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "llava_formatter\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nllava_formatter\n(\nprompt\n:\nstr\n,\norder_image_tokens\n:\nbool\n=\nFalse\n)\n-\n>\nTuple\n[\nstr\n,\nList\n[\nstr\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Formats the input prompt by replacing image tags and returns the new prompt along with image locations.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "pil_to_data_uri\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\npil_to_data_uri\n(\nimage\n:\nImage\n.\nImage\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Converts a PIL Image object to a data URI.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "gpt4v_formatter\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngpt4v_formatter\n(\nprompt\n:\nstr\n,\nimg_format\n:\nstr\n=\n\"uri\"\n)\n-\n>\nList\n[\nUnion\n[\nstr\n,\ndict\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Formats the input prompt by replacing image tags and returns a list of text and images.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "extract_img_paths\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nextract_img_paths\n(\nparagraph\n:\nstr\n)\n-\n>\nlist"
+                            }
+                        },
+                        {
+                            "text": "Extract image paths (URLs or local paths) from a text paragraph.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "message_formatter_pil_to_b64\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nmessage_formatter_pil_to_b64\n(\nmessages\n:\nList\n[\nDict\n]\n)\n-\n>\nList\n[\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "Converts the PIL image URLs in the messages to base64 encoded data URIs.\n\nThis function iterates over a list of message dictionaries. For each message,\nif it contains a 'content' key with a list of items, it looks for items\nwith an 'image_url' key. The function then converts the PIL image URL\n(pointed to by 'image_url') to a base64 encoded data URI.\n\nArguments\n:\n\nReturns\n:\n\nList[Dict]\n- A new list of message dictionaries with PIL image URLs in the\n'image_url' key converted to base64 encoded data URIs.\n\nExample Input:\n[\n\n{'content'\n- [{'type': 'text', 'text': 'You are a helpful AI assistant.'}], 'role': 'system'},\n\n{'content'\n- [\n\n{'type'\n- 'text', 'text': \"What's the breed of this dog here?\n\"},\n\n{'type'\n- 'image_url', 'image_url': {'url': a PIL.Image.Image}},\n\n{'type'\n- 'text', 'text': '.'}],\n\n'role'\n- 'user'}\n]\n\nExample Output:\n[\n\n{'content'\n- [{'type': 'text', 'text': 'You are a helpful AI assistant.'}], 'role': 'system'},\n\n{'content'\n- [\n\n{'type'\n- 'text', 'text': \"What's the breed of this dog here?\n\"},\n\n{'type'\n- 'image_url', 'image_url': {'url': a B64 Image}},\n\n{'type'\n- 'text', 'text': '.'}],\n\n'role'\n- 'user'}\n]"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

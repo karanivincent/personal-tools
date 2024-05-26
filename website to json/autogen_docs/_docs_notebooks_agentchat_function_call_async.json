@@ -1,0 +1,88 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_function_call_async",
+    "title": "Task Solving with Provided Tools as Functions (Asynchronous Function Calls)",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nAutoGen offers conversable agents powered by LLM, tool, or human, which\ncan be used to perform tasks collectively via automated chat. This\nframework allows tool use and human participation through multi-agent\nconversation. Please find documentation about this feature\nhere\n.\n\nIn this notebook, we demonstrate how to use\nAssistantAgent\nand\nUserProxyAgent\nto make function calls with the new feature of OpenAI\nmodels (in model version 0613). A specified prompt and function configs\nmust be passed to\nAssistantAgent\nto initialize the agent. The\ncorresponding functions must be passed to\nUserProxyAgent\n, which will\nexecute any function calls made by\nAssistantAgent\n. Besides this\nrequirement of matching descriptions with functions, we recommend\nchecking the system message in the\nAssistantAgent\nto ensure the\ninstructions align with the function call descriptions.\n\nInstall\npyautogen\n:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen"
+                    }
+                },
+                {
+                    "text": "For more information, please refer to the\ninstallation guide\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\ntime\nfrom\ntyping_extensions\nimport\nAnnotated\nimport\nautogen\nfrom\nautogen\n.\ncache\nimport\nCache\nconfig_list\n=\nautogen\n.\nconfig_list_from_json\n(\nenv_or_file\n=\n\"OAI_CONFIG_LIST\"\n,\nfilter_dict\n=\n{\n\"tags\"\n:\n[\n\"tool\"\n]\n}\n)"
+                    }
+                },
+                {
+                    "text": "Learn more about configuring LLMs for agents\nhere\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Making Async and Sync Function Calls\n​",
+            "content": [
+                {
+                    "text": "In this example, we demonstrate function call execution with\nAssistantAgent\nand\nUserProxyAgent\n. With the default system prompt of\nAssistantAgent\n, we allow the LLM assistant to perform tasks with code,\nand the\nUserProxyAgent\nwould extract code blocks from the LLM response\nand execute them. With the new “function_call” feature, we define\nfunctions and specify the description of the function in the OpenAI\nconfig for the\nAssistantAgent\n. Then we register the functions in\nUserProxyAgent\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "llm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n}\ncoder\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"chatbot\"\n,\nsystem_message\n=\n\"For coding tasks, only use the functions you have been provided with. You have a stopwatch and a timer, these tools can and should be used in parallel. Reply TERMINATE when the task is done.\"\n,\nllm_config\n=\nllm_config\n,\n)\n# create a UserProxyAgent instance named \"user_proxy\"\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\nsystem_message\n=\n\"A proxy for the user for executing code.\"\n,\nis_termination_msg\n=\nlambda\nx\n:\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\nand\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\n.\nrstrip\n(\n)\n.\nendswith\n(\n\"TERMINATE\"\n)\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nmax_consecutive_auto_reply\n=\n10\n,\ncode_execution_config\n=\n{\n\"work_dir\"\n:\n\"coding\"\n}\n,\n)\n# define functions according to the function description\n# An example async function registered using register_for_llm and register_for_execution decorators\n@user_proxy\n.\nregister_for_execution\n(\n)\n@coder\n.\nregister_for_llm\n(\ndescription\n=\n\"create a timer for N seconds\"\n)\nasync\ndef\ntimer\n(\nnum_seconds\n:\nAnnotated\n[\nstr\n,\n\"Number of seconds in the timer.\"\n]\n)\n-\n>\nstr\n:\nfor\ni\nin\nrange\n(\nint\n(\nnum_seconds\n)\n)\n:\ntime\n.\nsleep\n(\n1\n)\n# should print to stdout\nreturn\n\"Timer is done!\"\n# An example sync function registered using register_function\ndef\nstopwatch\n(\nnum_seconds\n:\nAnnotated\n[\nstr\n,\n\"Number of seconds in the stopwatch.\"\n]\n)\n-\n>\nstr\n:\nfor\ni\nin\nrange\n(\nint\n(\nnum_seconds\n)\n)\n:\ntime\n.\nsleep\n(\n1\n)\nreturn\n\"Stopwatch is done!\"\nautogen\n.\nagentchat\n.\nregister_function\n(\nstopwatch\n,\ncaller\n=\ncoder\n,\nexecutor\n=\nuser_proxy\n,\ndescription\n=\n\"create a stopwatch for N seconds\"\n,\n)"
+                    }
+                },
+                {
+                    "text": "Start the conversation.\nawait\nis used to pause and resume code\nexecution for async IO operations. Without\nawait\n, an async function\nreturns a coroutine object but doesn’t execute the function. With\nawait\n, the async function is executed and the current function is\npaused until the awaited function returns a result."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "with\nCache\n.\ndisk\n(\n)\nas\ncache\n:\nawait\nuser_proxy\n.\na_initiate_chat\n(\n# noqa: F704\ncoder\n,\nmessage\n=\n\"Create a timer for 5 seconds and then a stopwatch for 5 seconds.\"\n,\ncache\n=\ncache\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "user_proxy\n(\nto\nchatbot\n)\n:\nCreate a timer for 5 seconds and then a stopwatch for 5 seconds.\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\n***** Suggested tool Call (call_h6324df0CdGPDNjPO8GrnAQJ): timer *****\nArguments:\n{\"num_seconds\":\"5\"}\n**********************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING ASYNC FUNCTION timer...\nuser_proxy\n(\nto\nchatbot\n)\n:\nuser_proxy\n(\nto\nchatbot\n)\n:\n***** Response from calling tool \"call_h6324df0CdGPDNjPO8GrnAQJ\" *****\nTimer is done!\n**********************************************************************\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\n***** Suggested tool Call (call_7SzbQxI8Nsl6dPQtScoSGPAu): stopwatch *****\nArguments:\n{\"num_seconds\":\"5\"}\n**************************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING ASYNC FUNCTION stopwatch...\nuser_proxy\n(\nto\nchatbot\n)\n:\nuser_proxy\n(\nto\nchatbot\n)\n:\n***** Response from calling tool \"call_7SzbQxI8Nsl6dPQtScoSGPAu\" *****\nStopwatch is done!\n**********************************************************************\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\nTERMINATE\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "Sync and async can be used in topologies beyond two agents. Below, we\nshow this feature for a group chat."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "markdownagent\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Markdown_agent\"\n,\nsystem_message\n=\n\"Respond in markdown only\"\n,\nllm_config\n=\nllm_config\n,\n)\n# Add a function for robust group chat termination\n@user_proxy\n.\nregister_for_execution\n(\n)\n@markdownagent\n.\nregister_for_llm\n(\n)\n@coder\n.\nregister_for_llm\n(\ndescription\n=\n\"terminate the group chat\"\n)\ndef\nterminate_group_chat\n(\nmessage\n:\nAnnotated\n[\nstr\n,\n\"Message to be sent to the group chat.\"\n]\n)\n-\n>\nstr\n:\nreturn\nf\"[GROUPCHAT_TERMINATE]\n{\nmessage\n}\n\"\ngroupchat\n=\nautogen\n.\nGroupChat\n(\nagents\n=\n[\nuser_proxy\n,\ncoder\n,\nmarkdownagent\n]\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n12\n)\nllm_config_manager\n=\nllm_config\n.\ncopy\n(\n)\nllm_config_manager\n.\npop\n(\n\"functions\"\n,\nNone\n)\nllm_config_manager\n.\npop\n(\n\"tools\"\n,\nNone\n)\nmanager\n=\nautogen\n.\nGroupChatManager\n(\ngroupchat\n=\ngroupchat\n,\nllm_config\n=\nllm_config_manager\n,\nis_termination_msg\n=\nlambda\nx\n:\n\"GROUPCHAT_TERMINATE\"\nin\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\n,\n)"
+                    }
+                },
+                {
+                    "text": "Finally, we initialize the chat that would use the functions defined\nabove:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "message\n=\n\"\"\"\n1) Create a timer and a stopwatch for 5 seconds each in parallel.\n2) Pretty print the result as md.\n3) when 1 and 2 are done, terminate the group chat\n\"\"\"\nwith\nCache\n.\ndisk\n(\n)\nas\ncache\n:\nawait\nuser_proxy\n.\na_initiate_chat\n(\n# noqa: F704\nmanager\n,\nmessage\n=\nmessage\n,\ncache\n=\ncache\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "user_proxy\n(\nto\nchat_manager\n)\n:\n1) Create a timer and a stopwatch for 5 seconds each in parallel.\n2) Pretty print the result as md.\n3) when 1 and 2 are done, terminate the group chat\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nchat_manager\n)\n:\n***** Suggested tool Call (call_qlS3QkcY1NkfgpKtCoR6oGo7): timer *****\nArguments:\n{\"num_seconds\": \"5\"}\n**********************************************************************\n***** Suggested tool Call (call_TEHlvMgCp0S3RzBbVsVPXWeL): stopwatch *****\nArguments:\n{\"num_seconds\": \"5\"}\n**************************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING ASYNC FUNCTION timer...\n>>>>>>>> EXECUTING ASYNC FUNCTION stopwatch...\nuser_proxy\n(\nto\nchat_manager\n)\n:\nuser_proxy\n(\nto\nchat_manager\n)\n:\n***** Response from calling tool \"call_qlS3QkcY1NkfgpKtCoR6oGo7\" *****\nTimer is done!\n**********************************************************************\n--------------------------------------------------------------------------------\nuser_proxy\n(\nto\nchat_manager\n)\n:\n***** Response from calling tool \"call_TEHlvMgCp0S3RzBbVsVPXWeL\" *****\nStopwatch is done!\n**********************************************************************\n--------------------------------------------------------------------------------\nMarkdown_agent\n(\nto\nchat_manager\n)\n:\n***** Suggested tool Call (call_JuQwvj4FigfvGyBeTMglY2ee): terminate_group_chat *****\nArguments:\n{\"message\":\"Both timer and stopwatch have completed their countdowns. The group chat is now being terminated.\"}\n*************************************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING ASYNC FUNCTION terminate_group_chat...\nuser_proxy\n(\nto\nchat_manager\n)\n:\nuser_proxy\n(\nto\nchat_manager\n)\n:\n***** Response from calling tool \"call_JuQwvj4FigfvGyBeTMglY2ee\" *****\n[GROUPCHAT_TERMINATE] Both timer and stopwatch have completed their countdowns. The group chat is now being terminated.\n**********************************************************************\n--------------------------------------------------------------------------------"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

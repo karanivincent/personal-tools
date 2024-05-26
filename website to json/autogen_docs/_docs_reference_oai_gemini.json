@@ -1,0 +1,107 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/oai/gemini",
+    "title": "oai.gemini",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Create a OpenAI-compatible client for Gemini features.\n\nExample\n:\n\nllm_config={\n\n\"config_list\"\n- [{\n\n\"api_type\"\n- \"google\",\n\n\"model\"\n- \"models/gemini-pro\",\n\n\"api_key\"\n- os.environ.get(\"GOOGLE_API_KEY\")\n}\n]}\n\nagent = autogen.AssistantAgent(\"my_agent\", llm_config=llm_config)\n\nResources:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "GeminiClient\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nGeminiClient\n(\n)"
+                    }
+                },
+                {
+                    "text": "Client for Google's Gemini API.\n\nPlease visit this\npage\nfor the roadmap of Gemini integration\nof AutoGen."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "message_retrieval\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nmessage_retrieval\n(\nresponse\n)\n-\n>\nList"
+                            }
+                        },
+                        {
+                            "text": "Retrieve and return a list of strings or a list of Choice.Message from the response.\n\nNOTE: if a list of Choice.Message is returned, it currently needs to contain the fields of OpenAI's ChatCompletion Message object,\nsince that is expected for function or tool calling in the rest of the codebase at the moment, unless a custom agent is being used."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_usage\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\nget_usage\n(\nresponse\n)\n-\n>\nDict"
+                            }
+                        },
+                        {
+                            "text": "Return usage summary of the response using RESPONSE_USAGE_KEYS."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "oai_content_to_gemini_content\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\noai_content_to_gemini_content\n(\ncontent\n:\nUnion\n[\nstr\n,\nList\n]\n)\n-\n>\nList"
+                            }
+                        },
+                        {
+                            "text": "Convert content from OAI format to Gemini format"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "concat_parts\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nconcat_parts\n(\nparts\n:\nList\n[\nPart\n]\n)\n-\n>\nList"
+                            }
+                        },
+                        {
+                            "text": "Concatenate parts with the same type.\nIf two adjacent parts both have the \"text\" attribute, then it will be joined into one part."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "oai_messages_to_gemini_messages\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\noai_messages_to_gemini_messages\n(\nmessages\n:\nlist\n[\nDict\n[\nstr\n,\nAny\n]\n]\n)\n-\n>\nlist\n[\ndict\n[\nstr\n,\nAny\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Convert messages from OAI format to Gemini format.\nMake sure the \"user\" role and \"model\" role are interleaved.\nAlso, make sure the last item is from the \"user\" role."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

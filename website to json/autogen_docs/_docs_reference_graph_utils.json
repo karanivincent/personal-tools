@@ -1,0 +1,62 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/graph_utils",
+    "title": "graph_utils",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Returns True if there are self loops in the allowed_speaker_transitions_Dict."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "check_graph_validity\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncheck_graph_validity\n(\nallowed_speaker_transitions_dict\n:\nDict\n,\nagents\n:\nList\n[\nAgent\n]\n)"
+                            }
+                        },
+                        {
+                            "text": "allowed_speaker_transitions_dict: A dictionary of keys and list as values. The keys are the names of the agents, and the values are the names of the agents that the key agent can transition to.\nagents: A list of Agents\n\nChecks for the following:\nErrors\n\nWarnings"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "invert_disallowed_to_allowed\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ninvert_disallowed_to_allowed\n(\ndisallowed_speaker_transitions_dict\n:\ndict\n,\nagents\n:\nList\n[\nAgent\n]\n)\n-\n>\ndict"
+                            }
+                        },
+                        {
+                            "text": "Start with a fully connected allowed_speaker_transitions_dict of all agents. Remove edges from the fully connected allowed_speaker_transitions_dict according to the disallowed_speaker_transitions_dict to form the allowed_speaker_transitions_dict."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "visualize_speaker_transitions_dict\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nvisualize_speaker_transitions_dict\n(\nspeaker_transitions_dict\n:\ndict\n,\nagents\n:\nList\n[\nAgent\n]\n,\nexport_path\n:\nOptional\n[\nstr\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Visualize the speaker_transitions_dict using networkx."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

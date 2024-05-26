@@ -1,0 +1,97 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics/openai-assistant/gpt_assistant_agent",
+    "title": "Agent Backed by OpenAI Assistant API",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "The GPTAssistantAgent is a powerful component of the AutoGen framework, utilizing OpenAI's Assistant API to enhance agents with advanced capabilities. This agent enables the integration of multiple tools such as the Code Interpreter, File Search, and Function Calling, allowing for a highly customizable and dynamic interaction model.\n\nVersion Requirements:\n\nKey Features of the GPTAssistantAgent:\n\nMulti-Tool Mastery:  Agents can leverage a combination of OpenAI's built-in tools, like\nCode Interpreter\nand\nFile Search\n, alongside custom tools you create or integrate via\nFunction Calling\n.\n\nStreamlined Conversation Management:  Benefit from persistent threads that automatically store message history and adjust based on the model's context length. This simplifies development by allowing you to focus on adding new messages rather than managing conversation flow.\n\nFile Access and Integration:  Enable agents to access and utilize files in various formats. Files can be incorporated during agent creation or throughout conversations via threads. Additionally, agents can generate files (e.g., images, spreadsheets) and cite referenced files within their responses.\n\nFor a practical illustration, here are some examples:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Create a OpenAI Assistant in Autogen\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nos\nfrom\nautogen\nimport\nconfig_list_from_json\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\ngpt_assistant_agent\nimport\nGPTAssistantAgent\nassistant_id\n=\nos\n.\nenviron\n.\nget\n(\n\"ASSISTANT_ID\"\n,\nNone\n)\nconfig_list\n=\nconfig_list_from_json\n(\n\"OAI_CONFIG_LIST\"\n)\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n}\nassistant_config\n=\n{\n# define the openai assistant behavior as you need\n}\noai_agent\n=\nGPTAssistantAgent\n(\nname\n=\n\"oai_agent\"\n,\ninstructions\n=\n\"I'm an openai assistant running in autogen\"\n,\nllm_config\n=\nllm_config\n,\nassistant_config\n=\nassistant_config\n,\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Use OpenAI Assistant Built-in Tools and Function Calling\n​",
+            "content": [],
+            "subsections": [
+                {
+                    "title": "Code Interpreter\n​",
+                    "content": [
+                        {
+                            "text": "The\nCode Interpreter\nempowers your agents to write and execute Python code in a secure environment provide by OpenAI. This unlocks several capabilities, including but not limited to:\n\nUsing the Code Interpreter with the following configuration."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "assistant_config\n=\n{\n\"tools\"\n:\n[\n{\n\"type\"\n:\n\"code_interpreter\"\n}\n,\n]\n,\n\"tool_resources\"\n:\n{\n\"code_interpreter\"\n:\n{\n\"file_ids\"\n:\n[\n\"$file.id\"\n]\n# optional. Files that are passed at the Assistant level are accessible by all Runs with this Assistant.\n}\n}\n}"
+                            }
+                        },
+                        {
+                            "text": "To get the\nfile.id\n, you can employ two methods:\n\nOpenAI Playground: Leverage the OpenAI Playground, an interactive platform accessible at\nhttps://platform.openai.com/playground\n, to upload your files and obtain the corresponding file IDs.\n\nCode-Based Uploading: Alternatively, you can upload files and retrieve their file IDs programmatically using the following code snippet:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "from\nopenai\nimport\nOpenAI\nclient\n=\nOpenAI\n(\n# Defaults to os.environ.get(\"OPENAI_API_KEY\")\n)\n# Upload a file with an \"assistants\" purpose\nfile\n=\nclient\n.\nfiles\n.\ncreate\n(\nfile\n=\nopen\n(\n\"mydata.csv\"\n,\n\"rb\"\n)\n,\npurpose\n=\n'assistants'\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "File Search\n​",
+                    "content": [
+                        {
+                            "text": "The\nFile Search\ntool empowers your agents to tap into knowledge beyond its pre-trained model. This allows you to incorporate your own documents and data, such as product information or code files, into your agent's capabilities.\n\nUsing the File Search with the following configuration."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "assistant_config\n=\n{\n\"tools\"\n:\n[\n{\n\"type\"\n:\n\"file_search\"\n}\n,\n]\n,\n\"tool_resources\"\n:\n{\n\"file_search\"\n:\n{\n\"vector_store_ids\"\n:\n[\n\"$vector_store.id\"\n]\n}\n}\n}"
+                            }
+                        },
+                        {
+                            "text": "Here's how to obtain the vector_store.id using two methods:\n\nOpenAI Playground: Leverage the OpenAI Playground, an interactive platform accessible at\nhttps://platform.openai.com/playground\n, to create a vector store, upload your files, and add it into your vector store. Once complete, you'll be able to retrieve the associated\nvector_store.id\n.\n\nCode-Based Uploading:Alternatively, you can upload files and retrieve their file IDs programmatically using the following code snippet:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "from\nopenai\nimport\nOpenAI\nclient\n=\nOpenAI\n(\n# Defaults to os.environ.get(\"OPENAI_API_KEY\")\n)\n# Step 1: Create a Vector Store\nvector_store\n=\nclient\n.\nbeta\n.\nvector_stores\n.\ncreate\n(\nname\n=\n\"Financial Statements\"\n)\nprint\n(\n\"Vector Store created:\"\n,\nvector_store\n.\nid\n)\n# This is your vector_store.id\n# Step 2: Prepare Files for Upload\nfile_paths\n=\n[\n\"edgar/goog-10k.pdf\"\n,\n\"edgar/brka-10k.txt\"\n]\nfile_streams\n=\n[\nopen\n(\npath\n,\n\"rb\"\n)\nfor\npath\nin\nfile_paths\n]\n# Step 3: Upload Files and Add to Vector Store (with status polling)\nfile_batch\n=\nclient\n.\nbeta\n.\nvector_stores\n.\nfile_batches\n.\nupload_and_poll\n(\nvector_store_id\n=\nvector_store\n.\nid\n,\nfiles\n=\nfile_streams\n)\n# Step 4: Verify Completion (Optional)\nprint\n(\n\"File batch status:\"\n,\nfile_batch\n.\nstatus\n)\nprint\n(\n\"Uploaded file count:\"\n,\nfile_batch\n.\nfile_counts\n.\nprocessed\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Function calling\n​",
+                    "content": [
+                        {
+                            "text": "Function Calling empowers you to extend the capabilities of your agents with your pre-defined functionalities, which allows you to describe custom functions to the Assistant, enabling intelligent function selection and argument generation.\n\nUsing the Function calling with the following configuration."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "# learn more from https://platform.openai.com/docs/guides/function-calling/function-calling\nfrom\nautogen\n.\nfunction_utils\nimport\nget_function_schema\ndef\nget_current_weather\n(\nlocation\n:\nstr\n)\n-\n>\ndict\n:\n\"\"\"\nRetrieves the current weather for a specified location.\nArgs:\nlocation (str): The location to get the weather for.\nReturns:\nUnion[str, dict]: A dictionary with weather details..\n\"\"\"\n# Simulated response\nreturn\n{\n\"location\"\n:\nlocation\n,\n\"temperature\"\n:\n22.5\n,\n\"description\"\n:\n\"Partly cloudy\"\n}\napi_schema\n=\nget_function_schema\n(\nget_current_weather\n,\nname\n=\nget_current_weather\n.\n__name__\n,\ndescription\n=\n\"Returns the current weather data for a specified location.\"\n)\nassistant_config\n=\n{\n\"tools\"\n:\n[\n{\n\"type\"\n:\n\"function\"\n,\n\"function\"\n:\napi_schema\n,\n}\n]\n,\n}"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

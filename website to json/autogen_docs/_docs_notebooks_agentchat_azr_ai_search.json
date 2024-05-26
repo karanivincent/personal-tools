@@ -1,0 +1,131 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_azr_ai_search",
+    "title": "Assistants with Azure Cognitive Search and Azure Identity",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nThis notebook demonstrates the use of Assistant Agents in conjunction\nwith Azure Cognitive Search and Azure Identity. Assistant Agents use\ntools that interact with Azure Cognitive Search to extract pertinent\ndata."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Prerequisites\n​",
+            "content": [
+                {
+                    "text": "Before running this notebook, please ensure the following prerequisites\nare met:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Dependencies\n​",
+                    "content": [
+                        {
+                            "text": "If you have AI search enabled in your Azure Portal, you can use the\nfollowing code to create an assistant agent that can search Azure\nCognitive Search.\n\nAI search setup details:\n- Documentation:\n\nCreate search service:\nhttps://learn.microsoft.com/en-us/azure/search/search-create-service-portal\n-\nSearch index:\nhttps://learn.microsoft.com/en-us/azure/search/search-how-to-create-search-index?tabs=portal\nhybrid search:\nhttps://learn.microsoft.com/en-us/azure/search/hybrid-search-how-to-query\n\nYoutube walkthrough:\nhttps://www.youtube.com/watch?v=6Zfuw-UJZ7k"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Install Azure CLI\n​",
+                    "content": [
+                        {
+                            "text": "This notebook requires the Azure CLI for authentication purposes. Follow\nthese steps to install and configure it:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Check Azure CLI Installation and Login Status\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Check Azure CLI installation and login status\n# !az --version\n# !az login"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Install required packages\n​",
+            "content": [
+                {
+                    "text": "Run the cell below to install the required packages for this notebook."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "!pip3 install pyautogen\n==\n0.2\n.16\n!pip3 install python\n-\ndotenv\n==\n1.0\n.1\n!pip3 install pyautogen\n[\ngraph\n]\n>=\n0.2\n.11\n!pip3 install azure\n-\nsearch\n-\ndocuments\n==\n11.4\n.\n0b8\n!pip3 install azure\n-\nidentity\n==\n1.12\n.0"
+                    }
+                },
+                {
+                    "text": "Next you will import the required packages for this notebook."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\njson\nimport\nos\nimport\nrequests\nfrom\nazure\n.\nidentity\nimport\nDefaultAzureCredential\nfrom\nazure\n.\nsearch\n.\ndocuments\nimport\nSearchClient\nfrom\ndotenv\nimport\nload_dotenv\nimport\nautogen\nfrom\nautogen\nimport\nAssistantAgent\n,\nUserProxyAgent\n,\nregister_function\nfrom\nautogen\n.\ncache\nimport\nCache\nload_dotenv\n(\n)\n# Import Cognitive Search index ENV\nAZURE_SEARCH_SERVICE\n=\nos\n.\ngetenv\n(\n\"AZURE_SEARCH_SERVICE\"\n)\nAZURE_SEARCH_INDEX\n=\nos\n.\ngetenv\n(\n\"AZURE_SEARCH_INDEX\"\n)\nAZURE_SEARCH_KEY\n=\nos\n.\ngetenv\n(\n\"AZURE_SEARCH_KEY\"\n)\nAZURE_SEARCH_API_VERSION\n=\nos\n.\ngetenv\n(\n\"AZURE_SEARCH_API_VERSION\"\n)\nAZURE_SEARCH_SEMANTIC_SEARCH_CONFIG\n=\nos\n.\ngetenv\n(\n\"AZURE_SEARCH_SEMANTIC_SEARCH_CONFIG\"\n)\nAZURE_SEARCH_SERVICE_ENDPOINT\n=\nos\n.\ngetenv\n(\n\"AZURE_SEARCH_SERVICE_ENDPOINT\"\n)"
+                    }
+                },
+                {
+                    "text": "Next, you need to authenticate and create a\nSearchClient\ninstance."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "credential\n=\nDefaultAzureCredential\n(\n)\nendpoint\n=\nAZURE_SEARCH_SERVICE_ENDPOINT\nfrom\nazure\n.\nidentity\nimport\nAzureCliCredential\ncredential\n=\nAzureCliCredential\n(\n)\ntoken\n=\ncredential\n.\nget_token\n(\n\"https://cognitiveservices.azure.com/.default\"\n)\nprint\n(\n\"TOKEN\"\n,\ntoken\n.\ntoken\n)\nclient\n=\nSearchClient\n(\nendpoint\n=\nendpoint\n,\nindex_name\n=\n\"test-index\"\n,\ncredential\n=\ncredential\n)"
+                    }
+                },
+                {
+                    "text": "Then, load the configuration list and define the configuration for the\nAssistantAgent\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "config_list\n=\nautogen\n.\nconfig_list_from_json\n(\nenv_or_file\n=\n\"OAI_CONFIG_LIST\"\n,\n)\ngpt4_config\n=\n{\n\"cache_seed\"\n:\n42\n,\n\"temperature\"\n:\n0\n,\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n120\n,\n}"
+                    }
+                },
+                {
+                    "text": "Define your tool function\nsearch\nthat will interact with the Azure\nCognitive Search service."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "def\nsearch\n(\nquery\n:\nstr\n)\n:\npayload\n=\njson\n.\ndumps\n(\n{\n\"search\"\n:\nquery\n,\n\"vectorQueries\"\n:\n[\n{\n\"kind\"\n:\n\"text\"\n,\n\"text\"\n:\nquery\n,\n\"k\"\n:\n5\n,\n\"fields\"\n:\n\"vector\"\n}\n]\n,\n\"queryType\"\n:\n\"semantic\"\n,\n\"semanticConfiguration\"\n:\nAZURE_SEARCH_SEMANTIC_SEARCH_CONFIG\n,\n\"captions\"\n:\n\"extractive\"\n,\n\"answers\"\n:\n\"extractive|count-3\"\n,\n\"queryLanguage\"\n:\n\"en-US\"\n,\n}\n)\nresponse\n=\nlist\n(\nclient\n.\nsearch\n(\npayload\n)\n)\noutput\n=\n[\n]\nfor\nresult\nin\nresponse\n:\nresult\n.\npop\n(\n\"titleVector\"\n)\nresult\n.\npop\n(\n\"contentVector\"\n)\noutput\n.\nappend\n(\nresult\n)\nreturn\noutput"
+                    }
+                },
+                {
+                    "text": "Define the\nAssistantAgent\nand\nUserProxyAgent\ninstances, and register\nthe\nsearch\nfunction to them."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "cog_search\n=\nAssistantAgent\n(\nname\n=\n\"COGSearch\"\n,\nsystem_message\n=\n\"You are a helpful AI assistant. \"\n\"You can help with Azure Cognitive Search.\"\n\"Return 'TERMINATE' when the task is done.\"\n,\nllm_config\n=\ngpt4_config\n,\n)\nuser_proxy\n=\nUserProxyAgent\n(\nname\n=\n\"User\"\n,\nllm_config\n=\nFalse\n,\nis_termination_msg\n=\nlambda\nmsg\n:\nmsg\n.\nget\n(\n\"content\"\n)\nis\nnot\nNone\nand\n\"TERMINATE\"\nin\nmsg\n[\n\"content\"\n]\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)\nregister_function\n(\nsearch\n,\ncaller\n=\ncog_search\n,\nexecutor\n=\nuser_proxy\n,\nname\n=\n\"search\"\n,\ndescription\n=\n\"A tool for searching the Cognitive Search index\"\n,\n)"
+                    }
+                },
+                {
+                    "text": "Finally, initiate a chat."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "if\n__name__\n==\n\"__main__\"\n:\nimport\nasyncio\nasync\ndef\nmain\n(\n)\n:\nwith\nCache\n.\ndisk\n(\n)\nas\ncache\n:\nawait\nuser_proxy\n.\na_initiate_chat\n(\ncog_search\n,\nmessage\n=\n\"Search for 'What is Azure?' in the 'test-index' index\"\n,\ncache\n=\ncache\n,\n)\nawait\nmain\n(\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "User\n(\nto\nCOGSearch\n)\n:\nSearch for 'What is Azure?' in the 'test-index' index\n--------------------------------------------------------------------------------\nCOGSearch\n(\nto\nUser\n)\n:\n***** Suggested tool Call (call_6Db6DFPNEp7J7Dz5dkAbbjDY): search *****\nArguments:\n{\"query\":\"What is Azure?\"}\n***********************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING ASYNC FUNCTION search...\nUser\n(\nto\nCOGSearch\n)\n:\nUser\n(\nto\nCOGSearch\n)\n:\n***** Response from calling tool \"call_6Db6DFPNEp7J7Dz5dkAbbjDY\" *****\n[{\"id\": \"40\", \"title\": \"Azure Cognitive Search\", \"category\": \"AI + Machine Learning\", \"content\": \"Azure Cognitive Search is a fully managed search-as-a-service that enables you to build rich search experiences for your applications. It provides features like full-text search, faceted navigation, and filters. Azure Cognitive Search supports various data sources, such as Azure SQL Database, Azure Blob Storage, and Azure Cosmos DB. You can use Azure Cognitive Search to index your data, create custom scoring profiles, and integrate with other Azure services. It also integrates with other Azure services, such as Azure Cognitive Services and Azure Machine Learning.\", \"@search.score\": 9.1308, \"@search.reranker_score\": null, \"@search.highlights\": null, \"@search.captions\": null}, {\"id\": \"90\", \"title\": \"Azure Cognitive Services\", \"category\": \"AI + Machine Learning\", \"content\": \"Azure Cognitive Services is a collection of AI services and APIs that enable you to build intelligent applications using pre-built models and algorithms. It provides features like computer vision, speech recognition, and natural language processing. Cognitive Services supports various platforms, such as .NET, Java, Node.js, and Python. You can use Azure Cognitive Services to build chatbots, analyze images and videos, and process and understand text. It also integrates with other Azure services, such as Azure Machine Learning and Azure Cognitive Search.\", \"@search.score\": 5.9858904, \"@search.reranker_score\": null, \"@search.highlights\": null, \"@search.captions\": null}, {\"id\": \"68\", \"title\": \"Azure Database for MariaDB\", \"category\": \"Databases\", \"content\": \"Azure Database for MariaDB is a fully managed, scalable, and secure relational database service that enables you to build and manage MariaDB applications in Azure. It provides features like automatic backups, monitoring, and high availability. Database for MariaDB supports various data types, such as JSON, spatial, and full-text. You can use Azure Database for MariaDB to migrate your existing applications, build new applications, and ensure the performance and security of your data. It also integrates with other Azure services, such as Azure App Service and Azure Data Factory.\", \"@search.score\": 3.9424267, \"@search.reranker_score\": null, \"@search.highlights\": null, \"@search.captions\": null}, {\"id\": \"69\", \"title\": \"Azure SQL Managed Instance\", \"category\": \"Databases\", \"content\": \"Azure SQL Managed Instance is a fully managed, scalable, and secure SQL Server instance hosted in Azure. It provides features like automatic backups, monitoring, and high availability. SQL Managed Instance supports various data types, such as JSON, spatial, and full-text. You can use Azure SQL Managed Instance to migrate your existing applications, build new applications, and ensure the performance and security of your data. It also integrates with other Azure services, such as Azure App Service and Azure Data Factory.\", \"@search.score\": 3.2041788, \"@search.reranker_score\": null, \"@search.highlights\": null, \"@search.captions\": null}, {\"id\": \"66\", \"title\": \"Azure Database for MySQL\", \"category\": \"Databases\", \"content\": \"Azure Database for MySQL is a fully managed, scalable, and secure relational database service that enables you to build and manage MySQL applications in Azure. It provides features like automatic backups, monitoring, and high availability. Database for MySQL supports various data types, such as JSON, spatial, and full-text. You can use Azure Database for MySQL to migrate your existing applications, build new applications, and ensure the performance and security of your data. It also integrates with other Azure services, such as Azure App Service and Azure Data Factory.\", \"@search.score\": 3.1852448, \"@search.reranker_score\": null, \"@search.highlights\": null, \"@search.captions\": null}, {\"id\": \"67\", \"title\": \"Azure Database for PostgreSQL\", \"category\": \"Databases\", \"content\": \"Azure Database for PostgreSQL is a fully managed, scalable, and secure relational database service that enables you to build and manage PostgreSQL applications in Azure. It provides features like automatic backups, monitoring, and high availability. Database for PostgreSQL supports various data types, such as JSON, spatial, and full-text. You can use Azure Database for PostgreSQL to migrate your existing applications, build new applications, and ensure the performance and security of your data. It also integrates with other Azure services, such as Azure App Service and Azure Data Factory.\", \"@search.score\": 2.8028796, \"@search.reranker_score\": null, \"@search.highlights\": null, \"@search.captions\": null}, {\"id\": \"3\", \"title\": \"Azure Cognitive Services\", \"category\": \"AI + Machine Learning\", \"content\": \"Azure Cognitive Services are a set of AI services that enable you to build intelligent applications with powerful algorithms using just a few lines of code. These services cover a wide range of capabilities, including vision, speech, language, knowledge, and search. They are designed to be easy to use and integrate into your applications. Cognitive Services are fully managed, scalable, and continuously improved by Microsoft. It allows developers to create AI-powered solutions without deep expertise in machine learning.\", \"@search.score\": 1.9905571, \"@search.reranker_score\": null, \"@search.highlights\": null, \"@search.captions\": null}]\n**********************************************************************\n--------------------------------------------------------------------------------\nCOGSearch\n(\nto\nUser\n)\n:\nHere are the search results for \"What is Azure?\" from the index:\n1. **Azure Cognitive Search**\n- Category: AI + Machine Learning\n- Content: Azure Cognitive Search is a fully managed search-as-a-service that enables you to build rich search experiences for your applications. It provides features like full-text search, faceted navigation, and filters. Azure Cognitive Search supports various data sources, such as Azure SQL Database, Azure Blob Storage, and Azure Cosmos DB. You can use Azure Cognitive Search to index your data, create custom scoring profiles, and integrate with other Azure services. It also integrates with Azure Cognitive Services and Azure Machine Learning.\n- Search Score: 9.1308\n2. **Azure Cognitive Services**\n- Category: AI + Machine Learning\n- Content: Azure Cognitive Services is a collection of AI services and APIs that enable you to build intelligent applications using pre-built models and algorithms. It provides features like computer vision, speech recognition, and natural language processing. Cognitive Services supports various platforms, such as .NET, Java, Node.js, and Python. You can use Azure Cognitive Services to build chatbots, analyze images and videos, and process and understand text. It also integrates with other Azure services, such as Azure Machine Learning and Azure Cognitive Search.\n- Search Score: 5.9858904\n3. **Azure Database for MariaDB**\n- Category: Databases\n- Content: Azure Database for MariaDB is a fully managed, scalable, and secure relational database service that enables you to build and manage MariaDB applications in Azure. It provides features like automatic backups, monitoring, and high availability. Database for MariaDB supports various data types, such as JSON, spatial, and full-text. You can use Azure Database for MariaDB to migrate your existing applications, build new applications, and ensure the performance and security of your data. It also integrates with other Azure services, such as Azure App Service and Azure Data Factory.\n- Search Score: 3.9424267\n4. **Azure SQL Managed Instance**\n- Category: Databases\n- Content: Azure SQL Managed Instance is a fully managed, scalable, and secure SQL Server instance hosted in Azure. It provides features like automatic backups, monitoring, and high availability. SQL Managed Instance supports various data types, such as JSON, spatial, and full-text. You can use Azure SQL Managed Instance to migrate your existing applications, build new applications, and ensure the performance and security of your data. It also integrates with other Azure services, such as Azure App Service and Azure Data Factory.\n- Search Score: 3.2041788\n5. **Azure Database for MySQL**\n- Category: Databases\n- Content: Azure Database for MySQL is a fully managed, scalable, and secure relational database service that enables you to build and manage MySQL applications in Azure. It provides features like automatic backups, monitoring, and high availability. Database for MySQL supports various data types, such as JSON, spatial, and full-text. You can use Azure Database for MySQL to migrate your existing applications, build new applications, and ensure the performance and security of your data. It also integrates with other Azure services, such as Azure App Service and Azure Data Factory.\n- Search Score: 3.1852448\n6. **Azure Database for PostgreSQL**\n- Category: Databases\n- Content: Azure Database for PostgreSQL is a fully managed, scalable, and secure relational database service that enables you to build and manage PostgreSQL applications in Azure. It provides features like automatic backups, monitoring, and high availability. Database for PostgreSQL supports various data types, such as JSON, spatial, and full-text. You can use Azure Database for PostgreSQL to migrate your existing applications, build new applications, and ensure the performance and security of your data. It also integrates with other Azure services, such as Azure App Service and Azure Data Factory.\n- Search Score: 2.8028796\n7. **Azure Cognitive Services**\n- Category: AI + Machine Learning\n- Content: Azure Cognitive Services are a set of AI services that enable you to build intelligent applications with powerful algorithms using just a few lines of code. These services cover a wide range of capabilities, including vision, speech, language, knowledge, and search. They are designed to be easy to use and integrate into your applications. Cognitive Services are fully managed, scalable, and continuously improved by Microsoft. It allows developers to create AI-powered solutions without deep expertise in machine learning.\n- Search Score: 1.9905571\nThe search scores indicate the relevance of each result to the query \"What is Azure?\" with higher scores representing greater relevance. The top result provides a detailed explanation of Azure Cognitive Search, which is a part of the Azure platform.\n--------------------------------------------------------------------------------\nUser\n(\nto\nCOGSearch\n)\n:\n--------------------------------------------------------------------------------\nCOGSearch\n(\nto\nUser\n)\n:\nTERMINATE\n--------------------------------------------------------------------------------"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

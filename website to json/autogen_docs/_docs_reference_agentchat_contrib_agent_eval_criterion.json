@@ -1,0 +1,53 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/agent_eval/criterion",
+    "title": "agentchat.contrib.agent_eval.criterion",
+    "sections": [
+        {
+            "title": "Criterion\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCriterion\n(\nBaseModel\n)"
+                    }
+                },
+                {
+                    "text": "A class that represents a criterion for agent evaluation."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "parse_json_str\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\nparse_json_str\n(\ncriteria\n:\nstr\n)"
+                            }
+                        },
+                        {
+                            "text": "Create a list of Criterion objects from a json string.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "write_json\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\nwrite_json\n(\ncriteria\n)"
+                            }
+                        },
+                        {
+                            "text": "Create a json string from a list of Criterion objects.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

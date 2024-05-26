@@ -1,0 +1,65 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/coding/jupyter/base",
+    "title": "coding.jupyter.base",
+    "sections": [
+        {
+            "title": "JupyterConnectionInfo\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "@dataclass\nclass\nJupyterConnectionInfo\n(\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental)"
+                },
+                {
+                    "text": "str\n- Host of the Jupyter gateway server"
+                },
+                {
+                    "text": "bool\n- Whether to use HTTPS"
+                },
+                {
+                    "text": "Optional[int]\n- Port of the Jupyter gateway server. If None, the default port is used"
+                },
+                {
+                    "text": "Optional[str]\n- Token for authentication. If None, no token is used"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "JupyterConnectable\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "@runtime_checkable\nclass\nJupyterConnectable\n(\nProtocol\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental)"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "connection_info\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nconnection_info\n(\n)\n-\n>\nJupyterConnectionInfo"
+                            }
+                        },
+                        {
+                            "text": "Return the connection information for this connectable."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

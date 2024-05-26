@@ -1,0 +1,105 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2023/11/13/OAI-assistants",
+    "title": "AutoGen Meets GPTs",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nAutoGen enables collaboration among multiple ChatGPTs for complex tasks.\n\n"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "TL;DR\n​",
+            "content": [
+                {
+                    "text": "OpenAI assistants are now integrated into AutoGen via\nGPTAssistantAgent\n.\nThis enables multiple OpenAI assistants, which form the backend of the now popular GPTs, to collaborate and tackle complex tasks.\nCheckout example notebooks for reference:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "Earlier last week, OpenAI introduced\nGPTs\n, giving users ability to create custom ChatGPTs tailored for them.\nBut what if these individual GPTs could collaborate to do even more?\nFortunately, because of AutoGen, this is now a reality!\nAutoGen has been pioneering agents and supporting\nmulti-agent workflows\nsince earlier this year, and now (starting with version 0.2.0b5) we are introducing compatibility with the\nAssistant API\n, which is currently in beta preview.\n\nTo accomplish this, we've added a new (experimental) agent called the\nGPTAssistantAgent\nthat\nlets you seamlessly add these new OpenAI assistants into AutoGen-based multi-agent workflows.\nThis integration shows great potential and synergy, and we plan to continue enhancing it."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Installation\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen==0.2.0b5"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Basic Example\n​",
+            "content": [
+                {
+                    "text": "Here's a basic example that uses a\nUserProxyAgent\nto allow an interface\nwith the\nGPTAssistantAgent\n.\n\nFirst, import the new agent and setup\nconfig_list\n:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nconfig_list_from_json\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\ngpt_assistant_agent\nimport\nGPTAssistantAgent\nfrom\nautogen\nimport\nUserProxyAgent\nconfig_list\n=\nconfig_list_from_json\n(\n\"OAI_CONFIG_LIST\"\n)"
+                    }
+                },
+                {
+                    "text": "Then simply define the OpenAI assistant agent and give it the task!"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# creates new assistant using Assistant API\ngpt_assistant\n=\nGPTAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"assistant_id\"\n:\nNone\n}\n)\nuser_proxy\n=\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\ncode_execution_config\n=\n{\n\"work_dir\"\n:\n\"coding\"\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n)\nuser_proxy\n.\ninitiate_chat\n(\ngpt_assistant\n,\nmessage\n=\n\"Print hello world\"\n)"
+                    }
+                },
+                {
+                    "text": "GPTAssistantAgent\nsupports both creating new OpenAI assistants or reusing existing assistants\n(e.g, by providing an\nassistant_id\n)."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Code Interpreter Example\n​",
+            "content": [
+                {
+                    "text": "GPTAssistantAgent\nallows you to specify an OpenAI tools\n(e.g., function calls, code interpreter, etc). The example below enables an assistant\nthat can use OpenAI code interpreter to solve tasks."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# creates new assistant using Assistant API\ngpt_assistant\n=\nGPTAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"assistant_id\"\n:\nNone\n,\n\"tools\"\n:\n[\n{\n\"type\"\n:\n\"code_interpreter\"\n}\n]\n,\n}\n)\nuser_proxy\n=\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\ncode_execution_config\n=\n{\n\"work_dir\"\n:\n\"coding\"\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n)\nuser_proxy\n.\ninitiate_chat\n(\ngpt_assistant\n,\nmessage\n=\n\"Print hello world\"\n)"
+                    }
+                },
+                {
+                    "text": "Checkout more examples\nhere\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Limitations and Future Work\n​",
+            "content": [],
+            "subsections": []
+        },
+        {
+            "title": "Acknowledgements\n​",
+            "content": [
+                {
+                    "text": "GPTAssistantAgent\nwas made possible through collaboration with\n@IANTHEREAL\n,\nJiale Liu\n,\nYiran Wu\n,\nQingyun Wu\n,\nChi Wang\n, and many other AutoGen maintainers."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

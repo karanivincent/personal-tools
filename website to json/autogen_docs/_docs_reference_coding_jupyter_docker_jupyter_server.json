@@ -1,0 +1,35 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/coding/jupyter/docker_jupyter_server",
+    "title": "coding.jupyter.docker_jupyter_server",
+    "sections": [
+        {
+            "title": "DockerJupyterServer\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nDockerJupyterServer\n(\nJupyterConnectable\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\n*\n,\ncustom_image_name\n:\nOptional\n[\nstr\n]\n=\nNone\n,\ncontainer_name\n:\nOptional\n[\nstr\n]\n=\nNone\n,\nauto_remove\n:\nbool\n=\nTrue\n,\nstop_container\n:\nbool\n=\nTrue\n,\ndocker_env\n:\nDict\n[\nstr\n,\nstr\n]\n=\n{\n}\n,\ntoken\n:\nUnion\n[\nstr\n,\nGenerateToken\n]\n=\nGenerateToken\n(\n)\n)"
+                            }
+                        },
+                        {
+                            "text": "Start a Jupyter kernel gateway server in a Docker container.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

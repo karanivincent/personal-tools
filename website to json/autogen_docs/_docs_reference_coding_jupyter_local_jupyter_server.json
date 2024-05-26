@@ -1,0 +1,35 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/coding/jupyter/local_jupyter_server",
+    "title": "coding.jupyter.local_jupyter_server",
+    "sections": [
+        {
+            "title": "LocalJupyterServer\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nLocalJupyterServer\n(\nJupyterConnectable\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nip\n:\nstr\n=\n\"127.0.0.1\"\n,\nport\n:\nOptional\n[\nint\n]\n=\nNone\n,\ntoken\n:\nUnion\n[\nstr\n,\nGenerateToken\n]\n=\nGenerateToken\n(\n)\n,\nlog_file\n:\nstr\n=\n\"jupyter_gateway.log\"\n,\nlog_level\n:\nstr\n=\n\"INFO\"\n,\nlog_max_bytes\n:\nint\n=\n1048576\n,\nlog_backup_count\n:\nint\n=\n3\n)"
+                            }
+                        },
+                        {
+                            "text": "Runs a Jupyter Kernel Gateway server locally.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,16 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks",
+    "title": "Notebooks",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "This page contains a collection of notebooks that demonstrate how to use\nAutoGen. The notebooks are tagged with the topics they cover.\nFor example, a notebook that demonstrates how to use function calling will\nbe tagged with\nfunction call\n."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

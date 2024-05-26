@@ -1,0 +1,74 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/retrieve_user_proxy_agent",
+    "title": "agentchat.contrib.retrieve_user_proxy_agent",
+    "sections": [
+        {
+            "title": "RetrieveUserProxyAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nRetrieveUserProxyAgent\n(\nUserProxyAgent\n)"
+                    }
+                },
+                {
+                    "text": "(In preview) The Retrieval-Augmented User Proxy retrieves document chunks based on the embedding\nsimilarity, and sends them along with the question to the Retrieval-Augmented Assistant"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nname\n=\n\"RetrieveChatAgent\"\n,\nhuman_input_mode\n:\nOptional\n[\nstr\n]\n=\n\"ALWAYS\"\n,\nis_termination_msg\n:\nOptional\n[\nCallable\n[\n[\nDict\n]\n,\nbool\n]\n]\n=\nNone\n,\nretrieve_config\n:\nOptional\n[\nDict\n]\n=\nNone\n,\n**\nkwargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:\n\nname\nstr\n- name of the agent.\n\nhuman_input_mode\nstr\n- whether to ask for human inputs every time a message is received.\nPossible values are \"ALWAYS\", \"TERMINATE\", \"NEVER\".\n\nis_termination_msg\nfunction\n- a function that takes a message in the form of a dictionary\nand returns a boolean value indicating if this received message is a termination message.\nThe dict can contain the following keys: \"content\", \"role\", \"name\", \"function_call\".\n\nretrieve_config\ndict or None\n- config for the retrieve agent.\n\nTo use default config, set to None. Otherwise, set to a dictionary with the\nfollowing keys:\n\n**Deprecated**\n- use\nvector_db\ninstead.\n\n**Deprecated**\n- use\nnew_docs\nwhen use\nvector_db\ninstead of\nclient\n.\n\n**Deprecated**\n- no need when use\nvector_db\ninstead of\nclient\n.\n\n**kwargs\ndict\n- other kwargs in\nUserProxyAgent\n.\n\nExample\n:\n\nExample of overriding retrieve_docs - If you have set up a customized vector db, and it's\nnot compatible with chromadb, you can easily plug in it with below code."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "class\nMyRetrieveUserProxyAgent\n(\nRetrieveUserProxyAgent\n)\n:\ndef\nquery_vector_db\n(\nself\n,\nquery_texts\n:\nList\n[\nstr\n]\n,\nn_results\n:\nint\n=\n10\n,\nsearch_string\n:\nstr\n=\n\"\"\n,\n**\nkwargs\n,\n)\n-\n>\nDict\n[\nstr\n,\nUnion\n[\nList\n[\nstr\n]\n,\nList\n[\nList\n[\nstr\n]\n]\n]\n]\n:\n# define your own query function here\npass\ndef\nretrieve_docs\n(\nself\n,\nproblem\n:\nstr\n,\nn_results\n:\nint\n=\n20\n,\nsearch_string\n:\nstr\n=\n\"\"\n,\n**\nkwargs\n)\n:\nresults\n=\nself\n.\nquery_vector_db\n(\nquery_texts\n=\n[\nproblem\n]\n,\nn_results\n=\nn_results\n,\nsearch_string\n=\nsearch_string\n,\n**\nkwargs\n,\n)\nself\n.\n_results\n=\nresults\nprint\n(\n\"doc_ids: \"\n,\nresults\n[\n\"ids\"\n]\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "retrieve_docs\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nretrieve_docs\n(\nproblem\n:\nstr\n,\nn_results\n:\nint\n=\n20\n,\nsearch_string\n:\nstr\n=\n\"\"\n)"
+                            }
+                        },
+                        {
+                            "text": "Retrieve docs based on the given problem and assign the results to the class property\n_results\n.\nThe retrieved docs should be type of\nQueryResults\nwhich is a list of tuples containing the document and\nthe distance.\n\nArguments\n:\n\nReturns\n:\n\nNone."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "message_generator\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\nmessage_generator\n(\nsender\n,\nrecipient\n,\ncontext\n)"
+                            }
+                        },
+                        {
+                            "text": "Generate an initial message with the given context for the RetrieveUserProxyAgent.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

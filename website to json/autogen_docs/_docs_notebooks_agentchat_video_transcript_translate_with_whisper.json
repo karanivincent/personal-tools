@@ -1,0 +1,82 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_video_transcript_translate_with_whisper",
+    "title": "Translating Video audio using Whisper and GPT-3.5-turbo",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nIn this notebook, we demonstrate how to use whisper and GPT-3.5-turbo\nwith\nAssistantAgent\nand\nUserProxyAgent\nto recognize and translate\nthe speech sound from a video file and add the timestamp like a subtitle\nfile based on\nagentchat_function_call.ipynb"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Requirements\n​",
+            "content": [
+                {
+                    "text": "Some extra dependencies are needed for this notebook, which can be installed via pip:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen openai openai-whisper"
+                    }
+                },
+                {
+                    "text": "For more information, please refer to the\ninstallation guide\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Set your API Endpoint\n​",
+            "content": [
+                {
+                    "text": "It is recommended to store your OpenAI API key in the environment\nvariable. For example, store it in\nOPENAI_API_KEY\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nos\nconfig_list\n=\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\ngetenv\n(\n\"OPENAI_API_KEY\"\n)\n,\n}\n]"
+                    }
+                },
+                {
+                    "text": "Learn more about configuring LLMs for agents\nhere\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example and Output\n​",
+            "content": [
+                {
+                    "text": "Below is an example of speech recognition from a\nPeppa Pig cartoon\nvideo\nclip\noriginally in English and translated into Chinese. ‘FFmpeg’ does not\nsupport online files. To run the code on the example video, you need to\ndownload the example video locally. You can change\nyour_file_path\nto\nyour local video file path."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\ntyping\nimport\nAnnotated\n,\nList\nimport\nwhisper\nfrom\nopenai\nimport\nOpenAI\nimport\nautogen\nsource_language\n=\n\"English\"\ntarget_language\n=\n\"Chinese\"\nkey\n=\nos\n.\ngetenv\n(\n\"OPENAI_API_KEY\"\n)\ntarget_video\n=\n\"your_file_path\"\nassistant\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nsystem_message\n=\n\"For coding tasks, only use the functions you have been provided with. Reply TERMINATE when the task is done.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n120\n}\n,\n)\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\nis_termination_msg\n=\nlambda\nx\n:\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\nand\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\n.\nrstrip\n(\n)\n.\nendswith\n(\n\"TERMINATE\"\n)\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nmax_consecutive_auto_reply\n=\n10\n,\ncode_execution_config\n=\n{\n}\n,\n)\ndef\ntranslate_text\n(\ninput_text\n,\nsource_language\n,\ntarget_language\n)\n:\nclient\n=\nOpenAI\n(\napi_key\n=\nkey\n)\nresponse\n=\nclient\n.\nchat\n.\ncompletions\n.\ncreate\n(\nmodel\n=\n\"gpt-3.5-turbo\"\n,\nmessages\n=\n[\n{\n\"role\"\n:\n\"system\"\n,\n\"content\"\n:\n\"You are a helpful assistant.\"\n}\n,\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\nf\"Directly translate the following\n{\nsource_language\n}\ntext to a pure\n{\ntarget_language\n}\n\"\nf\"video subtitle text without additional explanation.: '\n{\ninput_text\n}\n'\"\n,\n}\n,\n]\n,\nmax_tokens\n=\n1500\n,\n)\n# Correctly accessing the response content\ntranslated_text\n=\nresponse\n.\nchoices\n[\n0\n]\n.\nmessage\n.\ncontent\nif\nresponse\n.\nchoices\nelse\nNone\nreturn\ntranslated_text\n@user_proxy\n.\nregister_for_execution\n(\n)\n@assistant\n.\nregister_for_llm\n(\ndescription\n=\n\"using translate_text function to translate the script\"\n)\ndef\ntranslate_transcript\n(\nsource_language\n:\nAnnotated\n[\nstr\n,\n\"Source language\"\n]\n,\ntarget_language\n:\nAnnotated\n[\nstr\n,\n\"Target language\"\n]\n)\n-\n>\nstr\n:\nwith\nopen\n(\n\"transcription.txt\"\n,\n\"r\"\n)\nas\nf\n:\nlines\n=\nf\n.\nreadlines\n(\n)\ntranslated_transcript\n=\n[\n]\nfor\nline\nin\nlines\n:\n# Split each line into timestamp and text parts\nparts\n=\nline\n.\nstrip\n(\n)\n.\nsplit\n(\n\": \"\n)\nif\nlen\n(\nparts\n)\n==\n2\n:\ntimestamp\n,\ntext\n=\nparts\n[\n0\n]\n,\nparts\n[\n1\n]\n# Translate only the text part\ntranslated_text\n=\ntranslate_text\n(\ntext\n,\nsource_language\n,\ntarget_language\n)\n# Reconstruct the line with the translated text and the preserved timestamp\ntranslated_line\n=\nf\"\n{\ntimestamp\n}\n:\n{\ntranslated_text\n}\n\"\ntranslated_transcript\n.\nappend\n(\ntranslated_line\n)\nelse\n:\n# If the line doesn't contain a timestamp, add it as is\ntranslated_transcript\n.\nappend\n(\nline\n.\nstrip\n(\n)\n)\nreturn\n\"\\n\"\n.\njoin\n(\ntranslated_transcript\n)\n@user_proxy\n.\nregister_for_execution\n(\n)\n@assistant\n.\nregister_for_llm\n(\ndescription\n=\n\"recognize the speech from video and transfer into a txt file\"\n)\ndef\nrecognize_transcript_from_video\n(\nfilepath\n:\nAnnotated\n[\nstr\n,\n\"path of the video file\"\n]\n)\n-\n>\nList\n[\ndict\n]\n:\ntry\n:\n# Load model\nmodel\n=\nwhisper\n.\nload_model\n(\n\"small\"\n)\n# Transcribe audio with detailed timestamps\nresult\n=\nmodel\n.\ntranscribe\n(\nfilepath\n,\nverbose\n=\nTrue\n)\n# Initialize variables for transcript\ntranscript\n=\n[\n]\nsentence\n=\n\"\"\nstart_time\n=\n0\n# Iterate through the segments in the result\nfor\nsegment\nin\nresult\n[\n\"segments\"\n]\n:\n# If new sentence starts, save the previous one and reset variables\nif\nsegment\n[\n\"start\"\n]\n!=\nstart_time\nand\nsentence\n:\ntranscript\n.\nappend\n(\n{\n\"sentence\"\n:\nsentence\n.\nstrip\n(\n)\n+\n\".\"\n,\n\"timestamp_start\"\n:\nstart_time\n,\n\"timestamp_end\"\n:\nsegment\n[\n\"start\"\n]\n,\n}\n)\nsentence\n=\n\"\"\nstart_time\n=\nsegment\n[\n\"start\"\n]\n# Add the word to the current sentence\nsentence\n+=\nsegment\n[\n\"text\"\n]\n+\n\" \"\n# Add the final sentence\nif\nsentence\n:\ntranscript\n.\nappend\n(\n{\n\"sentence\"\n:\nsentence\n.\nstrip\n(\n)\n+\n\".\"\n,\n\"timestamp_start\"\n:\nstart_time\n,\n\"timestamp_end\"\n:\nresult\n[\n\"segments\"\n]\n[\n-\n1\n]\n[\n\"end\"\n]\n,\n}\n)\n# Save the transcript to a file\nwith\nopen\n(\n\"transcription.txt\"\n,\n\"w\"\n)\nas\nfile\n:\nfor\nitem\nin\ntranscript\n:\nsentence\n=\nitem\n[\n\"sentence\"\n]\nstart_time\n,\nend_time\n=\nitem\n[\n\"timestamp_start\"\n]\n,\nitem\n[\n\"timestamp_end\"\n]\nfile\n.\nwrite\n(\nf\"\n{\nstart_time\n}\ns to\n{\nend_time\n}\ns:\n{\nsentence\n}\n\\n\"\n)\nreturn\ntranscript\nexcept\nFileNotFoundError\n:\nreturn\n\"The specified audio file could not be found.\"\nexcept\nException\nas\ne\n:\nreturn\nf\"An unexpected error occurred:\n{\nstr\n(\ne\n)\n}\n\""
+                    }
+                },
+                {
+                    "text": "Now, start the chat:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "user_proxy\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\nf\"For the video located in\n{\ntarget_video\n}\n, recognize the speech and transfer it into a script file, \"\nf\"then translate from\n{\nsource_language\n}\ntext to a\n{\ntarget_language\n}\nvideo subtitle text. \"\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "user_proxy\n(\nto\nchatbot\n)\n:\nFor the video located in E:\\pythonProject\\gpt_detection\\peppa pig.mp4, recognize the speech and transfer it into a script file, then translate from English text to a Chinese video subtitle text.\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\n***** Suggested function Call: recognize_transcript_from_video *****\nArguments:\n{\n\"audio_filepath\": \"E:\\\\pythonProject\\\\gpt_detection\\\\peppa pig.mp4\"\n}\n********************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING FUNCTION recognize_transcript_from_video...\nDetecting language using up to the first 30 seconds. Use `--language` to specify the language\nDetected language: English\n[00:00.000 --> 00:03.000]  This is my little brother George.\n[00:03.000 --> 00:05.000]  This is Mummy Pig.\n[00:05.000 --> 00:07.000]  And this is Daddy Pig.\n[00:07.000 --> 00:09.000]  Pee-pah Pig.\n[00:09.000 --> 00:11.000]  Desert Island.\n[00:11.000 --> 00:14.000]  Pepper and George are at Danny Dog's house.\n[00:14.000 --> 00:17.000]  Captain Dog is telling stories of when he was a sailor.\n[00:17.000 --> 00:20.000]  I sailed all around the world.\n[00:20.000 --> 00:22.000]  And then I came home again.\n[00:22.000 --> 00:25.000]  But now I'm back for good.\n[00:25.000 --> 00:27.000]  I'll never forget you.\n[00:27.000 --> 00:29.000]  Daddy, do you miss the sea?\n[00:29.000 --> 00:31.000]  Well, sometimes.\n[00:31.000 --> 00:36.000]  It is Grandad Dog, Grandpa Pig and Grumpy Rabbit.\n[00:36.000 --> 00:37.000]  Hello.\n[00:37.000 --> 00:40.000]  Can Captain Dog come out to play?\n[00:40.000 --> 00:43.000]  What? We are going on a fishing trip.\n[00:43.000 --> 00:44.000]  On a boat?\n[00:44.000 --> 00:45.000]  On the sea!\n[00:45.000 --> 00:47.000]  OK, let's go.\n[00:47.000 --> 00:51.000]  But Daddy, you said you'd never get on a boat again.\n[00:51.000 --> 00:54.000]  I'm not going to get on a boat again.\n[00:54.000 --> 00:57.000]  You said you'd never get on a boat again.\n[00:57.000 --> 01:00.000]  Oh, yes. So I did.\n[01:00.000 --> 01:02.000]  OK, bye-bye.\n[01:02.000 --> 01:03.000]  Bye.\nuser_proxy\n(\nto\nchatbot\n)\n:\n***** Response from calling function \"recognize_transcript_from_video\" *****\n[{'sentence': 'This is my little brother George..', 'timestamp_start': 0, 'timestamp_end': 3.0}, {'sentence': 'This is Mummy Pig..', 'timestamp_start': 3.0, 'timestamp_end': 5.0}, {'sentence': 'And this is Daddy Pig..', 'timestamp_start': 5.0, 'timestamp_end': 7.0}, {'sentence': 'Pee-pah Pig..', 'timestamp_start': 7.0, 'timestamp_end': 9.0}, {'sentence': 'Desert Island..', 'timestamp_start': 9.0, 'timestamp_end': 11.0}, {'sentence': \"Pepper and George are at Danny Dog's house..\", 'timestamp_start': 11.0, 'timestamp_end': 14.0}, {'sentence': 'Captain Dog is telling stories of when he was a sailor..', 'timestamp_start': 14.0, 'timestamp_end': 17.0}, {'sentence': 'I sailed all around the world..', 'timestamp_start': 17.0, 'timestamp_end': 20.0}, {'sentence': 'And then I came home again..', 'timestamp_start': 20.0, 'timestamp_end': 22.0}, {'sentence': \"But now I'm back for good..\", 'timestamp_start': 22.0, 'timestamp_end': 25.0}, {'sentence': \"I'll never forget you..\", 'timestamp_start': 25.0, 'timestamp_end': 27.0}, {'sentence': 'Daddy, do you miss the sea?.', 'timestamp_start': 27.0, 'timestamp_end': 29.0}, {'sentence': 'Well, sometimes..', 'timestamp_start': 29.0, 'timestamp_end': 31.0}, {'sentence': 'It is Grandad Dog, Grandpa Pig and Grumpy Rabbit..', 'timestamp_start': 31.0, 'timestamp_end': 36.0}, {'sentence': 'Hello..', 'timestamp_start': 36.0, 'timestamp_end': 37.0}, {'sentence': 'Can Captain Dog come out to play?.', 'timestamp_start': 37.0, 'timestamp_end': 40.0}, {'sentence': 'What? We are going on a fishing trip..', 'timestamp_start': 40.0, 'timestamp_end': 43.0}, {'sentence': 'On a boat?.', 'timestamp_start': 43.0, 'timestamp_end': 44.0}, {'sentence': 'On the sea!.', 'timestamp_start': 44.0, 'timestamp_end': 45.0}, {'sentence': \"OK, let's go..\", 'timestamp_start': 45.0, 'timestamp_end': 47.0}, {'sentence': \"But Daddy, you said you'd never get on a boat again..\", 'timestamp_start': 47.0, 'timestamp_end': 51.0}, {'sentence': \"I'm not going to get on a boat again..\", 'timestamp_start': 51.0, 'timestamp_end': 54.0}, {'sentence': \"You said you'd never get on a boat again..\", 'timestamp_start': 54.0, 'timestamp_end': 57.0}, {'sentence': 'Oh, yes. So I did..', 'timestamp_start': 57.0, 'timestamp_end': 60.0}, {'sentence': 'OK, bye-bye..', 'timestamp_start': 60.0, 'timestamp_end': 62.0}, {'sentence': 'Bye..', 'timestamp_start': 62.0, 'timestamp_end': 63.0}]\n****************************************************************************\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\n***** Suggested function Call: translate_transcript *****\nArguments:\n{\n\"source_language\": \"en\",\n\"target_language\": \"zh\"\n}\n*********************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING FUNCTION translate_transcript...\nuser_proxy\n(\nto\nchatbot\n)\n:\n***** Response from calling function \"translate_transcript\" *****\n0s to 3.0s: 这是我小弟弟乔治。\n3.0s to 5.0s: 这是妈妈猪。\n5.0s to 7.0s: 这位是猪爸爸..\n7.0s to 9.0s: 'Peppa Pig...' (皮皮猪)\n9.0s to 11.0s: \"荒岛..\"\n11.0s to 14.0s: 胡椒和乔治在丹尼狗的家里。\n14.0s to 17.0s: 船长狗正在讲述他作为一名海员时的故事。\n17.0s to 20.0s: 我环游了全世界。\n20.0s to 22.0s: 然后我又回到了家。。\n22.0s to 25.0s: \"但现在我回来了，永远地回来了...\"\n25.0s to 27.0s: \"我永远不会忘记你...\"\n27.0s to 29.0s: \"爸爸，你想念大海吗？\"\n29.0s to 31.0s: 嗯，有时候...\n31.0s to 36.0s: 这是大爷狗、爷爷猪和脾气暴躁的兔子。\n36.0s to 37.0s: 你好。\n37.0s to 40.0s: \"船长狗可以出来玩吗?\"\n40.0s to 43.0s: 什么？我们要去钓鱼了。。\n43.0s to 44.0s: 在船上？\n44.0s to 45.0s: 在海上！\n45.0s to 47.0s: 好的，我们走吧。\n47.0s to 51.0s: \"但是爸爸，你说过你再也不会上船了…\"\n51.0s to 54.0s: \"我不会再上船了..\"\n54.0s to 57.0s: \"你说过再也不会上船了...\"\n57.0s to 60.0s: 哦，是的。所以我做了。\n60.0s to 62.0s: 好的，再见。\n62.0s to 63.0s: 再见。。\n*****************************************************************\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\nTERMINATE\n--------------------------------------------------------------------------------"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

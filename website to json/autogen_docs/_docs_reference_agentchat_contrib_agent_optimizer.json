@@ -1,0 +1,92 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/agent_optimizer",
+    "title": "agentchat.contrib.agent_optimizer",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "The wrapper for generated functions."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "AgentOptimizer\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nAgentOptimizer\n(\n)"
+                    }
+                },
+                {
+                    "text": "Base class for optimizing AutoGen agents. Specifically, it is used to optimize the functions used in the agent.\nMore information could be found in the following paper:\nhttps://arxiv.org/abs/2402.11359\n."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nmax_actions_per_step\n:\nint\n,\nllm_config\n:\ndict\n,\noptimizer_model\n:\nOptional\n[\nstr\n]\n=\n\"gpt-4-1106-preview\"\n)"
+                            }
+                        },
+                        {
+                            "text": "(These APIs are experimental and may change in the future.)\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "record_one_conversation\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nrecord_one_conversation\n(\nconversation_history\n:\nList\n[\nDict\n]\n,\nis_satisfied\n:\nbool\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "record one conversation history.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "step\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nstep\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "One step of training. It will return register_for_llm and register_for_executor at each iteration,\nwhich are subsequently utilized to update the assistant and executor agents, respectively.\nSee example:\nhttps://github.com/microsoft/autogen/blob/main/notebook/agentchat_agentoptimizer.ipynb"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "reset_optimizer\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nreset_optimizer\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "reset the optimizer."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,158 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/retrieve_utils",
+    "title": "retrieve_utils",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "These formats will be parsed by the 'unstructured' library, if installed."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "split_text_to_chunks\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nsplit_text_to_chunks\n(\ntext\n:\nstr\n,\nmax_tokens\n:\nint\n=\n4000\n,\nchunk_mode\n:\nstr\n=\n\"multi_lines\"\n,\nmust_break_at_empty_line\n:\nbool\n=\nTrue\n,\noverlap\n:\nint\n=\n0\n)"
+                            }
+                        },
+                        {
+                            "text": "Split a long text into chunks of max_tokens."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "extract_text_from_pdf\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nextract_text_from_pdf\n(\nfile\n:\nstr\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Extract text from PDF files"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "split_files_to_chunks\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nsplit_files_to_chunks\n(\nfiles\n:\nlist\n,\nmax_tokens\n:\nint\n=\n4000\n,\nchunk_mode\n:\nstr\n=\n\"multi_lines\"\n,\nmust_break_at_empty_line\n:\nbool\n=\nTrue\n,\ncustom_text_split_function\n:\nCallable\n=\nNone\n)\n-\n>\nTuple\n[\nList\n[\nstr\n]\n,\nList\n[\ndict\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Split a list of files into chunks of max_tokens."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_files_from_dir\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_files_from_dir\n(\ndir_path\n:\nUnion\n[\nstr\n,\nList\n[\nstr\n]\n]\n,\ntypes\n:\nlist\n=\nTEXT_FORMATS\n,\nrecursive\n:\nbool\n=\nTrue\n)"
+                            }
+                        },
+                        {
+                            "text": "Return a list of all the files in a given directory, a url, a file path or a list of them."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "parse_html_to_markdown\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nparse_html_to_markdown\n(\nhtml\n:\nstr\n,\nurl\n:\nstr\n=\nNone\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Parse HTML to markdown."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_file_from_url\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_file_from_url\n(\nurl\n:\nstr\n,\nsave_path\n:\nstr\n=\nNone\n)\n-\n>\nTuple\n[\nstr\n,\nstr\n]"
+                            }
+                        },
+                        {
+                            "text": "Download a file from a URL."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "is_url\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nis_url\n(\nstring\n:\nstr\n)"
+                            }
+                        },
+                        {
+                            "text": "Return True if the string is a valid URL."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "create_vector_db_from_dir\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncreate_vector_db_from_dir\n(\ndir_path\n:\nUnion\n[\nstr\n,\nList\n[\nstr\n]\n]\n,\nmax_tokens\n:\nint\n=\n4000\n,\nclient\n:\nAPI\n=\nNone\n,\ndb_path\n:\nstr\n=\n\"tmp/chromadb.db\"\n,\ncollection_name\n:\nstr\n=\n\"all-my-documents\"\n,\nget_or_create\n:\nbool\n=\nFalse\n,\nchunk_mode\n:\nstr\n=\n\"multi_lines\"\n,\nmust_break_at_empty_line\n:\nbool\n=\nTrue\n,\nembedding_model\n:\nstr\n=\n\"all-MiniLM-L6-v2\"\n,\nembedding_function\n:\nCallable\n=\nNone\n,\ncustom_text_split_function\n:\nCallable\n=\nNone\n,\ncustom_text_types\n:\nList\n[\nstr\n]\n=\nTEXT_FORMATS\n,\nrecursive\n:\nbool\n=\nTrue\n,\nextra_docs\n:\nbool\n=\nFalse\n)\n-\n>\nAPI"
+                            }
+                        },
+                        {
+                            "text": "Create a vector db from all the files in a given directory, the directory can also be a single file or a url to\na single file. We support chromadb compatible APIs to create the vector db, this function is not required if\nyou prepared your own vector db.\n\nArguments\n:\n\nReturns\n:\n\nThe chromadb client."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "query_vector_db\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nquery_vector_db\n(\nquery_texts\n:\nList\n[\nstr\n]\n,\nn_results\n:\nint\n=\n10\n,\nclient\n:\nAPI\n=\nNone\n,\ndb_path\n:\nstr\n=\n\"tmp/chromadb.db\"\n,\ncollection_name\n:\nstr\n=\n\"all-my-documents\"\n,\nsearch_string\n:\nstr\n=\n\"\"\n,\nembedding_model\n:\nstr\n=\n\"all-MiniLM-L6-v2\"\n,\nembedding_function\n:\nCallable\n=\nNone\n)\n-\n>\nQueryResult"
+                            }
+                        },
+                        {
+                            "text": "Query a vector db. We support chromadb compatible APIs, it's not required if you prepared your own vector db\nand query function.\n\nArguments\n:\n\nReturns\n:\n\nThe query result. The format is:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "class\nQueryResult\n(\nTypedDict\n)\n:\nids\n:\nList\n[\nIDs\n]\nembeddings\n:\nOptional\n[\nList\n[\nList\n[\nEmbedding\n]\n]\n]\ndocuments\n:\nOptional\n[\nList\n[\nList\n[\nDocument\n]\n]\n]\nmetadatas\n:\nOptional\n[\nList\n[\nList\n[\nMetadata\n]\n]\n]\ndistances\n:\nOptional\n[\nList\n[\nList\n[\nfloat\n]\n]\n]"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

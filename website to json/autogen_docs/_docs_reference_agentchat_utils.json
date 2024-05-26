@@ -1,0 +1,41 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/utils",
+    "title": "agentchat.utils",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Gather usage summary from all agents.\n\nArguments\n:\n\nReturns\n:\n\nExample\n:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "{\n\"usage_including_cached_inference\"\n:\n{\n\"total_cost\"\n:\n0.0006090000000000001\n,\n\"gpt-35-turbo\"\n:\n{\n\"cost\"\n:\n0.0006090000000000001\n,\n\"prompt_tokens\"\n:\n242\n,\n\"completion_tokens\"\n:\n123\n,\n\"total_tokens\"\n:\n365\n}\n,\n}\n,\n\"usage_excluding_cached_inference\"\n:\n{\n\"total_cost\"\n:\n0.0006090000000000001\n,\n\"gpt-35-turbo\"\n:\n{\n\"cost\"\n:\n0.0006090000000000001\n,\n\"prompt_tokens\"\n:\n242\n,\n\"completion_tokens\"\n:\n123\n,\n\"total_tokens\"\n:\n365\n}\n,\n}\n}"
+                    }
+                },
+                {
+                    "text": "Notes\n:\n\nIf none of the agents incurred any cost (not having a client), then the usage_including_cached_inference and usage_excluding_cached_inference will be\n{'total_cost': 0}\n."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "parse_tags_from_content\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nparse_tags_from_content\n(\ntag\n:\nstr\n,\ncontent\n:\nUnion\n[\nstr\n,\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]\n]\n)\n-\n>\nList\n[\nDict\n[\nstr\n,\nDict\n[\nstr\n,\nstr\n]\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Parses HTML style tags from message contents.\n\nThe parsing is done by looking for patterns in the text that match the format of HTML tags. The tag to be parsed is\nspecified as an argument to the function. The function looks for this tag in the text and extracts its content. The\ncontent of a tag is everything that is inside the tag, between the opening and closing angle brackets. The content\ncan be a single string or a set of attribute-value pairs.\n\nExamples\n:\n\n<img\nhttp://example.com/image.png>\n-> [{\"tag\": \"img\", \"attr\": {\"src\": \"\nhttp://example.com/image.png\n\"}, \"match\": re.Match}]\n->\n\nArguments\n:\n\nReturns\n:\n\nList[Dict[str, str]]: A list of dictionaries, where each dictionary represents a parsed tag. Each dictionary\ncontains three key-value pairs: 'type' which is the tag, 'attr' which is a dictionary of the parsed attributes,\nand 'match' which is a regular expression match object.\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,68 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/society_of_mind_agent",
+    "title": "agentchat.contrib.society_of_mind_agent",
+    "sections": [
+        {
+            "title": "SocietyOfMindAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nSocietyOfMindAgent\n(\nConversableAgent\n)"
+                    }
+                },
+                {
+                    "text": "(In preview) A single agent that runs a Group Chat as an inner monologue.\nAt the end of the conversation (termination for any reason), the SocietyOfMindAgent\napplies the response_preparer method on the entire inner monologue message history to\nextract a final answer for the reply.\n\nMost arguments are inherited from ConversableAgent. New arguments are:\nchat_manager (GroupChatManager): the group chat manager that will be running the inner monologue\nresponse_preparer (Optional, Callable or String): If response_preparer is a callable function, then\nit should have the signature:\nf( self: SocietyOfMindAgent, messages: List[Dict])\nwhere\nself\nis this SocietyOfMindAgent, and\nmessages\nis a list of inner-monologue messages.\nThe function should return a string representing the final response (extracted or prepared)\nfrom that history.\nIf response_preparer is a string, then it should be the LLM prompt used to extract the final\nmessage from the inner chat transcript.\nThe default response_preparer depends on if an llm_config is provided. If llm_config is False,\nthen the response_preparer deterministically returns the last message in the inner-monolgue. If\nllm_config is set to anything else, then a default LLM prompt is used."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "chat_manager\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nchat_manager\n(\n)\n-\n>\nUnion\n[\nGroupChatManager\n,\nNone\n]"
+                            }
+                        },
+                        {
+                            "text": "Return the group chat manager."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "update_chat_manager\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nupdate_chat_manager\n(\nchat_manager\n:\nUnion\n[\nGroupChatManager\n,\nNone\n]\n)"
+                            }
+                        },
+                        {
+                            "text": "Update the chat manager.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "generate_inner_monologue_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_inner_monologue_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nOpenAIWrapper\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nstr\n,\nDict\n,\nNone\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Generate a reply by running the group chat"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

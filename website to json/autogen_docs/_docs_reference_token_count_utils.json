@@ -1,0 +1,47 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/token_count_utils",
+    "title": "token_count_utils",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Count number of tokens left for an OpenAI model.\n\nArguments\n:\n\nReturns\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "count_token\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncount_token\n(\ninput\n:\nUnion\n[\nstr\n,\nList\n,\nDict\n]\n,\nmodel\n:\nstr\n=\n\"gpt-3.5-turbo-0613\"\n)\n-\n>\nint"
+                            }
+                        },
+                        {
+                            "text": "Count number of tokens used by an OpenAI model.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "num_tokens_from_functions\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nnum_tokens_from_functions\n(\nfunctions\n,\nmodel\n=\n\"gpt-3.5-turbo-0613\"\n)\n-\n>\nint"
+                            }
+                        },
+                        {
+                            "text": "Return the number of tokens used by a list of functions.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

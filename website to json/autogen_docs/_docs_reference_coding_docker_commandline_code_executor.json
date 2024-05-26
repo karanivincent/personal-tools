@@ -1,0 +1,140 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/coding/docker_commandline_code_executor",
+    "title": "coding.docker_commandline_code_executor",
+    "sections": [
+        {
+            "title": "DockerCommandLineCodeExecutor\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nDockerCommandLineCodeExecutor\n(\nCodeExecutor\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nimage\n:\nstr\n=\n\"python:3-slim\"\n,\ncontainer_name\n:\nOptional\n[\nstr\n]\n=\nNone\n,\ntimeout\n:\nint\n=\n60\n,\nwork_dir\n:\nUnion\n[\nPath\n,\nstr\n]\n=\nPath\n(\n\".\"\n)\n,\nbind_dir\n:\nOptional\n[\nUnion\n[\nPath\n,\nstr\n]\n]\n=\nNone\n,\nauto_remove\n:\nbool\n=\nTrue\n,\nstop_container\n:\nbool\n=\nTrue\n,\nexecution_policies\n:\nOptional\n[\nDict\n[\nstr\n,\nbool\n]\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) A code executor class that executes code through\na command line environment in a Docker container.\n\nThe executor first saves each code block in a file in the working\ndirectory, and then executes the code file in the container.\nThe executor executes the code blocks in the order they are received.\nCurrently, the executor only supports Python and shell scripts.\nFor Python code, use the language \"python\" for the code block.\nFor shell scripts, use the language \"bash\", \"shell\", or \"sh\" for the code\nblock.\n\nArguments\n:\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "timeout\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\ntimeout\n(\n)\n-\n>\nint"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) The timeout for code execution."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "work_dir\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nwork_dir\n(\n)\n-\n>\nPath"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) The working directory for the code execution."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "bind_dir\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nbind_dir\n(\n)\n-\n>\nPath"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) The binding directory for the code execution container."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "code_extractor\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\ncode_extractor\n(\n)\n-\n>\nCodeExtractor"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Export a code extractor that can be used by an agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "execute_code_blocks\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nexecute_code_blocks\n(\ncode_blocks\n:\nList\n[\nCodeBlock\n]\n)\n-\n>\nCommandLineCodeResult"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Execute the code blocks and return the result.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "restart\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nrestart\n(\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Restart the code executor."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "stop\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nstop\n(\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Stop the code executor."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

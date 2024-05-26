@@ -1,0 +1,163 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics/code-execution/jupyter-code-executor",
+    "title": "Jupyter Code Executor",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nAutoGen is able to execute code in a stateful Jupyter kernel, this is in\ncontrast to the command line code executor where each code block is\nexecuted in a new process. This means that you can define variables in\none code block and use them in another. One of the interesting\nproperties of this is that when an error is encountered, only the\nfailing code needs to be re-executed, and not the entire script.\n\nTo use the\nJupyterCodeExecutor\nyou need a Jupyter server running. This can be in Docker, local, or even\na remote server. Then, when constructing the\nJupyterCodeExecutor\nyou pass it the server it should connect to."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Dependencies\n​",
+            "content": [
+                {
+                    "text": "In order to use Jupyter based code execution some extra dependencies are\nrequired. These can be installed with the extra\njupyter-executor\n:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install 'pyautogen[jupyter-executor]'"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Jupyter Server\n​",
+            "content": [],
+            "subsections": [
+                {
+                    "title": "Docker\n​",
+                    "content": [
+                        {
+                            "text": "To run a Docker based Jupyter server, the\nDockerJupyterServer\ncan be used."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "from\nautogen\n.\ncoding\nimport\nCodeBlock\nfrom\nautogen\n.\ncoding\n.\njupyter\nimport\nDockerJupyterServer\n,\nJupyterCodeExecutor\nwith\nDockerJupyterServer\n(\n)\nas\nserver\n:\nexecutor\n=\nJupyterCodeExecutor\n(\nserver\n)\nprint\n(\nexecutor\n.\nexecute_code_blocks\n(\ncode_blocks\n=\n[\nCodeBlock\n(\nlanguage\n=\n\"python\"\n,\ncode\n=\n\"print('Hello, World!')\"\n)\n,\n]\n)\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "exit_code=0 output='Hello, World!\\n' output_files=[]"
+                            }
+                        },
+                        {
+                            "text": "By default the\nDockerJupyterServer\nwill build and use a bundled Dockerfile, which can be seen below:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "print\n(\nDockerJupyterServer\n.\nDEFAULT_DOCKERFILE\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "FROM quay.io/jupyter/docker-stacks-foundation\nSHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-c\"]\nUSER ${NB_UID}\nRUN mamba install --yes jupyter_kernel_gateway ipykernel &&     mamba clean --all -f -y &&     fix-permissions \"${CONDA_DIR}\" &&     fix-permissions \"/home/${NB_USER}\"\nENV TOKEN=\"UNSET\"\nCMD python -m jupyter kernelgateway --KernelGatewayApp.ip=0.0.0.0     --KernelGatewayApp.port=8888     --KernelGatewayApp.auth_token=\"${TOKEN}\"     --JupyterApp.answer_yes=true     --JupyterWebsocketPersonality.list_kernels=true\nEXPOSE 8888\nWORKDIR \"${HOME}\""
+                            }
+                        },
+                        {
+                            "text": "A custom image can be used by passing the\ncustom_image_name\nparameter\nto the\nDockerJupyterServer\nconstructor. There are some requirements of the image for it to work\ncorrectly:\n\nIf you wanted to add extra dependencies (for example\nmatplotlib\nand\nnumpy\n) to this image you could customize the Dockerfile like so:"
+                        },
+                        {
+                            "code": {
+                                "language": "dockerfile",
+                                "script": "FROM quay.io/jupyter/docker-stacks-foundation\nSHELL [\"/bin/bash\", \"-o\", \"pipefail\", \"-c\"]\nUSER ${NB_UID}\nRUN mamba install --yes jupyter_kernel_gateway ipykernel matplotlib numpy &&\nmamba clean --all -f -y &&\nfix-permissions \"${CONDA_DIR}\" &&\nfix-permissions \"/home/${NB_USER}\"\nENV TOKEN=\"UNSET\"\nCMD python -m jupyter kernelgateway \\\n--KernelGatewayApp.ip=0.0.0.0 \\\n--KernelGatewayApp.port=8888 \\\n--KernelGatewayApp.auth_token=\"${TOKEN}\" \\\n--JupyterApp.answer_yes=true \\\n--JupyterWebsocketPersonality.list_kernels=true\nEXPOSE 8888\nWORKDIR \"${HOME}\""
+                            }
+                        },
+                        {
+                            "text": "To learn about how to combine AutoGen in a Docker image while also executing code in a separate image go\nhere\n."
+                        }
+                    ],
+                    "subsections": [
+                        {
+                            "title": "Custom Docker Image\n​",
+                            "content": [],
+                            "subsections": []
+                        }
+                    ]
+                },
+                {
+                    "title": "Local\n​",
+                    "content": [
+                        {
+                            "text": "The local version will run code on your local system. Use it with caution.\n\nTo run a local Jupyter server, the\nLocalJupyterServer\ncan be used.\n\nThe\nLocalJupyterServer\ndoes not function on Windows due to a bug. In this case, you can use the\nDockerJupyterServer\ninstead or use the\nEmbeddedIPythonCodeExecutor\n. Do note that the intention is to remove the\nEmbeddedIPythonCodeExecutor\nwhen the bug is fixed."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "from\nautogen\n.\ncoding\nimport\nCodeBlock\nfrom\nautogen\n.\ncoding\n.\njupyter\nimport\nJupyterCodeExecutor\n,\nLocalJupyterServer\nwith\nLocalJupyterServer\n(\n)\nas\nserver\n:\nexecutor\n=\nJupyterCodeExecutor\n(\nserver\n)\nprint\n(\nexecutor\n.\nexecute_code_blocks\n(\ncode_blocks\n=\n[\nCodeBlock\n(\nlanguage\n=\n\"python\"\n,\ncode\n=\n\"print('Hello, World!')\"\n)\n,\n]\n)\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Image outputs\n​",
+            "content": [
+                {
+                    "text": "When Jupyter outputs an image, this is saved as a file into the\noutput_dir\nof the\nJupyterCodeExecutor\n,\nas specified by the constructor. By default this is the current working\ndirectory."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Assigning to an agent\n​",
+            "content": [
+                {
+                    "text": "A single server can support multiple agents, as each executor will\ncreate its own kernel. To assign an executor to an agent it can be done\nlike so:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\npathlib\nimport\nPath\nfrom\nautogen\nimport\nConversableAgent\nfrom\nautogen\n.\ncoding\n.\njupyter\nimport\nDockerJupyterServer\n,\nJupyterCodeExecutor\nserver\n=\nDockerJupyterServer\n(\n)\noutput_dir\n=\nPath\n(\n\"coding\"\n)\noutput_dir\n.\nmkdir\n(\nexist_ok\n=\nTrue\n)\ncode_executor_agent\n=\nConversableAgent\n(\nname\n=\n\"code_executor_agent\"\n,\nllm_config\n=\nFalse\n,\ncode_execution_config\n=\n{\n\"executor\"\n:\nJupyterCodeExecutor\n(\nserver\n,\noutput_dir\n=\noutput_dir\n)\n,\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)"
+                    }
+                },
+                {
+                    "text": "When using code execution it is critical that you update the system\nprompt of agents you expect to write code to be able to make use of the\nexecutor. For example, for the\nJupyterCodeExecutor\nyou might setup a code writing agent like so:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# The code writer agent's system message is to instruct the LLM on how to\n# use the Jupyter code executor with IPython kernel.\ncode_writer_system_message\n=\n\"\"\"\nYou have been given coding capability to solve tasks using Python code in a stateful IPython kernel.\nYou are responsible for writing the code, and the user is responsible for executing the code.\nWhen you write Python code, put the code in a markdown code block with the language set to Python.\nFor example:\n```python\nx = 3\n```\nYou can use the variable `x` in subsequent code blocks.\n```python\nprint(x)\n```\nWrite code incrementally and leverage the statefulness of the kernel to avoid repeating code.\nImport libraries in a separate code block.\nDefine a function or a class in a separate code block.\nRun code that produces output in a separate code block.\nRun code that involves expensive operations like download, upload, and call external APIs in a separate code block.\nWhen your code produces an output, the output will be returned to you.\nBecause you have limited conversation memory, if your code creates an image,\nthe output will be a path to the image instead of the image itself.\"\"\"\nimport\nos\ncode_writer_agent\n=\nConversableAgent\n(\n\"code_writer\"\n,\nsystem_message\n=\ncode_writer_system_message\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\ncode_execution_config\n=\nFalse\n,\n# Turn off code execution for this agent.\nmax_consecutive_auto_reply\n=\n2\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)"
+                    }
+                },
+                {
+                    "text": "Then we can use these two agents to solve a problem:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\npprint\nchat_result\n=\ncode_executor_agent\n.\ninitiate_chat\n(\ncode_writer_agent\n,\nmessage\n=\n\"Write Python code to calculate the 14th Fibonacci number.\"\n)\npprint\n.\npprint\n(\nchat_result\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "code_executor_agent\n(\nto\ncode_writer\n)\n:\nWrite Python code to calculate the 14th Fibonacci number.\n--------------------------------------------------------------------------------\ncode_writer\n(\nto\ncode_executor_agent\n)\n:\nSure. The Fibonacci sequence is a series of numbers where the next number is found by adding up the two numbers before it. We know that the first two Fibonacci numbers are 0 and 1. After that, the series looks like:\n0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ...\nSo, let's define a Python function to calculate the nth Fibonacci number.\n--------------------------------------------------------------------------------\ncode_executor_agent\n(\nto\ncode_writer\n)\n:\n--------------------------------------------------------------------------------\ncode_writer\n(\nto\ncode_executor_agent\n)\n:\nHere is the Python function to calculate the nth Fibonacci number:\n```python\ndef fibonacci(n):\nif n <= 1:\nreturn n\nelse:\na, b = 0, 1\nfor _ in range(2, n+1):\na, b = b, a+b\nreturn b\n```\nNow, let's use this function to calculate the 14th Fibonacci number.\n```python\nfibonacci(14)\n```\n--------------------------------------------------------------------------------\ncode_executor_agent\n(\nto\ncode_writer\n)\n:\nexitcode: 0 (execution succeeded)\nCode output:\n377\n--------------------------------------------------------------------------------\nChatResult(chat_id=None,\nchat_history=[{'content': 'Write Python code to calculate the 14th '\n'Fibonacci number.',\n'role': 'assistant'},\n{'content': 'Sure. The Fibonacci sequence is a series '\n'of numbers where the next number is '\n'found by adding up the two numbers '\n'before it. We know that the first two '\n'Fibonacci numbers are 0 and 1. After '\n'that, the series looks like:\\n'\n'\\n'\n'0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, '\n'...\\n'\n'\\n'\n\"So, let's define a Python function to \"\n'calculate the nth Fibonacci number.',\n'role': 'user'},\n{'content': '', 'role': 'assistant'},\n{'content': 'Here is the Python function to calculate '\n'the nth Fibonacci number:\\n'\n'\\n'\n'```python\\n'\n'def fibonacci(n):\\n'\n'    if n <= 1:\\n'\n'        return n\\n'\n'    else:\\n'\n'        a, b = 0, 1\\n'\n'        for _ in range(2, n+1):\\n'\n'            a, b = b, a+b\\n'\n'        return b\\n'\n'```\\n'\n'\\n'\n\"Now, let's use this function to \"\n'calculate the 14th Fibonacci number.\\n'\n'\\n'\n'```python\\n'\n'fibonacci(14)\\n'\n'```',\n'role': 'user'},\n{'content': 'exitcode: 0 (execution succeeded)\\n'\n'Code output: \\n'\n'377',\n'role': 'assistant'}],\nsummary='exitcode: 0 (execution succeeded)\\nCode output: \\n377',\ncost=({'gpt-4-0613': {'completion_tokens': 193,\n'cost': 0.028499999999999998,\n'prompt_tokens': 564,\n'total_tokens': 757},\n'total_cost': 0.028499999999999998},\n{'gpt-4-0613': {'completion_tokens': 193,\n'cost': 0.028499999999999998,\n'prompt_tokens': 564,\n'total_tokens': 757},\n'total_cost': 0.028499999999999998}),\nhuman_input=[])"
+                    }
+                },
+                {
+                    "text": "Finally, stop the server. Or better yet use a context manager for it to\nbe stopped automatically."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "server\n.\nstop\n(\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

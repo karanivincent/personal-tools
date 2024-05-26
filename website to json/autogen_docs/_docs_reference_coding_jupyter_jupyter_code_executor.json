@@ -1,0 +1,95 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/coding/jupyter/jupyter_code_executor",
+    "title": "coding.jupyter.jupyter_code_executor",
+    "sections": [
+        {
+            "title": "JupyterCodeExecutor\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nJupyterCodeExecutor\n(\nCodeExecutor\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\njupyter_server\n:\nUnion\n[\nJupyterConnectable\n,\nJupyterConnectionInfo\n]\n,\nkernel_name\n:\nstr\n=\n\"python3\"\n,\ntimeout\n:\nint\n=\n60\n,\noutput_dir\n:\nUnion\n[\nPath\n,\nstr\n]\n=\nPath\n(\n\".\"\n)\n)"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) A code executor class that executes code statefully using\na Jupyter server supplied to this class.\n\nEach execution is stateful and can access variables created from previous\nexecutions in the same session.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "code_extractor\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\ncode_extractor\n(\n)\n-\n>\nCodeExtractor"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Export a code extractor that can be used by an agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "execute_code_blocks\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nexecute_code_blocks\n(\ncode_blocks\n:\nList\n[\nCodeBlock\n]\n)\n-\n>\nIPythonCodeResult"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Execute a list of code blocks and return the result.\n\nThis method executes a list of code blocks as cells in the Jupyter kernel.\nSee:\nhttps://jupyter-client.readthedocs.io/en/stable/messaging.html\nfor the message protocol.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "restart\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nrestart\n(\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Restart a new session."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "stop\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nstop\n(\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Stop the kernel."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

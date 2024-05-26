@@ -1,0 +1,65 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/multimodal_conversable_agent",
+    "title": "agentchat.contrib.multimodal_conversable_agent",
+    "sections": [
+        {
+            "title": "MultimodalConversableAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nMultimodalConversableAgent\n(\nConversableAgent\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nname\n:\nstr\n,\nsystem_message\n:\nOptional\n[\nUnion\n[\nstr\n,\nList\n]\n]\n=\nDEFAULT_LMM_SYS_MSG\n,\nis_termination_msg\n:\nstr\n=\nNone\n,\n*\nargs\n,\n**\nkwargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "update_system_message\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nupdate_system_message\n(\nsystem_message\n:\nUnion\n[\nDict\n,\nList\n,\nstr\n]\n)"
+                            }
+                        },
+                        {
+                            "text": "Update the system message.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "generate_oai_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_oai_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nOpenAIWrapper\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nstr\n,\nDict\n,\nNone\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Generate a reply using autogen.oai."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,31 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/Migration-Guide",
+    "title": "Migration Guide",
+    "sections": [
+        {
+            "title": "Migrating to 0.2\n​",
+            "content": [
+                {
+                    "text": "openai v1 is a total rewrite of the library with many breaking changes. For example, the inference requires instantiating a client, instead of using a global class method.\nTherefore, some changes are required for users of\npyautogen<0.2\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nOpenAIWrapper\nclient\n=\nOpenAIWrapper\n(\nconfig_list\n=\nconfig_list\n)\nresponse\n=\nclient\n.\ncreate\n(\nmessages\n=\n[\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"2+2=\"\n}\n]\n)\nprint\n(\nclient\n.\nextract_text_or_completion_object\n(\nresponse\n)\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nautogen\n.\nruntime_logging\n# Start logging\nautogen\n.\nruntime_logging\n.\nstart\n(\n)\n# Stop logging\nautogen\n.\nruntime_logging\n.\nstop\n(\n)"
+                    }
+                },
+                {
+                    "text": "Checkout\nLogging documentation\nand\nLogging example notebook\nto learn more.\n\nInference parameter tuning can be done via\nflaml.tune\n."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

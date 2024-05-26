@@ -1,0 +1,92 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/math_utils",
+    "title": "math_utils",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "(openai<1) Solve the math problem.\n\nArguments\n:\n\nReturns\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "remove_boxed\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nremove_boxed\n(\nstring\n:\nstr\n)\n-\n>\nOptional\n[\nstr\n]"
+                            }
+                        },
+                        {
+                            "text": "Source:\nhttps://github.com/hendrycks/math\nExtract the text within a \\boxed{...} environment.\n\nExample\n:\n\nremove_boxed(\"\\boxed{\\frac{2}{3}}\")\n\n\\frac{2}{3}"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "last_boxed_only_string\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nlast_boxed_only_string\n(\nstring\n:\nstr\n)\n-\n>\nOptional\n[\nstr\n]"
+                            }
+                        },
+                        {
+                            "text": "Source:\nhttps://github.com/hendrycks/math\nExtract the last \\boxed{...} or \\fbox{...} element from a string."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "is_equiv\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nis_equiv\n(\nstr1\n:\nOptional\n[\nstr\n]\n,\nstr2\n:\nOptional\n[\nstr\n]\n)\n-\n>\nfloat"
+                            }
+                        },
+                        {
+                            "text": "Returns (as a float) whether two strings containing math are equivalent up to differences of formatting in"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "is_equiv_chain_of_thought\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nis_equiv_chain_of_thought\n(\nstr1\n:\nstr\n,\nstr2\n:\nstr\n)\n-\n>\nfloat"
+                            }
+                        },
+                        {
+                            "text": "Strips the solution first before calling\nis_equiv\n."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "eval_math_responses\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\neval_math_responses\n(\nresponses\n,\nsolution\n=\nNone\n,\n**\nargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Select a response for a math problem using voting, and check if the response is correct if the solution is provided.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,38 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/assistant_agent",
+    "title": "agentchat.assistant_agent",
+    "sections": [
+        {
+            "title": "AssistantAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nAssistantAgent\n(\nConversableAgent\n)"
+                    }
+                },
+                {
+                    "text": "(In preview) Assistant agent, designed to solve a task with LLM.\n\nAssistantAgent is a subclass of ConversableAgent configured with a default system message.\nThe default system message is designed to solve a task with LLM,\nincluding suggesting python code blocks and debugging.\nhuman_input_mode\nis default to \"NEVER\"\nand\ncode_execution_config\nis default to False.\nThis agent doesn't execute code by default, and expects the user to execute the code."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nname\n:\nstr\n,\nsystem_message\n:\nOptional\n[\nstr\n]\n=\nDEFAULT_SYSTEM_MESSAGE\n,\nllm_config\n:\nOptional\n[\nUnion\n[\nDict\n,\nLiteral\n[\nFalse\n]\n]\n]\n=\nNone\n,\nis_termination_msg\n:\nOptional\n[\nCallable\n[\n[\nDict\n]\n,\nbool\n]\n]\n=\nNone\n,\nmax_consecutive_auto_reply\n:\nOptional\n[\nint\n]\n=\nNone\n,\nhuman_input_mode\n:\nOptional\n[\nstr\n]\n=\n\"NEVER\"\n,\ndescription\n:\nOptional\n[\nstr\n]\n=\nNone\n,\n**\nkwargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

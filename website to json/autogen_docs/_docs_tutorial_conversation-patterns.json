@@ -1,0 +1,350 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/tutorial/conversation-patterns",
+    "title": "Conversation Patterns",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nIn the previous chapter we used two-agent conversation, which can be\nstarted by the\ninitiate_chat\nmethod. Two-agent chat is a useful\nconversation pattern but AutoGen offers more. In this chapter, we will\nfirst dig a little bit more into the two-agent chat pattern and chat\nresult, then we will show you several conversation patterns that involve\nmore than two agents."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Two-Agent Chat and Chat Result\n​",
+            "content": [
+                {
+                    "text": "Two-agent chat is the simplest form of conversation pattern. We start a\ntwo-agent chat using the\ninitiate_chat\nmethod of every\nConversableAgent\nagent. We have already seen multiple examples of\ntwo-agent chats in previous chapters but we haven’t covered the details.\n\nThe following figure illustrates how two-agent chat works.\n\n\n\nA two-agent chats takes two inputs: a message, which is a string\nprovided by the caller; a context, which specifies various parameters of\nthe chat. The sender agent uses its chat initializer method (i.e.,\ngenerate_init_message\nmethod of\nConversableAgent\n) to generate an\ninitial message from the inputs, and sends it to the recipient agent to\nstart the chat. The sender agent is the agent whose\ninitiate_chat\nmethod is called, and the recipient agent is the other agent.\n\nOnce the chat terminates, the history of the chat is processed by a chat\nsummarizer. The summarizer summarizes the chat history and calculates\nthe token usage of the chat. You can configure the type of summary using\nthe\nsummary_method\nparameter of the\ninitiate_chat\nmethod. By\ndefault, it is the last message of the chat (i.e.,\nsummary_method='last_msg'\n).\n\nThe example below is a two-agent chat between a student agent and a\nteacher agent. Its summarizer uses an LLM-based summary."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nos\nfrom\nautogen\nimport\nConversableAgent\nstudent_agent\n=\nConversableAgent\n(\nname\n=\n\"Student_Agent\"\n,\nsystem_message\n=\n\"You are a student willing to learn.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\n)\nteacher_agent\n=\nConversableAgent\n(\nname\n=\n\"Teacher_Agent\"\n,\nsystem_message\n=\n\"You are a math teacher.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\n)\nchat_result\n=\nstudent_agent\n.\ninitiate_chat\n(\nteacher_agent\n,\nmessage\n=\n\"What is triangle inequality?\"\n,\nsummary_method\n=\n\"reflection_with_llm\"\n,\nmax_turns\n=\n2\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Student_Agent\n(\nto\nTeacher_Agent\n)\n:\nWhat is triangle inequality?\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nTeacher_Agent\n(\nto\nStudent_Agent\n)\n:\nTriangle inequality theorem is a fundamental principle in geometry that states that the sum of the lengths of any two sides of a triangle must always be greater than the length of the third side. In a triangle with sides of lengths a, b, and c, the theorem can be written as:\na + b > c\na + c > b\nb + c > a\nEach of these represents the condition for one specific side (a, b, or c). All must be true for a triangle to exist.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nStudent_Agent\n(\nto\nTeacher_Agent\n)\n:\nThank you for the explanation. This theorem helps in understanding the basic properties of a triangle. It can also be useful when solving geometric problems or proving other mathematical theorems. Can you give me an example of how we can use the triangle inequality theorem?\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nTeacher_Agent\n(\nto\nStudent_Agent\n)\n:\nAbsolutely! Here's an example:\nSuppose you're given three line segments with lengths 10, 7, and 3 units. The question is: \"Can these three line segments form a triangle?\"\nTo answer this, you would use the triangle inequality theorem. Adding any two side lengths together should be greater than the third:\n- For sides 10 and 7: 10 + 7 = 17, which is larger than 3.\n- For sides 10 and 3: 10 + 3 = 13, which is larger than 7.\n- For sides 7 and 3: 7 + 3 = 10, which is equal to the length of the third side (10), but not greater.\nSo, these three lines cannot form a triangle, because not all pairs of sides satisfy the triangle inequality theorem.\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "Let’s see what the summary looks like. The summary is stored in the\nchat_result\nobject of the type\nChatResult\nthat was returned by the\ninitiate_chat\nmethod."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "print\n(\nchat_result\n.\nsummary\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "The triangle inequality theorem states that in a triangle, the sum of the lengths of any two sides must always be greater than the length of the third side. This principle is significant in geometry and is used in solving problems or proving theorems. For instance, if given three line segments, you can determine if they can form a triangle using this theorem."
+                    }
+                },
+                {
+                    "text": "In the above example, the summary method is set to\nreflection_with_llm\nwhich takes a list of messages from the conversation and summarize them\nusing a call to an LLM. The summary method first tries to use the\nrecipient’s LLM, if it is not available then it uses the sender’s LLM.\nIn this case the recipient is “Teacher_Agent” and the sender is\n“Student_Agent”. The input prompt for the LLM is the following default\nprompt:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "print\n(\nConversableAgent\n.\nDEFAULT_summary_prompt\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Summarize the takeaway from the conversation. Do not add any introductory phrases."
+                    }
+                },
+                {
+                    "text": "You can also use a custom prompt by setting the\nsummary_prompt\nargument of\ninitiate_chat\n.\n\nThere are some other useful information in the\nChatResult\nobject,\nincluding the conversation history, human input, and token cost."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Get the chat history.\nimport\npprint\npprint\n.\npprint\n(\nchat_result\n.\nchat_history\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "[{'content': 'What is triangle inequality?', 'role': 'assistant'},\n{'content': 'Triangle inequality theorem is a fundamental principle in '\n'geometry that states that the sum of the lengths of any two '\n'sides of a triangle must always be greater than the length of '\n'the third side. In a triangle with sides of lengths a, b, and c, '\n'the theorem can be written as:\\n'\n'\\n'\n'a + b > c\\n'\n'a + c > b\\n'\n'b + c > a\\n'\n'\\n'\n'Each of these represents the condition for one specific side (a, '\n'b, or c). All must be true for a triangle to exist.',\n'role': 'user'},\n{'content': 'Thank you for the explanation. This theorem helps in '\n'understanding the basic properties of a triangle. It can also be '\n'useful when solving geometric problems or proving other '\n'mathematical theorems. Can you give me an example of how we can '\n'use the triangle inequality theorem?',\n'role': 'assistant'},\n{'content': \"Absolutely! Here's an example:\\n\"\n'\\n'\n\"Suppose you're given three line segments with lengths 10, 7, and \"\n'3 units. The question is: \"Can these three line segments form a '\n'triangle?\"\\n'\n'\\n'\n'To answer this, you would use the triangle inequality theorem. '\n'Adding any two side lengths together should be greater than the '\n'third:\\n'\n'\\n'\n'- For sides 10 and 7: 10 + 7 = 17, which is larger than 3.\\n'\n'- For sides 10 and 3: 10 + 3 = 13, which is larger than 7.\\n'\n'- For sides 7 and 3: 7 + 3 = 10, which is equal to the length of '\n'the third side (10), but not greater.\\n'\n'\\n'\n'So, these three lines cannot form a triangle, because not all '\n'pairs of sides satisfy the triangle inequality theorem.',\n'role': 'user'}]"
+                    }
+                },
+                {
+                    "text": "That chat messages in the chat result are from the recipient agent’s\nperspective – the sender is the “assistant” and the recipient is the\n“user”."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Get the cost of the chat.\npprint\n.\npprint\n(\nchat_result\n.\ncost\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "({'gpt-4-0613': {'completion_tokens': 399,\n'cost': 0.04521,\n'prompt_tokens': 709,\n'total_tokens': 1108},\n'total_cost': 0.04521},\n{'total_cost': 0})"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Sequential Chats\n​",
+            "content": [
+                {
+                    "text": "The name of this pattern is self-explanatory – it is a sequence of chats\nbetween two agents, chained together by a mechanism called\ncarryover\n,\nwhich brings the summary of the previous chat to the context of the next\nchat.\n\nThis pattern is useful for complex task that can be broken down into\ninterdependent sub-tasks. The figure below illustrate how this pattern\nworks.\n\n\n\nIn this pattern, the a pair of agents first start a two-agent chat, then\nthe summary of the conversation becomes a\ncarryover\nfor the next\ntwo-agent chat. The next chat passes the carryover to the\ncarryover\nparameter of the context to generate its initial message.\n\nCarryover accumulates as the conversation moves forward,, so each\nsubsequent chat starts with all the carryovers from previous chats.\n\nThe figure above shows distinct recipient agents for all the chats,\nhowever, the recipient agents in the sequence are allowed to repeat.\n\nTo illustrate this pattern, let’s consider a simple example of\narithmetic operator agents. One agent (called the “Number_Agent”) is\nresponsible for coming up with a number, and other agents are\nresponsible for performing a specific arithmetic operation on the\nnumber, e.g., add 1, multiply by 2, etc.."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# The Number Agent always returns the same numbers.\nnumber_agent\n=\nConversableAgent\n(\nname\n=\n\"Number_Agent\"\n,\nsystem_message\n=\n\"You return me the numbers I give you, one number each line.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)\n# The Adder Agent adds 1 to each number it receives.\nadder_agent\n=\nConversableAgent\n(\nname\n=\n\"Adder_Agent\"\n,\nsystem_message\n=\n\"You add 1 to each number I give you and return me the new numbers, one number each line.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)\n# The Multiplier Agent multiplies each number it receives by 2.\nmultiplier_agent\n=\nConversableAgent\n(\nname\n=\n\"Multiplier_Agent\"\n,\nsystem_message\n=\n\"You multiply each number I give you by 2 and return me the new numbers, one number each line.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)\n# The Subtracter Agent subtracts 1 from each number it receives.\nsubtracter_agent\n=\nConversableAgent\n(\nname\n=\n\"Subtracter_Agent\"\n,\nsystem_message\n=\n\"You subtract 1 from each number I give you and return me the new numbers, one number each line.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)\n# The Divider Agent divides each number it receives by 2.\ndivider_agent\n=\nConversableAgent\n(\nname\n=\n\"Divider_Agent\"\n,\nsystem_message\n=\n\"You divide each number I give you by 2 and return me the new numbers, one number each line.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)"
+                    }
+                },
+                {
+                    "text": "The Number Agent chats with the first operator agent, then the second\noperator agent, and so on. After each chat, the last message in the\nconversation (i.e., the result of the arithmetic operation from the\noperator agent) is used as the summary of the chat. This is specified by\nthe\nsummary_method\nparameter. In the end we will have the result of\nthe arithmetic operations."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Start a sequence of two-agent chats.\n# Each element in the list is a dictionary that specifies the arguments\n# for the initiate_chat method.\nchat_results\n=\nnumber_agent\n.\ninitiate_chats\n(\n[\n{\n\"recipient\"\n:\nadder_agent\n,\n\"message\"\n:\n\"14\"\n,\n\"max_turns\"\n:\n2\n,\n\"summary_method\"\n:\n\"last_msg\"\n,\n}\n,\n{\n\"recipient\"\n:\nmultiplier_agent\n,\n\"message\"\n:\n\"These are my numbers\"\n,\n\"max_turns\"\n:\n2\n,\n\"summary_method\"\n:\n\"last_msg\"\n,\n}\n,\n{\n\"recipient\"\n:\nsubtracter_agent\n,\n\"message\"\n:\n\"These are my numbers\"\n,\n\"max_turns\"\n:\n2\n,\n\"summary_method\"\n:\n\"last_msg\"\n,\n}\n,\n{\n\"recipient\"\n:\ndivider_agent\n,\n\"message\"\n:\n\"These are my numbers\"\n,\n\"max_turns\"\n:\n2\n,\n\"summary_method\"\n:\n\"last_msg\"\n,\n}\n,\n]\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "********************************************************************************\nStart a new chat with the following message:\n14\nWith the following carryover:\n********************************************************************************\nNumber_Agent\n(\nto\nAdder_Agent\n)\n:\n14\n--------------------------------------------------------------------------------\nAdder_Agent\n(\nto\nNumber_Agent\n)\n:\n15\n--------------------------------------------------------------------------------\nNumber_Agent\n(\nto\nAdder_Agent\n)\n:\n15\n--------------------------------------------------------------------------------\nAdder_Agent\n(\nto\nNumber_Agent\n)\n:\n16\n--------------------------------------------------------------------------------\n********************************************************************************\nStart a new chat with the following message:\nThese are my numbers\nWith the following carryover:\n16\n********************************************************************************\nNumber_Agent\n(\nto\nMultiplier_Agent\n)\n:\nThese are my numbers\nContext:\n16\n--------------------------------------------------------------------------------\nMultiplier_Agent\n(\nto\nNumber_Agent\n)\n:\n32\n--------------------------------------------------------------------------------\nNumber_Agent\n(\nto\nMultiplier_Agent\n)\n:\n32\n--------------------------------------------------------------------------------\nMultiplier_Agent\n(\nto\nNumber_Agent\n)\n:\n64\n--------------------------------------------------------------------------------\n********************************************************************************\nStart a new chat with the following message:\nThese are my numbers\nWith the following carryover:\n16\n64\n********************************************************************************\nNumber_Agent\n(\nto\nSubtracter_Agent\n)\n:\nThese are my numbers\nContext:\n16\n64\n--------------------------------------------------------------------------------\nSubtracter_Agent\n(\nto\nNumber_Agent\n)\n:\n15\n63\n--------------------------------------------------------------------------------\nNumber_Agent\n(\nto\nSubtracter_Agent\n)\n:\n15\n63\n--------------------------------------------------------------------------------\nSubtracter_Agent\n(\nto\nNumber_Agent\n)\n:\n14\n62\n--------------------------------------------------------------------------------\n********************************************************************************\nStart a new chat with the following message:\nThese are my numbers\nWith the following carryover:\n16\n64\n14\n62\n********************************************************************************\nNumber_Agent\n(\nto\nDivider_Agent\n)\n:\nThese are my numbers\nContext:\n16\n64\n14\n62\n--------------------------------------------------------------------------------\nDivider_Agent\n(\nto\nNumber_Agent\n)\n:\n8\n32\n7\n31\n--------------------------------------------------------------------------------\nNumber_Agent\n(\nto\nDivider_Agent\n)\n:\n8\n32\n7\n31\n--------------------------------------------------------------------------------\nDivider_Agent\n(\nto\nNumber_Agent\n)\n:\n4\n16\n3.5\n15.5\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "First thing to note is that the\ninitiate_chats\nmethod takes a list of\ndictionaries, each dictionary contains the arguments for the\ninitiate_chat\nmethod.\n\nSecond, each chat in the sequence has a maximum round of 2, as specified\nwith the setting\nmax_turns=2\n, which means each arithmetic operation is\nperformed twice. So you can see in the first chat the number 14 becomes\n15 and then 16, in the second chat the number 16 becomes 32 and then 64,\nand so on.\n\nThird, the carryover accumulates as the chats go on. In the second chat,\nthe carryover is the summary of the first chat “16”. In the third chat,\nthe carryover is the summary of the first and second chat, which is the\nlist “16” and “64”, and both numbers are operated upon. In the forth and\nlast chat, the carryover is the summary of all previous chats, which is\nthe list “16”, “64”, “14” and “62”, and all of these numbers are\noperated upon.\n\nThe final note is that the\ninitiate_chats\nmethod returns a list of\nChatResult\nobjects, one for each chat in the sequence."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "print\n(\n\"First Chat Summary: \"\n,\nchat_results\n[\n0\n]\n.\nsummary\n)\nprint\n(\n\"Second Chat Summary: \"\n,\nchat_results\n[\n1\n]\n.\nsummary\n)\nprint\n(\n\"Third Chat Summary: \"\n,\nchat_results\n[\n2\n]\n.\nsummary\n)\nprint\n(\n\"Fourth Chat Summary: \"\n,\nchat_results\n[\n3\n]\n.\nsummary\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "First Chat Summary:  16\nSecond Chat Summary:  64\nThird Chat Summary:  14\n62\nFourth Chat Summary:  4\n16\n3.5\n15.5"
+                    }
+                },
+                {
+                    "text": "Besides calling\ninitiate_chats\nfrom the same sender agent, you can\nalso call a high-level function\nautogen.agentchat.initiate_chats\nto\nstart a sequence of two-agent chats with different sender agents. This\nfunction allows you to specify the sender agent for each chat in the\nsequence."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Group Chat\n​",
+            "content": [
+                {
+                    "text": "So far we have only seen conversation patterns that involve two agents\nor a sequence of two-agent chats. AutoGen provides a more general\nconversation pattern called group chat, which involves more than two\nagents. The core idea of group chat is that all agents contribute to a\nsingle conversation thread and share the same context. This is useful\nfor tasks that require collaboration among multiple agents.\n\nThe figure below illustrates how group chat works.\n\n\n\nA group chat is orchestrated by a special agent type\nGroupChatManager\n.\nIn the first step of the group chat, the Group Chat Manager selects an\nagent to speak. Then, the selected agent speaks and the message is sent\nback to the Group Chat Manager, who\nbroadcasts\nthe message to all\nother agents in the group. This process repeats until the conversation\nstops.\n\nThe Group Chat Manager can use several strategies to select the next\nagent. Currently, the following strategies are supported:\n\nTo illustrate this pattern, let’s consider a simple example of a group\nchat among the same arithmetic operator agents as in the previous\nexample, with the objective of turning a number into a specific target\nnumber using a sequence of arithmetic operations powered by the agents.\n\nIn this example, we use the\nauto\nstrategy to select the next agent. To\nhelp the Group Chat Manager select the next agent, we also set the\ndescription\nof the agents. Without the\ndescription\n, the Group Chat\nManager will use the agents’\nsystem_message\n, which may be not be the\nbest choice."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# The `description` attribute is a string that describes the agent.\n# It can also be set in `ConversableAgent` constructor.\nadder_agent\n.\ndescription\n=\n\"Add 1 to each input number.\"\nmultiplier_agent\n.\ndescription\n=\n\"Multiply each input number by 2.\"\nsubtracter_agent\n.\ndescription\n=\n\"Subtract 1 from each input number.\"\ndivider_agent\n.\ndescription\n=\n\"Divide each input number by 2.\"\nnumber_agent\n.\ndescription\n=\n\"Return the numbers given.\""
+                    }
+                },
+                {
+                    "text": "We first create a\nGroupChat\nobject and provide the list of agents. If\nwe were to use the\nround_robin\nstrategy, this list would specify the\norder of the agents to be selected. We also initialize the group chat\nwith an empty message list and a maximum round of 6, which means there\nwill be at most 6 iteratiosn of selecting speaker, agent speaks and\nbroadcasting message."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nGroupChat\ngroup_chat\n=\nGroupChat\n(\nagents\n=\n[\nadder_agent\n,\nmultiplier_agent\n,\nsubtracter_agent\n,\ndivider_agent\n,\nnumber_agent\n]\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n6\n,\n)"
+                    }
+                },
+                {
+                    "text": "Now we create a\nGroupChatManager\nobject and provide the\nGroupChat\nobject as input. We also need to specify the\nllm_config\nof the Group\nChat Manager so it can use the LLM to select the next agent (the\nauto\nstrategy)."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nGroupChatManager\ngroup_chat_manager\n=\nGroupChatManager\n(\ngroupchat\n=\ngroup_chat\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\n)"
+                    }
+                },
+                {
+                    "text": "Finally, we have the Number Agent from before to start a two-agent chat\nwith the Group Chat Manager, which runs the group chat internally and\nterminates the two-agent chat when the internal group chat is done.\nBecause the Number Agent is selected to speak by us, it counts as the\nfirst round of the group chat."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "chat_result\n=\nnumber_agent\n.\ninitiate_chat\n(\ngroup_chat_manager\n,\nmessage\n=\n\"My number is 3, I want to turn it into 13.\"\n,\nsummary_method\n=\n\"reflection_with_llm\"\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Number_Agent\n(\nto\nchat_manager\n)\n:\nMy number is 3, I want to turn it into 13.\n--------------------------------------------------------------------------------\nMultiplier_Agent\n(\nto\nchat_manager\n)\n:\n6\n--------------------------------------------------------------------------------\nAdder_Agent\n(\nto\nchat_manager\n)\n:\n7\n--------------------------------------------------------------------------------\nMultiplier_Agent\n(\nto\nchat_manager\n)\n:\n14\n--------------------------------------------------------------------------------\nSubtracter_Agent\n(\nto\nchat_manager\n)\n:\n13\n--------------------------------------------------------------------------------\nNumber_Agent\n(\nto\nchat_manager\n)\n:\n13\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "You can see that the Number Agent is selected to speak first, then the\nGroup Chat Manager selects the Multiplier Agent to speak, then the Adder\nAgent, and so on. The number is operated upon by each agent in the group\nchat, and the final result is 13.\n\nWe can take a look at the summary of the group chat, provided by the\nChatResult\nobject returned by the\ninitiate_chat\nmethod."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "print\n(\nchat_result\n.\nsummary\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "The agents cooperatively manipulated the initial number (3) through multipliying, adding, and subtracting operations to reach the target number (13)."
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Send Introductions\n​",
+                    "content": [
+                        {
+                            "text": "In the previous example, we set the\ndescription\nof the agents to help\nthe Group Chat Manager select the next agent. This only helps the Group\nChat Manager, however, does not help the participating agents to know\nabout each other. Sometimes it is useful have each agent introduce\nthemselves to other agents in the group chat. This can be done by\nsetting the\nsend_introductions=True\n."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "group_chat_with_introductions\n=\nGroupChat\n(\nagents\n=\n[\nadder_agent\n,\nmultiplier_agent\n,\nsubtracter_agent\n,\ndivider_agent\n,\nnumber_agent\n]\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n6\n,\nsend_introductions\n=\nTrue\n,\n)"
+                            }
+                        },
+                        {
+                            "text": "Under the hood, the Group Chat Manager sends a message containing the\nagents’ names and descriptions to all agents in the group chat before\nthe group chat starts."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Group Chat in a Sequential Chat\n​",
+                    "content": [
+                        {
+                            "text": "Group chat can also be used as a part of a sequential chat. In this\ncase, the Group Chat Manager is treated as a regular agent in the\nsequence of two-agent chats."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "# Let's use the group chat with introduction messages created above.\ngroup_chat_manager_with_intros\n=\nGroupChatManager\n(\ngroupchat\n=\ngroup_chat_with_introductions\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\n)\n# Start a sequence of two-agent chats between the number agent and\n# the group chat manager.\nchat_result\n=\nnumber_agent\n.\ninitiate_chats\n(\n[\n{\n\"recipient\"\n:\ngroup_chat_manager_with_intros\n,\n\"message\"\n:\n\"My number is 3, I want to turn it into 13.\"\n,\n}\n,\n{\n\"recipient\"\n:\ngroup_chat_manager_with_intros\n,\n\"message\"\n:\n\"Turn this number to 32.\"\n,\n}\n,\n]\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "********************************************************************************\nStart a new chat with the following message:\nMy number is 3, I want to turn it into 13.\nWith the following carryover:\n********************************************************************************\nNumber_Agent\n(\nto\nchat_manager\n)\n:\nMy number is 3, I want to turn it into 13.\n--------------------------------------------------------------------------------\nMultiplier_Agent\n(\nto\nchat_manager\n)\n:\n6\n--------------------------------------------------------------------------------\nAdder_Agent\n(\nto\nchat_manager\n)\n:\n7\n--------------------------------------------------------------------------------\nMultiplier_Agent\n(\nto\nchat_manager\n)\n:\n14\n--------------------------------------------------------------------------------\nSubtracter_Agent\n(\nto\nchat_manager\n)\n:\n13\n--------------------------------------------------------------------------------\nNumber_Agent\n(\nto\nchat_manager\n)\n:\nYour number is 13.\n--------------------------------------------------------------------------------\n********************************************************************************\nStart a new chat with the following message:\nTurn this number to 32.\nWith the following carryover:\nYour number is 13.\n********************************************************************************\nNumber_Agent\n(\nto\nchat_manager\n)\n:\nTurn this number to 32.\nContext:\nYour number is 13.\n--------------------------------------------------------------------------------\nMultiplier_Agent\n(\nto\nchat_manager\n)\n:\n26\n--------------------------------------------------------------------------------\nAdder_Agent\n(\nto\nchat_manager\n)\n:\n14\n--------------------------------------------------------------------------------\nMultiplier_Agent\n(\nto\nchat_manager\n)\n:\n28\n--------------------------------------------------------------------------------\nAdder_Agent\n(\nto\nchat_manager\n)\n:\n15\n--------------------------------------------------------------------------------\nMultiplier_Agent\n(\nto\nchat_manager\n)\n:\n30\n--------------------------------------------------------------------------------"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "/Users/ekzhu/autogen/autogen/agentchat/chat.py:46: UserWarning: Repetitive recipients detected: The chat history will be cleared by default if a recipient appears more than once. To retain the chat history, please set 'clear_history=False' in the configuration of the repeating agent.\nwarnings.warn("
+                            }
+                        },
+                        {
+                            "text": "In the above example, the Group Chat Manager runs the group chat two\ntimes. In the first time the number 3 becomes 13, and the last message\nof this group chat is being used as the carryover for the next group\nchat, which starts from 13.\n\nYou can also see from the warning message that the Group Chat Manager’s\nhistory is being cleared after the first group chat, which is the\ndefault. To keep the history of the Group Chat Manager, you can set the\nclear_history=False\nfor the first chat."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Constrained Speaker Selection\n​",
+                    "content": [
+                        {
+                            "text": "Group chat is a powerful conversation pattern, but it can be hard to\ncontrol if the number of participating agents is large. AutoGen provides\na way to constrain the selection of the next speaker by using the\nallowed_or_disallowed_speaker_transitions\nargument of the\nGroupChat\nclass.\n\nThe\nallowed_or_disallowed_speaker_transitions\nargument is a dictionary\nthat maps a given agent to a list of agents that can (or cannot) be\nselected to speak next. The\nspeaker_transitions_type\nargument\nspecifies whether the transitions are allowed or disallowed.\n\nHere is an example:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "allowed_transitions\n=\n{\nnumber_agent\n:\n[\nadder_agent\n,\nnumber_agent\n]\n,\nadder_agent\n:\n[\nmultiplier_agent\n,\nnumber_agent\n]\n,\nsubtracter_agent\n:\n[\ndivider_agent\n,\nnumber_agent\n]\n,\nmultiplier_agent\n:\n[\nsubtracter_agent\n,\nnumber_agent\n]\n,\ndivider_agent\n:\n[\nadder_agent\n,\nnumber_agent\n]\n,\n}"
+                            }
+                        },
+                        {
+                            "text": "In this example, the allowed transitions are specified for each agent.\nThe Number Agent can be followed by the Adder Agent and the Number\nAgent, the Adder Agent can be followed by the Multiplier Agent and the\nNumber Agent, and so on. Let’s put this into the group chat and see how\nit works. The\nspeaker_transitions_type\nis set to\nallowed\nso the\ntransitions are positive constraints."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "constrained_graph_chat\n=\nGroupChat\n(\nagents\n=\n[\nadder_agent\n,\nmultiplier_agent\n,\nsubtracter_agent\n,\ndivider_agent\n,\nnumber_agent\n]\n,\nallowed_or_disallowed_speaker_transitions\n=\nallowed_transitions\n,\nspeaker_transitions_type\n=\n\"allowed\"\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n12\n,\nsend_introductions\n=\nTrue\n,\n)\nconstrained_group_chat_manager\n=\nGroupChatManager\n(\ngroupchat\n=\nconstrained_graph_chat\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\n)\nchat_result\n=\nnumber_agent\n.\ninitiate_chat\n(\nconstrained_group_chat_manager\n,\nmessage\n=\n\"My number is 3, I want to turn it into 10. Once I get to 10, keep it there.\"\n,\nsummary_method\n=\n\"reflection_with_llm\"\n,\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "Number_Agent\n(\nto\nchat_manager\n)\n:\nMy number is 3, I want to turn it into 10. Once I get to 10, keep it there.\n--------------------------------------------------------------------------------\nAdder_Agent\n(\nto\nchat_manager\n)\n:\n4\n--------------------------------------------------------------------------------\nMultiplier_Agent\n(\nto\nchat_manager\n)\n:\n8\n--------------------------------------------------------------------------------\nSubtracter_Agent\n(\nto\nchat_manager\n)\n:\n7\n--------------------------------------------------------------------------------\nDivider_Agent\n(\nto\nchat_manager\n)\n:\n3.5\n--------------------------------------------------------------------------------\nAdder_Agent\n(\nto\nchat_manager\n)\n:\n4.5\n--------------------------------------------------------------------------------\nMultiplier_Agent\n(\nto\nchat_manager\n)\n:\n9\n--------------------------------------------------------------------------------\nSubtracter_Agent\n(\nto\nchat_manager\n)\n:\n8\n--------------------------------------------------------------------------------\nDivider_Agent\n(\nto\nchat_manager\n)\n:\n4\n--------------------------------------------------------------------------------\nAdder_Agent\n(\nto\nchat_manager\n)\n:\n5\n--------------------------------------------------------------------------------\nMultiplier_Agent\n(\nto\nchat_manager\n)\n:\n10\n--------------------------------------------------------------------------------\nNumber_Agent\n(\nto\nchat_manager\n)\n:\n10\n--------------------------------------------------------------------------------"
+                            }
+                        },
+                        {
+                            "text": "This time, the agents are selected following the constraints we have\nspecified."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Nested Chats\n​",
+            "content": [
+                {
+                    "text": "The previous conversations patterns (two-agent chat, sequential chat,\nand group chat) are useful for building complex workflows, however, they\ndo not expose a single conversational interface, which is often needed\nfor scenarios like question-answering bots and personal assistants. In\nsome other cases, it is also useful to package a workflow into a single\nagent for reuse in a larger workflow. AutoGen provides a way to achieve\nthis by using nested chats.\n\nNested chats is powered by the nested chats handler, which is a\npluggable component of\nConversableAgent\n. The figure below illustrates\nhow the nested chats handler triggers a sequence of nested chats when a\nmessage is received.\n\n\n\nWhen a message comes in and passes the\nhuman-in-the-loop\ncomponent\n, the nested chats handler checks if the\nmessage should trigger a nested chat based on conditions specified by\nthe user. If the conditions are met, the nested chats handler starts a\nsequence of nested chats specified using the sequential chats pattern.\nIn each of the nested chats, the sender agent is always the same agent\nthat triggered the nested chats. In the end, the nested chat handler\nuses the results of the nested chats to produce a response to the\noriginal message. By default, the nested chat handler uses the summary\nof the last chat as the response.\n\nHere is an example of using nested chats to build an arithmetic agent\nthat packages arithmetic operations, code-based validation, and poetry\ninto a single agent. This arithmetic agent takes a number transformation\nrequest like “turn number 3 into 13” and returns a poem that describes a\ntransformation attempt.\n\nFirst we define the agents. We reuse the\ngroup_chat_manager_with_intros\nfrom previous example to orchestrate\nthe arithmetic operations."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\ntempfile\ntemp_dir\n=\ntempfile\n.\ngettempdir\n(\n)\narithmetic_agent\n=\nConversableAgent\n(\nname\n=\n\"Arithmetic_Agent\"\n,\nllm_config\n=\nFalse\n,\nhuman_input_mode\n=\n\"ALWAYS\"\n,\n# This agent will always require human input to make sure the code is\n# safe to execute.\ncode_execution_config\n=\n{\n\"use_docker\"\n:\nFalse\n,\n\"work_dir\"\n:\ntemp_dir\n}\n,\n)\ncode_writer_agent\n=\nConversableAgent\n(\nname\n=\n\"Code_Writer_Agent\"\n,\nsystem_message\n=\n\"You are a code writer. You write Python script in Markdown code blocks.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)\npoetry_agent\n=\nConversableAgent\n(\nname\n=\n\"Poetry_Agent\"\n,\nsystem_message\n=\n\"You are an AI poet.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)"
+                    }
+                },
+                {
+                    "text": "Now we define the nested chats using the sequential chat pattern. All\nthe senders are always\nartihmetic_agent\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "nested_chats\n=\n[\n{\n\"recipient\"\n:\ngroup_chat_manager_with_intros\n,\n\"summary_method\"\n:\n\"reflection_with_llm\"\n,\n\"summary_prompt\"\n:\n\"Summarize the sequence of operations used to turn \"\n\"the source number into target number.\"\n,\n}\n,\n{\n\"recipient\"\n:\ncode_writer_agent\n,\n\"message\"\n:\n\"Write a Python script to verify the arithmetic operations is correct.\"\n,\n\"summary_method\"\n:\n\"reflection_with_llm\"\n,\n}\n,\n{\n\"recipient\"\n:\npoetry_agent\n,\n\"message\"\n:\n\"Write a poem about it.\"\n,\n\"max_turns\"\n:\n1\n,\n\"summary_method\"\n:\n\"last_msg\"\n,\n}\n,\n]"
+                    }
+                },
+                {
+                    "text": "Now we register the nested chats handler to the\narithmetic_agent\nand\nset the conditions for triggering the nested chats."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "arithmetic_agent\n.\nregister_nested_chats\n(\nnested_chats\n,\n# The trigger function is used to determine if the agent should start the nested chat\n# given the sender agent.\n# In this case, the arithmetic agent will not start the nested chats if the sender is\n# from the nested chats' recipient to avoid recursive calls.\ntrigger\n=\nlambda\nsender\n:\nsender\nnot\nin\n[\ngroup_chat_manager_with_intros\n,\ncode_writer_agent\n,\npoetry_agent\n]\n,\n)"
+                    }
+                },
+                {
+                    "text": "Finally, we call\ngenerate_reply\nto get a response from the\narithmetic_agent\n– this will trigger a sequence of nested chats and\nreturn the summary of the last nested chat as the response."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Instead of using `initiate_chat` method to start another conversation,\n# we can use the `generate_reply` method to get single reply to a message directly.\nreply\n=\narithmetic_agent\n.\ngenerate_reply\n(\nmessages\n=\n[\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"I have a number 3 and I want to turn it into 7.\"\n}\n]\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": ">>>>>>>> NO HUMAN INPUT RECEIVED.\n>>>>>>>> USING AUTO REPLY...\n********************************************************************************\nStart a new chat with the following message:\nI have a number 3 and I want to turn it into 7.\nWith the following carryover:\n********************************************************************************\nArithmetic_Agent\n(\nto\nchat_manager\n)\n:\nI have a number 3 and I want to turn it into 7.\n--------------------------------------------------------------------------------\nAdder_Agent\n(\nto\nchat_manager\n)\n:\nTo give you the result, I'll add 1 to the number you gave me. So your new number is 4.\n--------------------------------------------------------------------------------\nMultiplier_Agent\n(\nto\nchat_manager\n)\n:\n8\n--------------------------------------------------------------------------------\nSubtracter_Agent\n(\nto\nchat_manager\n)\n:\n7\n--------------------------------------------------------------------------------\nNumber_Agent\n(\nto\nchat_manager\n)\n:\n7\n--------------------------------------------------------------------------------\nNumber_Agent\n(\nto\nchat_manager\n)\n:\n7\n--------------------------------------------------------------------------------\n********************************************************************************\nStart a new chat with the following message:\nWrite a Python script to verify the arithmetic operations is correct.\nWith the following carryover:\nFirst, 1 was added to the initial number 3 to make it 4. Then it was multiplied by 2 which resulted in 8. Finally, 1 was subtracted from 8 to reach the target number 7.\n********************************************************************************\nArithmetic_Agent\n(\nto\nCode_Writer_Agent\n)\n:\nWrite a Python script to verify the arithmetic operations is correct.\nContext:\nFirst, 1 was added to the initial number 3 to make it 4. Then it was multiplied by 2 which resulted in 8. Finally, 1 was subtracted from 8 to reach the target number 7.\n--------------------------------------------------------------------------------\nCode_Writer_Agent\n(\nto\nArithmetic_Agent\n)\n:\nHere is a Python script to verify the aforementioned arithmetic operations:\n```python\n# defining the initial value\ninitial_number = 3\n# Adding 1 to initial number\ninitial_number += 1\nassert initial_number == 4, \"The first operation failed!\"\n# Multiplying the result by 2\ninitial_number *= 2\nassert initial_number == 8, \"The second operation failed!\"\n# Subtracting 1 from the result\ninitial_number -= 1\nassert initial_number == 7, \"The final operation failed!\"\nprint(\"All operations were carried out successfully!\")\n```\nIn the script, the entire process is broken down into steps. The `assert` function is used to verify the result at every step. If any of the operations doesn't yield the expected result, an `AssertionError` exception will be raised. If all operations pass, the message \"All operations were carried out successfully!\" will be printed.\n--------------------------------------------------------------------------------\n>>>>>>>> NO HUMAN INPUT RECEIVED.\n>>>>>>>> USING AUTO REPLY...\n>>>>>>>> EXECUTING CODE BLOCK 0 (inferred language is python)...\nArithmetic_Agent\n(\nto\nCode_Writer_Agent\n)\n:\nexitcode: 0 (execution succeeded)\nCode output:\nAll operations were carried out successfully!\n--------------------------------------------------------------------------------\nCode_Writer_Agent\n(\nto\nArithmetic_Agent\n)\n:\nCertainly, that means the python script was successful and every arithmetic operation performed correctly given the initial input and the steps performed.\n--------------------------------------------------------------------------------\n********************************************************************************\nStart a new chat with the following message:\nWrite a poem about it.\nWith the following carryover:\nFirst, 1 was added to the initial number 3 to make it 4. Then it was multiplied by 2 which resulted in 8. Finally, 1 was subtracted from 8 to reach the target number 7.\nThe Python script successfully performed and verified the arithmetic operations on the initial number provided. The steps included adding 1 to the initial number, multiplying the result by 2, and finally subtracting 1. The assert function was used to check the result at each step, and confirmed that all operations were carried out correctly.\n********************************************************************************\nArithmetic_Agent\n(\nto\nPoetry_Agent\n)\n:\nWrite a poem about it.\nContext:\nFirst, 1 was added to the initial number 3 to make it 4. Then it was multiplied by 2 which resulted in 8. Finally, 1 was subtracted from 8 to reach the target number 7.\nThe Python script successfully performed and verified the arithmetic operations on the initial number provided. The steps included adding 1 to the initial number, multiplying the result by 2, and finally subtracting 1. The assert function was used to check the result at each step, and confirmed that all operations were carried out correctly.\n--------------------------------------------------------------------------------\nPoetry_Agent\n(\nto\nArithmetic_Agent\n)\n:\nFrom numbers, logic, pure mathematical creation,\nPonder this tale of numeric manipulation.\nIn the universe of Python where operations exist,\nA story of integers and functions persist.\nThree was the number from where we began,\nOblivious to the journey and its grandiosely plan.\nAdded with 1, the sum it adorned,\nA sweet quadruple in the dawn was formed.\nThe saga continued with a twist of the tale,\nThe four was multiplied, while the winds wail.\nThe duo of four unfolded its wings,\nAn octet presence in our midst it brings.\nThen enters subtraction, sly and clever,\nRemoving one to alter the endeavor.\nFrom eight, subtracted one in delight,\nTo finally bask in the glow of seven's light.\nEach operation, together they conspired,\nIn this tale of integers, creatively inspired.\nThrough life's equation, the script ran so free,\nAmidst the language of Python, a symphony, you see.\nTested with assert, cross-checked the chain,\nConfirming accuracy in program's domain.\nEach move calculated, each step so right,\nIn the maze of coding, found was the light.\nSuch is the tale, of numbers and operations,\nA dance among digits, logical iterations,\nJust another day, in this AI poet's life,\nCutting through ambiguity, like a razor-sharp knife.\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "A poem is returned as the response, which describes the transformation\nattempt from 3 to 7.\n\nThe implementation of the nested chats handler makes use of the\nregister_reply\nmethod, which allows you to make extensive customization to\nConversableAgent\n. The GroupChatManager uses the same mechanism to\nimplement the group chat.\n\nNested chat is a powerful conversation pattern that allows you to\npackage complex workflows into a single agent. You can hide\ntool\nusages\nwithin a single agent by having\nthe tool-caller agent starts a nested chat with a tool-executor agent\nand then use the result of the nested chat to generate a response. See\nthe\nnested chats for tool use\nnotebook\nfor an\nexample."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Summary\n​",
+            "content": [
+                {
+                    "text": "In this chapter, we covered two-agent chat, sequential chat, group chat,\nand nested chat patterns. You can compose these patterns like LEGO\nblocks to create complex workflows. You can also use\nregister_reply\nto create new patterns.\n\nThis is the last chapter on basic AutoGen concepts. In the next chatper,\nwe will give you some tips on what to do next."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

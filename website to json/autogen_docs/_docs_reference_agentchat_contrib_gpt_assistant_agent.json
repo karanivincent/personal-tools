@@ -1,0 +1,173 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/gpt_assistant_agent",
+    "title": "agentchat.contrib.gpt_assistant_agent",
+    "sections": [
+        {
+            "title": "GPTAssistantAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nGPTAssistantAgent\n(\nConversableAgent\n)"
+                    }
+                },
+                {
+                    "text": "An experimental AutoGen agent class that leverages the OpenAI Assistant API for conversational capabilities.\nThis agent is unique in its reliance on the OpenAI Assistant for state management, differing from other agents like ConversableAgent."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nname\n=\n\"GPT Assistant\"\n,\ninstructions\n:\nOptional\n[\nstr\n]\n=\nNone\n,\nllm_config\n:\nOptional\n[\nUnion\n[\nDict\n,\nbool\n]\n]\n=\nNone\n,\nassistant_config\n:\nOptional\n[\nDict\n]\n=\nNone\n,\noverwrite_instructions\n:\nbool\n=\nFalse\n,\noverwrite_tools\n:\nbool\n=\nFalse\n,\n**\nkwargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "can_execute_function\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncan_execute_function\n(\nname\n:\nstr\n)\n-\n>\nbool"
+                            }
+                        },
+                        {
+                            "text": "Whether the agent can execute the function."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "reset\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nreset\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "Resets the agent, clearing any existing conversation thread and unread message indices."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "clear_history\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nclear_history\n(\nagent\n:\nOptional\n[\nAgent\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Clear the chat history of the agent.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "pretty_print_thread\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\npretty_print_thread\n(\nthread\n)"
+                            }
+                        },
+                        {
+                            "text": "Pretty print the thread."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "oai_threads\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\noai_threads\n(\n)\n-\n>\nDict\n[\nAgent\n,\nAny\n]"
+                            }
+                        },
+                        {
+                            "text": "Return the threads of the agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "assistant_id\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nassistant_id\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "Return the assistant id"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_assistant_instructions\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_assistant_instructions\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "Return the assistant instructions from OAI assistant API"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "delete_assistant\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ndelete_assistant\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "Delete the assistant from OAI assistant API"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "find_matching_assistant\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nfind_matching_assistant\n(\ncandidate_assistants\n,\ninstructions\n,\ntools\n)"
+                            }
+                        },
+                        {
+                            "text": "Find the matching assistant from a list of candidate assistants.\nFilter out candidates with the same name but different instructions, and function names."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

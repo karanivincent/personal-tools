@@ -1,0 +1,50 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/cache/in_memory_cache",
+    "title": "cache.in_memory_cache",
+    "sections": [
+        {
+            "title": "InMemoryCache\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nInMemoryCache\n(\nAbstractCache\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__enter__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__enter__\n(\n)\n-\n>\nSelf"
+                            }
+                        },
+                        {
+                            "text": "Enter the runtime context related to the object.\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "__exit__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__exit__\n(\nexc_type\n:\nOptional\n[\nType\n[\nBaseException\n]\n]\n,\nexc_val\n:\nOptional\n[\nBaseException\n]\n,\nexc_tb\n:\nOptional\n[\nTracebackType\n]\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Exit the runtime context related to the object.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

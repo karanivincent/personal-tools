@@ -1,0 +1,80 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/Getting-Started",
+    "title": "Getting Started",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "AutoGen is a framework that enables development of LLM applications using\nmultiple agents that can converse with each other to solve tasks. AutoGen agents\nare customizable, conversable, and seamlessly allow human participation. They\ncan operate in various modes that employ combinations of LLMs, human inputs, and\ntools.\n\n"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Main Features\n​",
+                    "content": [
+                        {
+                            "text": "AutoGen is powered by collaborative\nresearch studies\nfrom\nMicrosoft, Penn State University, and University of Washington."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Quickstart\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "sh",
+                                "script": "pip install pyautogen"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "from\nautogen\nimport\nAssistantAgent\n,\nUserProxyAgent\nllm_config\n=\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\nassistant\n=\nAssistantAgent\n(\n\"assistant\"\n,\nllm_config\n=\nllm_config\n)\nuser_proxy\n=\nUserProxyAgent\n(\n\"user_proxy\"\n,\ncode_execution_config\n=\nFalse\n)\n# Start the chat\nuser_proxy\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\n\"Tell me a joke about NVDA and TESLA stock prices.\"\n,\n)"
+                            }
+                        },
+                        {
+                            "text": "When asked, be sure to check the generated code before continuing to ensure it is safe to run."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "import\nautogen\nfrom\nautogen\nimport\nAssistantAgent\n,\nUserProxyAgent\nllm_config\n=\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\nassistant\n=\nAssistantAgent\n(\n\"assistant\"\n,\nllm_config\n=\nllm_config\n)\nuser_proxy\n=\nUserProxyAgent\n(\n\"user_proxy\"\n,\ncode_execution_config\n=\n{\n\"executor\"\n:\nautogen\n.\ncoding\n.\nLocalCommandLineCodeExecutor\n(\nwork_dir\n=\n\"coding\"\n)\n}\n)\n# Start the chat\nuser_proxy\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\n\"Plot a chart of NVDA and TESLA stock price change YTD.\"\n,\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "import\nautogen\nfrom\nautogen\nimport\nAssistantAgent\n,\nUserProxyAgent\nllm_config\n=\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\nwith\nautogen\n.\ncoding\n.\nDockerCommandLineCodeExecutor\n(\nwork_dir\n=\n\"coding\"\n)\nas\ncode_executor\n:\nassistant\n=\nAssistantAgent\n(\n\"assistant\"\n,\nllm_config\n=\nllm_config\n)\nuser_proxy\n=\nUserProxyAgent\n(\n\"user_proxy\"\n,\ncode_execution_config\n=\n{\n\"executor\"\n:\ncode_executor\n}\n)\n# Start the chat\nuser_proxy\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\n\"Plot a chart of NVDA and TESLA stock price change YTD. Save the plot to a file called plot.png\"\n,\n)"
+                            }
+                        },
+                        {
+                            "text": "Open\ncoding/plot.png\nto see the generated plot.\n\nLearn more about configuring LLMs for agents\nhere\n."
+                        },
+                        {
+                            "text": "Autogen enables the next-gen LLM applications with a generic multi-agent conversation framework. It offers customizable and conversable agents which integrate LLMs, tools, and humans.\nBy automating chat among multiple capable agents, one can easily make them collectively perform tasks autonomously or with human feedback, including tasks that require using tools via code. For\nexample\n,\n\nThe figure below shows an example conversation flow with AutoGen.\n\n"
+                        }
+                    ],
+                    "subsections": [
+                        {
+                            "title": "Multi-Agent Conversation Framework\n​",
+                            "content": [],
+                            "subsections": []
+                        }
+                    ]
+                },
+                {
+                    "title": "Where to Go Next?\n​",
+                    "content": [
+                        {
+                            "text": "If you like our project, please give it a\nstar\non GitHub. If you are interested in contributing, please read\nContributor's Guide\n."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

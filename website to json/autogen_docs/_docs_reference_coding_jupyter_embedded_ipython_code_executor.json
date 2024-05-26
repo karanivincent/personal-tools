@@ -1,0 +1,68 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/coding/jupyter/embedded_ipython_code_executor",
+    "title": "coding.jupyter.embedded_ipython_code_executor",
+    "sections": [
+        {
+            "title": "EmbeddedIPythonCodeExecutor\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nEmbeddedIPythonCodeExecutor\n(\nBaseModel\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) A code executor class that executes code statefully using an embedded\nIPython kernel managed by this class.\n\nThis will execute LLM generated code on the local machine.\n\nEach execution is stateful and can access variables created from previous\nexecutions in the same session. The kernel must be installed before using\nthis class. The kernel can be installed using the following command:\npython -m ipykernel install --user --name {kernel_name}\nwhere\nkernel_name\nis the name of the kernel to install.\n\nArguments\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "code_extractor\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\ncode_extractor\n(\n)\n-\n>\nCodeExtractor"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Export a code extractor that can be used by an agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "execute_code_blocks\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nexecute_code_blocks\n(\ncode_blocks\n:\nList\n[\nCodeBlock\n]\n)\n-\n>\nIPythonCodeResult"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Execute a list of code blocks and return the result.\n\nThis method executes a list of code blocks as cells in an IPython kernel\nmanaged by this class.\nSee:\nhttps://jupyter-client.readthedocs.io/en/stable/messaging.html\nfor the message protocol.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "restart\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nrestart\n(\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Restart a new session."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

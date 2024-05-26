@@ -1,0 +1,199 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics/handling_long_contexts/intro_to_transform_messages",
+    "title": "Introduction to Transform Messages",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Why do we need to handle long contexts? The problem arises from several constraints and requirements:\n\nToken limits: LLMs have token limits that restrict the amount of textual data they can process. If we exceed these limits, we may encounter errors or incur additional costs. By preprocessing the chat history, we can ensure that we stay within the acceptable token range.\n\nContext relevance: As conversations progress, retaining the entire chat history may become less relevant or even counterproductive. Keeping only the most recent and pertinent messages can help the LLMs focus on the most crucial context, leading to more accurate and relevant responses.\n\nEfficiency: Processing long contexts can consume more computational resources, leading to slower response times."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Transform Messages Capability\n​",
+            "content": [
+                {
+                    "text": "The\nTransformMessages\ncapability is designed to modify incoming messages before they are processed by the LLM agent. This can include limiting the number of messages, truncating messages to meet token limits, and more.\n\nInstall\npyautogen\n:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen"
+                    }
+                },
+                {
+                    "text": "For more information, please refer to the\ninstallation guide\n."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Exploring and Understanding Transformations\n​",
+                    "content": [
+                        {
+                            "text": "Let's start by exploring the available transformations and understanding how they work. We will start off by importing the required modules."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "import\ncopy\nimport\npprint\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\ncapabilities\nimport\ntransforms"
+                            }
+                        },
+                        {
+                            "text": "Consider a scenario where you want to limit the context history to only the most recent messages to maintain efficiency and relevance. You can achieve this with the MessageHistoryLimiter transformation:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "# Limit the message history to the 3 most recent messages\nmax_msg_transfrom\n=\ntransforms\n.\nMessageHistoryLimiter\n(\nmax_messages\n=\n3\n)\nmessages\n=\n[\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"hello\"\n}\n,\n{\n\"role\"\n:\n\"assistant\"\n,\n\"content\"\n:\n[\n{\n\"type\"\n:\n\"text\"\n,\n\"text\"\n:\n\"there\"\n}\n]\n}\n,\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"how\"\n}\n,\n{\n\"role\"\n:\n\"assistant\"\n,\n\"content\"\n:\n[\n{\n\"type\"\n:\n\"text\"\n,\n\"text\"\n:\n\"are you doing?\"\n}\n]\n}\n,\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"very very very very very very long string\"\n}\n,\n]\nprocessed_messages\n=\nmax_msg_transfrom\n.\napply_transform\n(\ncopy\n.\ndeepcopy\n(\nmessages\n)\n)\npprint\n.\npprint\n(\nprocessed_messages\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "console",
+                                "script": "[{'content': 'how', 'role': 'user'},\n{'content': [{'text': 'are you doing?', 'type': 'text'}], 'role': 'assistant'},\n{'content': 'very very very very very very long string', 'role': 'user'}]"
+                            }
+                        },
+                        {
+                            "text": "By applying the\nMessageHistoryLimiter\n, we can see that we were able to limit the context history to the 3 most recent messages."
+                        },
+                        {
+                            "text": "To adhere to token limitations, use the\nMessageTokenLimiter\ntransformation. This limits tokens per message and the total token count across all messages. Additionally, a\nmin_tokens\nthreshold can be applied:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "# Limit the token limit per message to 3 tokens\ntoken_limit_transform\n=\ntransforms\n.\nMessageTokenLimiter\n(\nmax_tokens_per_message\n=\n3\n,\nmin_tokens\n=\n10\n)\nprocessed_messages\n=\ntoken_limit_transform\n.\napply_transform\n(\ncopy\n.\ndeepcopy\n(\nmessages\n)\n)\npprint\n.\npprint\n(\nprocessed_messages\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "console",
+                                "script": "[{'content': 'hello', 'role': 'user'},\n{'content': [{'text': 'there', 'type': 'text'}], 'role': 'assistant'},\n{'content': 'how', 'role': 'user'},\n{'content': [{'text': 'are you doing', 'type': 'text'}], 'role': 'assistant'},\n{'content': 'very very very', 'role': 'user'}]"
+                            }
+                        },
+                        {
+                            "text": "We can see that we were able to limit the number of tokens to 3, which is equivalent to 3 words for this instance.\n\nIn the following example we will explore the effect of the\nmin_tokens\nthreshold."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "short_messages\n=\n[\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"hello there, how are you?\"\n}\n,\n{\n\"role\"\n:\n\"assistant\"\n,\n\"content\"\n:\n[\n{\n\"type\"\n:\n\"text\"\n,\n\"text\"\n:\n\"hello\"\n}\n]\n}\n,\n]\nprocessed_short_messages\n=\ntoken_limit_transform\n.\napply_transform\n(\ncopy\n.\ndeepcopy\n(\nshort_messages\n)\n)\npprint\n.\npprint\n(\nprocessed_short_messages\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "console",
+                                "script": "[{'content': 'hello there, how are you?', 'role': 'user'},\n{'content': [{'text': 'hello', 'type': 'text'}], 'role': 'assistant'}]"
+                            }
+                        },
+                        {
+                            "text": "We can see that no transformation was applied, because the threshold of 10 total tokens was not reached."
+                        }
+                    ],
+                    "subsections": [
+                        {
+                            "title": "Example 1: Limiting the Total Number of Messages\n​",
+                            "content": [],
+                            "subsections": []
+                        },
+                        {
+                            "title": "Example 2: Limiting the Number of Tokens\n​",
+                            "content": [],
+                            "subsections": []
+                        }
+                    ]
+                },
+                {
+                    "title": "Apply Transformations Using Agents\n​",
+                    "content": [
+                        {
+                            "text": "So far, we have only tested the\nMessageHistoryLimiter\nand\nMessageTokenLimiter\ntransformations individually, let's test these transformations with AutoGen's agents."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "import\nos\nimport\ncopy\nimport\nautogen\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\ncapabilities\nimport\ntransform_messages\n,\ntransforms\nfrom\ntyping\nimport\nDict\n,\nList\nconfig_list\n=\n[\n{\n\"model\"\n:\n\"gpt-3.5-turbo\"\n,\n\"api_key\"\n:\nos\n.\ngetenv\n(\n\"OPENAI_API_KEY\"\n)\n}\n]\n# Define your agent; the user proxy and an assistant\nassistant\n=\nautogen\n.\nAssistantAgent\n(\n\"assistant\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n}\n,\n)\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\n\"user_proxy\"\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nis_termination_msg\n=\nlambda\nx\n:\n\"TERMINATE\"\nin\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\n,\nmax_consecutive_auto_reply\n=\n10\n,\n)"
+                            }
+                        },
+                        {
+                            "text": "Learn more about configuring LLMs for agents\nhere\n.\n\nWe first need to write the\ntest\nfunction that creates a very long chat history by exchanging messages between an assistant and a user proxy agent, and then attempts to initiate a new chat without clearing the history, potentially triggering an error due to token limits."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "# Create a very long chat history that is bound to cause a crash for gpt 3.5\ndef\ntest\n(\nassistant\n:\nautogen\n.\nConversableAgent\n,\nuser_proxy\n:\nautogen\n.\nUserProxyAgent\n)\n:\nfor\n_\nin\nrange\n(\n1000\n)\n:\n# define a fake, very long messages\nassitant_msg\n=\n{\n\"role\"\n:\n\"assistant\"\n,\n\"content\"\n:\n\"test \"\n*\n1000\n}\nuser_msg\n=\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"\"\n}\nassistant\n.\nsend\n(\nassitant_msg\n,\nuser_proxy\n,\nrequest_reply\n=\nFalse\n,\nsilent\n=\nTrue\n)\nuser_proxy\n.\nsend\n(\nuser_msg\n,\nassistant\n,\nrequest_reply\n=\nFalse\n,\nsilent\n=\nTrue\n)\ntry\n:\nuser_proxy\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\n\"plot and save a graph of x^2 from -10 to 10\"\n,\nclear_history\n=\nFalse\n)\nexcept\nException\nas\ne\n:\nprint\n(\nf\"Encountered an error with the base assistant: \\n\n{\ne\n}\n\"\n)"
+                            }
+                        },
+                        {
+                            "text": "The first run will be the default implementation, where the agent does not have the\nTransformMessages\ncapability."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "test\n(\nassistant\n,\nuser_proxy\n)"
+                            }
+                        },
+                        {
+                            "text": "Running this test will result in an error due to the large number of tokens sent to OpenAI's gpt 3.5."
+                        },
+                        {
+                            "code": {
+                                "language": "console",
+                                "script": "user_proxy (to assistant):\nplot and save a graph of x^2 from -10 to 10\n--------------------------------------------------------------------------------\nEncountered an error with the base assistant\nError code: 429 - {'error': {'message': 'Request too large for gpt-3.5-turbo in organization org-U58JZBsXUVAJPlx2MtPYmdx1 on tokens per min (TPM): Limit 60000, Requested 1252546. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}}"
+                            }
+                        },
+                        {
+                            "text": "Now let's add the\nTransformMessages\ncapability to the assistant and run the same test."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "context_handling\n=\ntransform_messages\n.\nTransformMessages\n(\ntransforms\n=\n[\ntransforms\n.\nMessageHistoryLimiter\n(\nmax_messages\n=\n10\n)\n,\ntransforms\n.\nMessageTokenLimiter\n(\nmax_tokens\n=\n1000\n,\nmax_tokens_per_message\n=\n50\n,\nmin_tokens\n=\n500\n)\n,\n]\n)\ncontext_handling\n.\nadd_to_agent\n(\nassistant\n)\ntest\n(\nassistant\n,\nuser_proxy\n)"
+                            }
+                        },
+                        {
+                            "text": "The following console output shows that the agent is now able to handle the large number of tokens sent to OpenAI's gpt 3.5."
+                        },
+                        {
+                            "code": {
+                                "language": "console",
+                                "script": "user_proxy (to assistant):\nplot and save a graph of x^2 from -10 to 10\n--------------------------------------------------------------------------------\nTruncated 3804 tokens. Tokens reduced from 4019 to 215\nassistant (to user_proxy):\nTo plot and save a graph of \\( x^2 \\) from -10 to 10, we can use Python with the matplotlib library. Here's the code to generate the plot and save it to a file named \"plot.png\":\n```python\n# filename: plot_quadratic.py\nimport matplotlib.pyplot as plt\nimport numpy as np\n# Create an array of x values from -10 to 10\nx = np.linspace(-10, 10, 100)\ny = x**2\n# Plot the graph\nplt.plot(x, y)\nplt.xlabel('x')\nplt.ylabel('x^2')\nplt.title('Plot of x^2')\nplt.grid(True)\n# Save the plot as an image file\nplt.savefig('plot.png')\n# Display the plot\nplt.show()\n````\nYou can run this script in a Python environment. It will generate a plot of \\( x^2 \\) from -10 to 10 and save it as \"plot.png\" in the same directory where the script is executed.\nExecute the Python script to create and save the graph.\nAfter executing the code, you should see a file named \"plot.png\" in the current directory, containing the graph of \\( x^2 \\) from -10 to 10. You can view this file to see the plotted graph.\nIs there anything else you would like to do or need help with?\nIf not, you can type \"TERMINATE\" to end our conversation.\n---"
+                            }
+                        }
+                    ],
+                    "subsections": [
+                        {
+                            "title": "Setting Up the Stage\n​",
+                            "content": [],
+                            "subsections": []
+                        }
+                    ]
+                },
+                {
+                    "title": "Create Custom Transformations to Handle Sensitive Content\n​",
+                    "content": [
+                        {
+                            "text": "You can create custom transformations by implementing the\nMessageTransform\nprotocol, which provides flexibility to handle various use cases. One practical application is to create a custom transformation that redacts sensitive information, such as API keys, passwords, or personal data, from the chat history or logs. This ensures that confidential data is not inadvertently exposed, enhancing the security and privacy of your conversational AI system.\n\nWe will demonstrate this by implementing a custom transformation called\nMessageRedact\nthat detects and redacts OpenAI API keys from the conversation history. This transformation is particularly useful when you want to prevent accidental leaks of API keys, which could compromise the security of your system."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "import\nos\nimport\npprint\nimport\ncopy\nimport\nre\nimport\nautogen\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\ncapabilities\nimport\ntransform_messages\n,\ntransforms\nfrom\ntyping\nimport\nDict\n,\nList\n# The transform must adhere to transform_messages.MessageTransform protocol.\nclass\nMessageRedact\n:\ndef\n__init__\n(\nself\n)\n:\nself\n.\n_openai_key_pattern\n=\nr\"sk-([a-zA-Z0-9]{48})\"\nself\n.\n_replacement_string\n=\n\"REDACTED\"\ndef\napply_transform\n(\nself\n,\nmessages\n:\nList\n[\nDict\n]\n)\n-\n>\nList\n[\nDict\n]\n:\ntemp_messages\n=\ncopy\n.\ndeepcopy\n(\nmessages\n)\nfor\nmessage\nin\ntemp_messages\n:\nif\nisinstance\n(\nmessage\n[\n\"content\"\n]\n,\nstr\n)\n:\nmessage\n[\n\"content\"\n]\n=\nre\n.\nsub\n(\nself\n.\n_openai_key_pattern\n,\nself\n.\n_replacement_string\n,\nmessage\n[\n\"content\"\n]\n)\nelif\nisinstance\n(\nmessage\n[\n\"content\"\n]\n,\nlist\n)\n:\nfor\nitem\nin\nmessage\n[\n\"content\"\n]\n:\nif\nitem\n[\n\"type\"\n]\n==\n\"text\"\n:\nitem\n[\n\"text\"\n]\n=\nre\n.\nsub\n(\nself\n.\n_openai_key_pattern\n,\nself\n.\n_replacement_string\n,\nitem\n[\n\"text\"\n]\n)\nreturn\ntemp_messages\ndef\nget_logs\n(\nself\n,\npre_transform_messages\n:\nList\n[\nDict\n]\n,\npost_transform_messages\n:\nList\n[\nDict\n]\n)\n-\n>\nTuple\n[\nstr\n,\nbool\n]\n:\nkeys_redacted\n=\nself\n.\n_count_redacted\n(\npost_transform_messages\n)\n-\nself\n.\n_count_redacted\n(\npre_transform_messages\n)\nif\nkeys_redacted\n>\n0\n:\nreturn\nf\"Redacted\n{\nkeys_redacted\n}\nOpenAI API keys.\"\n,\nTrue\nreturn\n\"\"\n,\nFalse\ndef\n_count_redacted\n(\nself\n,\nmessages\n:\nList\n[\nDict\n]\n)\n-\n>\nint\n:\n# counts occurrences of \"REDACTED\" in message content\ncount\n=\n0\nfor\nmessage\nin\nmessages\n:\nif\nisinstance\n(\nmessage\n[\n\"content\"\n]\n,\nstr\n)\n:\nif\n\"REDACTED\"\nin\nmessage\n[\n\"content\"\n]\n:\ncount\n+=\n1\nelif\nisinstance\n(\nmessage\n[\n\"content\"\n]\n,\nlist\n)\n:\nfor\nitem\nin\nmessage\n[\n\"content\"\n]\n:\nif\nisinstance\n(\nitem\n,\ndict\n)\nand\n\"text\"\nin\nitem\n:\nif\n\"REDACTED\"\nin\nitem\n[\n\"text\"\n]\n:\ncount\n+=\n1\nreturn\ncount\nassistant_with_redact\n=\nautogen\n.\nAssistantAgent\n(\n\"assistant\"\n,\nllm_config\n=\nllm_config\n,\nmax_consecutive_auto_reply\n=\n1\n,\n)\nredact_handling\n=\ntransform_messages\n.\nTransformMessages\n(\ntransforms\n=\n[\nMessageRedact\n(\n)\n]\n)\nredact_handling\n.\nadd_to_agent\n(\nassistant_with_redact\n)\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\n\"user_proxy\"\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nmax_consecutive_auto_reply\n=\n1\n,\n)\nmessages\n=\n[\n{\n\"content\"\n:\n\"api key 1 = sk-7nwt00xv6fuegfu3gnwmhrgxvuc1cyrhxcq1quur9zvf05fy\"\n}\n,\n# Don't worry, the key is randomly generated\n{\n\"content\"\n:\n[\n{\n\"type\"\n:\n\"text\"\n,\n\"text\"\n:\n\"API key 2 = sk-9wi0gf1j2rz6utaqd3ww3o6c1h1n28wviypk7bd81wlj95an\"\n}\n]\n}\n,\n]\nfor\nmessage\nin\nmessages\n:\nuser_proxy\n.\nsend\n(\nmessage\n,\nassistant_with_redact\n,\nrequest_reply\n=\nFalse\n,\nsilent\n=\nTrue\n)\nresult\n=\nuser_proxy\n.\ninitiate_chat\n(\nassistant_with_redact\n,\nmessage\n=\n\"What are the two API keys that I just provided\"\n,\nclear_history\n=\nFalse"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "console",
+                                "script": "user_proxy (to assistant):\nWhat are the two API keys that I just provided\n--------------------------------------------------------------------------------\nRedacted 2 OpenAI API keys.\nassistant (to user_proxy):\nAs an AI, I must inform you that it is not safe to share API keys publicly as they can be used to access your private data or services that can incur costs. Given that you've typed \"REDACTED\" instead of the actual keys, it seems you are aware of the privacy concerns and are likely testing my response or simulating an exchange without exposing real credentials, which is a good practice for privacy and security reasons.\nTo respond directly to your direct question: The two API keys you provided are both placeholders indicated by the text \"REDACTED\", and not actual API keys. If these were real keys, I would have reiterated the importance of keeping them secure and would not display them here.\nRemember to keep your actual API keys confidential to prevent unauthorized use. If you've accidentally exposed real API keys, you should revoke or regenerate them as soon as possible through the corresponding service's API management console.\n--------------------------------------------------------------------------------\nuser_proxy (to assistant):\n--------------------------------------------------------------------------------\nRedacted 2 OpenAI API keys."
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

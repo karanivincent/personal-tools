@@ -1,0 +1,85 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics/llm-caching",
+    "title": "LLM Caching",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "AutoGen supports caching API requests so that they can be reused when the same request is issued. This is useful when repeating or continuing experiments for reproducibility and cost saving.\n\nSince version\n0.2.8\n, a configurable context manager allows you to easily\nconfigure LLM cache, using either\nDiskCache\n,\nRedisCache\n, or Cosmos DB Cache. All agents inside the context manager will use the same cache."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nCache\n# Use Redis as cache\nwith\nCache\n.\nredis\n(\nredis_url\n=\n\"redis://localhost:6379/0\"\n)\nas\ncache\n:\nuser\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\ncoding_task\n,\ncache\n=\ncache\n)\n# Use DiskCache as cache\nwith\nCache\n.\ndisk\n(\n)\nas\ncache\n:\nuser\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\ncoding_task\n,\ncache\n=\ncache\n)\n# Use Azure Cosmos DB as cache\nwith\nCache\n.\ncosmos_db\n(\nconnection_string\n=\n\"your_connection_string\"\n,\ndatabase_id\n=\n\"your_database_id\"\n,\ncontainer_id\n=\n\"your_container_id\"\n)\nas\ncache\n:\nuser\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\ncoding_task\n,\ncache\n=\ncache\n)"
+                    }
+                },
+                {
+                    "text": "The cache can also be passed directly to the model client's create call."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "client\n=\nOpenAIWrapper\n(\n.\n.\n.\n)\nwith\nCache\n.\ndisk\n(\n)\nas\ncache\n:\nclient\n.\ncreate\n(\n.\n.\n.\n,\ncache\n=\ncache\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Controlling the seed\n​",
+            "content": [
+                {
+                    "text": "You can vary the\ncache_seed\nparameter to get different LLM output while\nstill using cache."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Setting the cache_seed to 1 will use a different cache from the default one\n# and you will see different output.\nwith\nCache\n.\ndisk\n(\ncache_seed\n=\n1\n)\nas\ncache\n:\nuser\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\ncoding_task\n,\ncache\n=\ncache\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Cache path\n​",
+            "content": [
+                {
+                    "text": "By default\nDiskCache\nuses\n.cache\nfor storage. To change the cache directory,\nset\ncache_path_root\n:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "with\nCache\n.\ndisk\n(\ncache_path_root\n=\n\"/tmp/autogen_cache\"\n)\nas\ncache\n:\nuser\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\ncoding_task\n,\ncache\n=\ncache\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Disabling cache\n​",
+            "content": [
+                {
+                    "text": "For backward compatibility,\nDiskCache\nis on by default with\ncache_seed\nset to 41.\nTo disable caching completely, set\ncache_seed\nto\nNone\nin the\nllm_config\nof the agent."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant\n=\nAssistantAgent\n(\n\"coding_agent\"\n,\nllm_config\n=\n{\n\"cache_seed\"\n:\nNone\n,\n\"config_list\"\n:\nOAI_CONFIG_LIST\n,\n\"max_tokens\"\n:\n1024\n,\n}\n,\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Difference between\ncache_seed\nand OpenAI's\nseed\nparameter\n​",
+            "content": [
+                {
+                    "text": "OpenAI v1.1 introduced a new parameter\nseed\n. The difference between AutoGen's\ncache_seed\nand OpenAI's\nseed\nis AutoGen uses an explicit request cache to guarantee the exactly same output is produced for the same input and when cache is hit, no OpenAI API call will be made. OpenAI's\nseed\nis a best-effort deterministic sampling with no guarantee of determinism. When using OpenAI's\nseed\nwith\ncache_seed\nset to\nNone\n, even for the same input, an OpenAI API call will be made and there is no guarantee for getting exactly the same output."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,1016 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/conversable_agent",
+    "title": "agentchat.conversable_agent",
+    "sections": [
+        {
+            "title": "ConversableAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nConversableAgent\n(\nLLMAgent\n)"
+                    }
+                },
+                {
+                    "text": "(In preview) A class for generic conversable agents which can be configured as assistant or user proxy.\n\nAfter receiving each message, the agent will send a reply to the sender unless the msg is a termination msg.\nFor example, AssistantAgent and UserProxyAgent are subclasses of this class,\nconfigured with different default settings.\n\nTo modify auto reply, override\ngenerate_reply\nmethod.\nTo disable/enable human response in every turn, set\nhuman_input_mode\nto \"NEVER\" or \"ALWAYS\".\nTo modify the way to get human input, override\nget_human_input\nmethod.\nTo modify the way to execute code blocks, single code block, or function call, override\nexecute_code_blocks\n,\nrun_code\n, and\nexecute_function\nmethods respectively."
+                },
+                {
+                    "text": "False or dict, the default config for llm inference"
+                },
+                {
+                    "text": "maximum number of consecutive auto replies (subject to future change)"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nname\n:\nstr\n,\nsystem_message\n:\nOptional\n[\nUnion\n[\nstr\n,\nList\n]\n]\n=\n\"You are a helpful AI Assistant.\"\n,\nis_termination_msg\n:\nOptional\n[\nCallable\n[\n[\nDict\n]\n,\nbool\n]\n]\n=\nNone\n,\nmax_consecutive_auto_reply\n:\nOptional\n[\nint\n]\n=\nNone\n,\nhuman_input_mode\n:\nLiteral\n[\n\"ALWAYS\"\n,\n\"NEVER\"\n,\n\"TERMINATE\"\n]\n=\n\"TERMINATE\"\n,\nfunction_map\n:\nOptional\n[\nDict\n[\nstr\n,\nCallable\n]\n]\n=\nNone\n,\ncode_execution_config\n:\nUnion\n[\nDict\n,\nLiteral\n[\nFalse\n]\n]\n=\nFalse\n,\nllm_config\n:\nOptional\n[\nUnion\n[\nDict\n,\nLiteral\n[\nFalse\n]\n]\n]\n=\nNone\n,\ndefault_auto_reply\n:\nUnion\n[\nstr\n,\nDict\n]\n=\n\"\"\n,\ndescription\n:\nOptional\n[\nstr\n]\n=\nNone\n,\nchat_messages\n:\nOptional\n[\nDict\n[\nAgent\n,\nList\n[\nDict\n]\n]\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "name\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nname\n(\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Get the name of the agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "description\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\ndescription\n(\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Get the description of the agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "description\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@description\n.\nsetter\ndef\ndescription\n(\ndescription\n:\nstr\n)"
+                            }
+                        },
+                        {
+                            "text": "Set the description of the agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "code_executor\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\ncode_executor\n(\n)\n-\n>\nOptional\n[\nCodeExecutor\n]"
+                            }
+                        },
+                        {
+                            "text": "The code executor used by this agent. Returns None if code execution is disabled."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "register_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nregister_reply\n(\ntrigger\n:\nUnion\n[\nType\n[\nAgent\n]\n,\nstr\n,\nAgent\n,\nCallable\n[\n[\nAgent\n]\n,\nbool\n]\n,\nList\n]\n,\nreply_func\n:\nCallable\n,\nposition\n:\nint\n=\n0\n,\nconfig\n:\nOptional\n[\nAny\n]\n=\nNone\n,\nreset_config\n:\nOptional\n[\nCallable\n]\n=\nNone\n,\n*\n,\nignore_async_in_sync_chat\n:\nbool\n=\nFalse\n,\nremove_other_reply_funcs\n:\nbool\n=\nFalse\n)"
+                            }
+                        },
+                        {
+                            "text": "Register a reply function.\n\nThe reply function will be called when the trigger matches the sender.\nThe function registered later will be checked earlier by default.\nTo change the order, set the position to a positive integer.\n\nBoth sync and async reply functions can be registered. The sync reply function will be triggered\nfrom both sync and async chats. However, an async reply function will only be triggered from async\nchats (initiated with\nConversableAgent.a_initiate_chat\n). If an\nasync\nreply function is registered\nand a chat is initialized with a sync function,\nignore_async_in_sync_chat\ndetermines the behaviour as follows:\nif\nignore_async_in_sync_chat\nis set to\nFalse\n(default value), an exception will be raised, and\nif\nignore_async_in_sync_chat\nis set to\nTrue\n, the reply function will be ignored.\n\nArguments\n:\n\ntrigger\nAgent class, str, Agent instance, callable, or list\n- the trigger.\nIf a class is provided, the reply function will be called when the sender is an instance of the class.\nIf a string is provided, the reply function will be called when the sender's name matches the string.\nIf an agent instance is provided, the reply function will be called when the sender is the agent instance.\nIf a callable is provided, the reply function will be called when the callable returns True.\nIf a list is provided, the reply function will be called when any of the triggers in the list is activated.\nIf None is provided, the reply function will be called only when the sender is None.\n\nNote\n- Be sure to register\nNone\nas a trigger if you would like to trigger an auto-reply function with non-empty messages and\nsender=None\n.\n\nreply_func\nCallable\n- the reply function.\nThe function takes a recipient agent, a list of messages, a sender agent and a config as input and returns a reply message."
+                        },
+                        {
+                            "text": "position\nint\n- the position of the reply function in the reply function list.\nThe function registered later will be checked earlier by default.\nTo change the order, set the position to a positive integer.\n\nconfig\nAny\n- the config to be passed to the reply function.\nWhen an agent is reset, the config will be reset to the original value.\n\nreset_config\nCallable\n- the function to reset the config.\nThe function returns None. Signature:\ndef reset_config(config: Any)\n\nignore_async_in_sync_chat\nbool\n- whether to ignore the async reply function in sync chats. If\nFalse\n, an exception\nwill be raised if an async reply function is registered and a chat is initialized with a sync\nfunction.\n\nremove_other_reply_funcs\nbool\n- whether to remove other reply functions when registering this reply function."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "replace_reply_func\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nreplace_reply_func\n(\nold_reply_func\n:\nCallable\n,\nnew_reply_func\n:\nCallable\n)"
+                            }
+                        },
+                        {
+                            "text": "Replace a registered reply function with a new one.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "register_nested_chats\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nregister_nested_chats\n(\nchat_queue\n:\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]\n,\ntrigger\n:\nUnion\n[\nType\n[\nAgent\n]\n,\nstr\n,\nAgent\n,\nCallable\n[\n[\nAgent\n]\n,\nbool\n]\n,\nList\n]\n,\nreply_func_from_nested_chats\n:\nUnion\n[\nstr\n,\nCallable\n]\n=\n\"summary_from_nested_chats\"\n,\nposition\n:\nint\n=\n2\n,\n**\nkwargs\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Register a nested chat reply function.\n\nArguments\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nreply_func_from_nested_chats\n(\nchat_queue\n:\nList\n[\nDict\n]\n,\nrecipient\n:\nConversableAgent\n,\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nAny\n]\n=\nNone\n,\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nstr\n,\nDict\n,\nNone\n]\n]\n:"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "system_message\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nsystem_message\n(\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Return the system message."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "update_system_message\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nupdate_system_message\n(\nsystem_message\n:\nstr\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Update the system message.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "update_max_consecutive_auto_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nupdate_max_consecutive_auto_reply\n(\nvalue\n:\nint\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Update the maximum number of consecutive auto replies.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "max_consecutive_auto_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nmax_consecutive_auto_reply\n(\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n)\n-\n>\nint"
+                            }
+                        },
+                        {
+                            "text": "The maximum number of consecutive auto replies."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "chat_messages\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nchat_messages\n(\n)\n-\n>\nDict\n[\nAgent\n,\nList\n[\nDict\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "A dictionary of conversations from agent to list of messages."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "chat_messages_for_summary\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nchat_messages_for_summary\n(\nagent\n:\nAgent\n)\n-\n>\nList\n[\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "A list of messages as a conversation to summarize."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "last_message\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nlast_message\n(\nagent\n:\nOptional\n[\nAgent\n]\n=\nNone\n)\n-\n>\nOptional\n[\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "The last message exchanged with the agent.\n\nArguments\n:\n\nReturns\n:\n\nThe last message exchanged with the agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "use_docker\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nuse_docker\n(\n)\n-\n>\nUnion\n[\nbool\n,\nstr\n,\nNone\n]"
+                            }
+                        },
+                        {
+                            "text": "Bool value of whether to use docker to execute the code,\nor str value of the docker image name to use, or None when code execution is disabled."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "send\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nsend\n(\nmessage\n:\nUnion\n[\nDict\n,\nstr\n]\n,\nrecipient\n:\nAgent\n,\nrequest_reply\n:\nOptional\n[\nbool\n]\n=\nNone\n,\nsilent\n:\nOptional\n[\nbool\n]\n=\nFalse\n)"
+                            }
+                        },
+                        {
+                            "text": "Send a message to another agent.\n\nArguments\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "{\n\"content\"\n:\nlambda\ncontext\n:\ncontext\n[\n\"use_tool_msg\"\n]\n,\n\"context\"\n:\n{\n\"use_tool_msg\"\n:\n\"Use tool X if they are relevant.\"\n}\n}"
+                            }
+                        },
+                        {
+                            "text": "Next time, one agent can send a message B with a different \"use_tool_msg\".\nThen the content of message A will be refreshed to the new \"use_tool_msg\".\nSo effectively, this provides a way for an agent to send a \"link\" and modify\nthe content of the \"link\" later.\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_send\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_send\n(\nmessage\n:\nUnion\n[\nDict\n,\nstr\n]\n,\nrecipient\n:\nAgent\n,\nrequest_reply\n:\nOptional\n[\nbool\n]\n=\nNone\n,\nsilent\n:\nOptional\n[\nbool\n]\n=\nFalse\n)"
+                            }
+                        },
+                        {
+                            "text": "(async) Send a message to another agent.\n\nArguments\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "{\n\"content\"\n:\nlambda\ncontext\n:\ncontext\n[\n\"use_tool_msg\"\n]\n,\n\"context\"\n:\n{\n\"use_tool_msg\"\n:\n\"Use tool X if they are relevant.\"\n}\n}"
+                            }
+                        },
+                        {
+                            "text": "Next time, one agent can send a message B with a different \"use_tool_msg\".\nThen the content of message A will be refreshed to the new \"use_tool_msg\".\nSo effectively, this provides a way for an agent to send a \"link\" and modify\nthe content of the \"link\" later.\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "receive\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nreceive\n(\nmessage\n:\nUnion\n[\nDict\n,\nstr\n]\n,\nsender\n:\nAgent\n,\nrequest_reply\n:\nOptional\n[\nbool\n]\n=\nNone\n,\nsilent\n:\nOptional\n[\nbool\n]\n=\nFalse\n)"
+                            }
+                        },
+                        {
+                            "text": "Receive a message from another agent.\n\nOnce a message is received, this function sends a reply to the sender or stop.\nThe reply can be generated automatically or entered manually by a human.\n\nArguments\n:\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_receive\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_receive\n(\nmessage\n:\nUnion\n[\nDict\n,\nstr\n]\n,\nsender\n:\nAgent\n,\nrequest_reply\n:\nOptional\n[\nbool\n]\n=\nNone\n,\nsilent\n:\nOptional\n[\nbool\n]\n=\nFalse\n)"
+                            }
+                        },
+                        {
+                            "text": "(async) Receive a message from another agent.\n\nOnce a message is received, this function sends a reply to the sender or stop.\nThe reply can be generated automatically or entered manually by a human.\n\nArguments\n:\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "initiate_chat\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ninitiate_chat\n(\nrecipient\n:\n\"ConversableAgent\"\n,\nclear_history\n:\nbool\n=\nTrue\n,\nsilent\n:\nOptional\n[\nbool\n]\n=\nFalse\n,\ncache\n:\nOptional\n[\nAbstractCache\n]\n=\nNone\n,\nmax_turns\n:\nOptional\n[\nint\n]\n=\nNone\n,\nsummary_method\n:\nOptional\n[\nUnion\n[\nstr\n,\nCallable\n]\n]\n=\nDEFAULT_SUMMARY_METHOD\n,\nsummary_args\n:\nOptional\n[\ndict\n]\n=\n{\n}\n,\nmessage\n:\nOptional\n[\nUnion\n[\nDict\n,\nstr\n,\nCallable\n]\n]\n=\nNone\n,\n**\nkwargs\n)\n-\n>\nChatResult"
+                            }
+                        },
+                        {
+                            "text": "Initiate a chat with the recipient agent.\n\nReset the consecutive auto reply counter.\nIf\nclear_history\nis True, the chat history with the recipient agent will be cleared.\n\nArguments\n:\n\nrecipient\n- the recipient agent.\n\nclear_history\nbool\n- whether to clear the chat history with the agent. Default is True.\n\nsilent\nbool or None\n- (Experimental) whether to print the messages for this conversation. Default is False.\n\ncache\nAbstractCache or None\n- the cache client to be used for this conversation. Default is None.\n\nmax_turns\nint or None\n- the maximum number of turns for the chat between the two agents. One turn means one conversation round trip. Note that this is different from\nmax_consecutive_auto_reply\nwhich is the maximum number of consecutive auto replies; and it is also different from\nmax_rounds in GroupChat\nwhich is the maximum number of rounds in a group chat session.\nIf max_turns is set to None, the chat will continue until a termination condition is met. Default is None.\n\nsummary_method\nstr or callable\n- a method to get a summary from the chat. Default is DEFAULT_SUMMARY_METHOD, i.e., \"last_msg\".\n\nSupported strings are \"last_msg\" and \"reflection_with_llm\":\n\nA callable summary_method should take the recipient and sender agent in a chat as input and return a string of summary. E.g.,"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nmy_summary_method\n(\nsender\n:\nConversableAgent\n,\nrecipient\n:\nConversableAgent\n,\nsummary_args\n:\ndict\n,\n)\n:\nreturn\nrecipient\n.\nlast_message\n(\nsender\n)\n[\n\"content\"\n]"
+                            }
+                        },
+                        {
+                            "text": "summary_args\ndict\n- a dictionary of arguments to be passed to the summary_method.\nOne example key is \"summary_prompt\", and value is a string of text used to prompt a LLM-based agent (the sender or receiver agent) to reflect\non the conversation and extract a summary when summary_method is \"reflection_with_llm\".\nThe default summary_prompt is DEFAULT_SUMMARY_PROMPT, i.e., \"Summarize takeaway from the conversation. Do not add any introductory phrases. If the intended request is NOT properly addressed, please point it out.\"\nAnother available key is \"summary_role\", which is the role of the message sent to the agent in charge of summarizing. Default is \"system\".\n\nmessage\nstr, dict or Callable\n- the initial message to be sent to the recipient. Needs to be provided. Otherwise, input() will be called to get the initial message.\n\nIf a string or a dict is provided, it will be used as the initial message.\ngenerate_init_message\nis called to generate the initial message for the agent based on this string and the context.\nIf dict, it may contain the following reserved fields (either content or tool_calls need to be provided).\n\n\"content\": content of the message, can be None.\n\n\"function_call\": a dictionary containing the function name and arguments. (deprecated in favor of \"tool_calls\")\n\n\"tool_calls\": a list of dictionaries containing the function name and arguments.\n\n\"role\": role of the message, can be \"assistant\", \"user\", \"function\".\nThis field is only needed to distinguish between \"function\" or \"assistant\"/\"user\".\n\n\"name\": In most cases, this field is not needed. When the role is \"function\", this field is needed to indicate the function name.\n\n\"context\" (dict): the context of the message, which will be passed to\nOpenAIWrapper.create\n.\n\nExample of a callable message (returning a string):"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nmy_message\n(\nsender\n:\nConversableAgent\n,\nrecipient\n:\nConversableAgent\n,\ncontext\n:\ndict\n)\n-\n>\nUnion\n[\nstr\n,\nDict\n]\n:\ncarryover\n=\ncontext\n.\nget\n(\n\"carryover\"\n,\n\"\"\n)\nif\nisinstance\n(\nmessage\n,\nlist\n)\n:\ncarryover\n=\ncarryover\n[\n-\n1\n]\nfinal_msg\n=\n\"Write a blogpost.\"\n+\n\"\\nContext: \\n\"\n+\ncarryover\nreturn\nfinal_msg"
+                            }
+                        },
+                        {
+                            "text": "Example of a callable message (returning a dict):"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nmy_message\n(\nsender\n:\nConversableAgent\n,\nrecipient\n:\nConversableAgent\n,\ncontext\n:\ndict\n)\n-\n>\nUnion\n[\nstr\n,\nDict\n]\n:\nfinal_msg\n=\n{\n}\ncarryover\n=\ncontext\n.\nget\n(\n\"carryover\"\n,\n\"\"\n)\nif\nisinstance\n(\nmessage\n,\nlist\n)\n:\ncarryover\n=\ncarryover\n[\n-\n1\n]\nfinal_msg\n[\n\"content\"\n]\n=\n\"Write a blogpost.\"\n+\n\"\\nContext: \\n\"\n+\ncarryover\nfinal_msg\n[\n\"context\"\n]\n=\n{\n\"prefix\"\n:\n\"Today I feel\"\n}\nreturn\nfinal_msg"
+                            }
+                        },
+                        {
+                            "text": "**kwargs\n- any additional information. It has the following reserved fields:\n\nRaises\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_initiate_chat\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_initiate_chat\n(\nrecipient\n:\n\"ConversableAgent\"\n,\nclear_history\n:\nbool\n=\nTrue\n,\nsilent\n:\nOptional\n[\nbool\n]\n=\nFalse\n,\ncache\n:\nOptional\n[\nAbstractCache\n]\n=\nNone\n,\nmax_turns\n:\nOptional\n[\nint\n]\n=\nNone\n,\nsummary_method\n:\nOptional\n[\nUnion\n[\nstr\n,\nCallable\n]\n]\n=\nDEFAULT_SUMMARY_METHOD\n,\nsummary_args\n:\nOptional\n[\ndict\n]\n=\n{\n}\n,\nmessage\n:\nOptional\n[\nUnion\n[\nstr\n,\nCallable\n]\n]\n=\nNone\n,\n**\nkwargs\n)\n-\n>\nChatResult"
+                            }
+                        },
+                        {
+                            "text": "(async) Initiate a chat with the recipient agent.\n\nReset the consecutive auto reply counter.\nIf\nclear_history\nis True, the chat history with the recipient agent will be cleared.\na_generate_init_message\nis called to generate the initial message for the agent.\n\nArgs: Please refer to\ninitiate_chat\n.\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "initiate_chats\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ninitiate_chats\n(\nchat_queue\n:\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]\n)\n-\n>\nList\n[\nChatResult\n]"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Initiate chats with multiple agents.\n\nArguments\n:\n\nchat_queue\nList[Dict]\n- a list of dictionaries containing the information of the chats.\nEach dictionary should contain the input arguments for\ninitiate_chat\n\nReturns\n- a list of ChatResult objects corresponding to the finished chats in the chat_queue."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_chat_results\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_chat_results\n(\nchat_index\n:\nOptional\n[\nint\n]\n=\nNone\n)\n-\n>\nUnion\n[\nList\n[\nChatResult\n]\n,\nChatResult\n]"
+                            }
+                        },
+                        {
+                            "text": "A summary from the finished chats of particular agents."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "reset\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nreset\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "Reset the agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "stop_reply_at_receive\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nstop_reply_at_receive\n(\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Reset the reply_at_receive of the sender."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "reset_consecutive_auto_reply_counter\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nreset_consecutive_auto_reply_counter\n(\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Reset the consecutive_auto_reply_counter of the sender."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "clear_history\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nclear_history\n(\nrecipient\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nnr_messages_to_preserve\n:\nOptional\n[\nint\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Clear the chat history of the agent.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "generate_oai_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_oai_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nOpenAIWrapper\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nstr\n,\nDict\n,\nNone\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Generate a reply using autogen.oai."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_generate_oai_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_generate_oai_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nstr\n,\nDict\n,\nNone\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Generate a reply using autogen.oai asynchronously."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "generate_code_execution_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_code_execution_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nUnion\n[\nDict\n,\nLiteral\n[\nFalse\n]\n]\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Generate a reply using code execution."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "generate_function_call_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_function_call_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nDict\n,\nNone\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Generate a reply using function call.\n\n\"function_call\" replaced by \"tool_calls\" as of\nOpenAI API v1.1.0\nSee\nhttps://platform.openai.com/docs/api-reference/chat/create#chat-create-functions"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_generate_function_call_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_generate_function_call_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nDict\n,\nNone\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Generate a reply using async function call.\n\n\"function_call\" replaced by \"tool_calls\" as of\nOpenAI API v1.1.0\nSee\nhttps://platform.openai.com/docs/api-reference/chat/create#chat-create-functions"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "generate_tool_calls_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_tool_calls_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nDict\n,\nNone\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Generate a reply using tool call."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_generate_tool_calls_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_generate_tool_calls_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nDict\n,\nNone\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Generate a reply using async function call."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "check_termination_and_human_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncheck_termination_and_human_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nstr\n,\nNone\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Check if the conversation should be terminated, and if human reply is provided.\n\nThis method checks for conditions that require the conversation to be terminated, such as reaching\na maximum number of consecutive auto-replies or encountering a termination message. Additionally,\nit prompts for and processes human input based on the configured human input mode, which can be\n'ALWAYS', 'NEVER', or 'TERMINATE'. The method also manages the consecutive auto-reply counter\nfor the conversation and prints relevant messages based on the human input received.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_check_termination_and_human_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_check_termination_and_human_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nstr\n,\nNone\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "(async) Check if the conversation should be terminated, and if human reply is provided.\n\nThis method checks for conditions that require the conversation to be terminated, such as reaching\na maximum number of consecutive auto-replies or encountering a termination message. Additionally,\nit prompts for and processes human input based on the configured human input mode, which can be\n'ALWAYS', 'NEVER', or 'TERMINATE'. The method also manages the consecutive auto-reply counter\nfor the conversation and prints relevant messages based on the human input received.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "generate_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\n\"Agent\"\n]\n=\nNone\n,\n**\nkwargs\n:\nAny\n)\n-\n>\nUnion\n[\nstr\n,\nDict\n,\nNone\n]"
+                            }
+                        },
+                        {
+                            "text": "Reply based on the conversation history and the sender.\n\nEither messages or sender must be provided.\nRegister a reply_func with\nNone\nas one trigger for it to be activated when\nmessages\nis non-empty and\nsender\nis\nNone\n.\nUse registered auto reply functions to generate replies.\nBy default, the following functions are checked in order:\n\nArguments\n:\n\nmessages\n- a list of messages in the conversation history.\n\nsender\n- sender of an Agent instance.\n\nAdditional keyword arguments:\n\nexclude\nList[Callable]\n- a list of reply functions to be excluded.\n\nReturns\n:\n\nstr or dict or None: reply. None if no reply is generated."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_generate_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_generate_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\n\"Agent\"\n]\n=\nNone\n,\n**\nkwargs\n:\nAny\n)\n-\n>\nUnion\n[\nstr\n,\nDict\n[\nstr\n,\nAny\n]\n,\nNone\n]"
+                            }
+                        },
+                        {
+                            "text": "(async) Reply based on the conversation history and the sender.\n\nEither messages or sender must be provided.\nRegister a reply_func with\nNone\nas one trigger for it to be activated when\nmessages\nis non-empty and\nsender\nis\nNone\n.\nUse registered auto reply functions to generate replies.\nBy default, the following functions are checked in order:\n\nArguments\n:\n\nmessages\n- a list of messages in the conversation history.\n\nsender\n- sender of an Agent instance.\n\nAdditional keyword arguments:\n\nexclude\nList[Callable]\n- a list of reply functions to be excluded.\n\nReturns\n:\n\nstr or dict or None: reply. None if no reply is generated."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_human_input\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_human_input\n(\nprompt\n:\nstr\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Get human input.\n\nOverride this method to customize the way to get human input.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_get_human_input\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_get_human_input\n(\nprompt\n:\nstr\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "(Async) Get human input.\n\nOverride this method to customize the way to get human input.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "run_code\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nrun_code\n(\ncode\n,\n**\nkwargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Run the code and return the result.\n\nOverride this function to modify the way to run the code.\n\nArguments\n:\n\nReturns\n:\n\nA tuple of (exitcode, logs, image)."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "execute_code_blocks\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nexecute_code_blocks\n(\ncode_blocks\n)"
+                            }
+                        },
+                        {
+                            "text": "Execute the code blocks and return the result."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "execute_function\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nexecute_function\n(\nfunc_call\n,\nverbose\n:\nbool\n=\nFalse\n)\n-\n>\nTuple\n[\nbool\n,\nDict\n[\nstr\n,\nstr\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Execute a function call and return the result.\n\nOverride this function to modify the way to execute function and tool calls.\n\nArguments\n:\n\nReturns\n:\n\nA tuple of (is_exec_success, result_dict).\n\nis_exec_success\nboolean\n- whether the execution is successful.\n\nresult_dict\n- a dictionary with keys \"name\", \"role\", and \"content\". Value of \"role\" is \"function\".\n\n\"function_call\" deprecated as of\nOpenAI API v1.1.0\nSee\nhttps://platform.openai.com/docs/api-reference/chat/create#chat-create-function_call"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_execute_function\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_execute_function\n(\nfunc_call\n)"
+                            }
+                        },
+                        {
+                            "text": "Execute an async function call and return the result.\n\nOverride this function to modify the way async functions and tools are executed.\n\nArguments\n:\n\nReturns\n:\n\nA tuple of (is_exec_success, result_dict).\n\nis_exec_success\nboolean\n- whether the execution is successful.\n\nresult_dict\n- a dictionary with keys \"name\", \"role\", and \"content\". Value of \"role\" is \"function\".\n\n\"function_call\" deprecated as of\nOpenAI API v1.1.0\nSee\nhttps://platform.openai.com/docs/api-reference/chat/create#chat-create-function_call"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "generate_init_message\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_init_message\n(\nmessage\n:\nUnion\n[\nDict\n,\nstr\n,\nNone\n]\n,\n**\nkwargs\n)\n-\n>\nUnion\n[\nstr\n,\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "Generate the initial message for the agent.\nIf message is None, input() will be called to get the initial message.\n\nArguments\n:\n\nReturns\n:\n\nstr or dict: the processed message."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_generate_init_message\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_generate_init_message\n(\nmessage\n:\nUnion\n[\nDict\n,\nstr\n,\nNone\n]\n,\n**\nkwargs\n)\n-\n>\nUnion\n[\nstr\n,\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "Generate the initial message for the agent.\nIf message is None, input() will be called to get the initial message.\n\nArguments\n:\n\nPlease refer to\ngenerate_init_message\nfor the description of the arguments.\n\nReturns\n:\n\nstr or dict: the processed message."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "register_function\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nregister_function\n(\nfunction_map\n:\nDict\n[\nstr\n,\nUnion\n[\nCallable\n,\nNone\n]\n]\n)"
+                            }
+                        },
+                        {
+                            "text": "Register functions to the agent.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "update_function_signature\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nupdate_function_signature\n(\nfunc_sig\n:\nUnion\n[\nstr\n,\nDict\n]\n,\nis_remove\n:\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "update a function_signature in the LLM configuration for function_call.\n\nArguments\n:\n\nfunc_sig\nstr or dict\n- description/name of the function to update/remove to the model. See:\nhttps://platform.openai.com/docs/api-reference/chat/create#chat/create-functions\n\nis_remove\n- whether removing the function from llm_config with name 'func_sig'\n\nDeprecated as of\nOpenAI API v1.1.0\nSee\nhttps://platform.openai.com/docs/api-reference/chat/create#chat-create-function_call"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "update_tool_signature\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nupdate_tool_signature\n(\ntool_sig\n:\nUnion\n[\nstr\n,\nDict\n]\n,\nis_remove\n:\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "update a tool_signature in the LLM configuration for tool_call.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "can_execute_function\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncan_execute_function\n(\nname\n:\nUnion\n[\nList\n[\nstr\n]\n,\nstr\n]\n)\n-\n>\nbool"
+                            }
+                        },
+                        {
+                            "text": "Whether the agent can execute the function."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "function_map\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nfunction_map\n(\n)\n-\n>\nDict\n[\nstr\n,\nCallable\n]"
+                            }
+                        },
+                        {
+                            "text": "Return the function map."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "register_for_llm\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nregister_for_llm\n(\n*\n,\nname\n:\nOptional\n[\nstr\n]\n=\nNone\n,\ndescription\n:\nOptional\n[\nstr\n]\n=\nNone\n,\napi_style\n:\nLiteral\n[\n\"function\"\n,\n\"tool\"\n]\n=\n\"tool\"\n)\n-\n>\nCallable\n[\n[\nF\n]\n,\nF\n]"
+                            }
+                        },
+                        {
+                            "text": "Decorator factory for registering a function to be used by an agent.\n\nIt's return value is used to decorate a function to be registered to the agent. The function uses type hints to\nspecify the arguments and return type. The function name is used as the default name for the function,\nbut a custom name can be provided. The function description is used to describe the function in the\nagent's configuration.\n\nArguments\n:\n\nname (optional(str)): name of the function. If None, the function name will be used (default: None).\ndescription (optional(str)): description of the function (default: None). It is mandatory\nfor the initial decorator, but the following ones can omit it.\n\nReturns\n:\n\nThe decorator for registering a function to be used by an agent.\n\nExamples\n:"
+                        },
+                        {
+                            "text": "For Azure OpenAI versions prior to 2023-12-01-preview, set\napi_style\nto\n\"function\"\nif\n\"tool\"\ndoesn't work:\n@agent2.register_for_llm(api_style=\"function\")     def my_function(a: Annotated[str, \"description of a parameter\"] = \"a\", b: int, c=3.14) -> str:          return a + str(b * c)"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "register_for_execution\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nregister_for_execution\n(\nname\n:\nOptional\n[\nstr\n]\n=\nNone\n)\n-\n>\nCallable\n[\n[\nF\n]\n,\nF\n]"
+                            }
+                        },
+                        {
+                            "text": "Decorator factory for registering a function to be executed by an agent.\n\nIt's return value is used to decorate a function to be registered to the agent.\n\nArguments\n:\n\nname (optional(str)): name of the function. If None, the function name will be used (default: None).\n\nReturns\n:\n\nThe decorator for registering a function to be used by an agent.\n\nExamples\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "register_model_client\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nregister_model_client\n(\nmodel_client_cls\n:\nModelClient\n,\n**\nkwargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Register a model client.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "register_hook\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nregister_hook\n(\nhookable_method\n:\nstr\n,\nhook\n:\nCallable\n)"
+                            }
+                        },
+                        {
+                            "text": "Registers a hook to be called by a hookable method, in order to add a capability to the agent.\nRegistered hooks are kept in lists (one per hookable method), and are called in their order of registration.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "process_all_messages_before_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nprocess_all_messages_before_reply\n(\nmessages\n:\nList\n[\nDict\n]\n)\n-\n>\nList\n[\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "Calls any registered capability hooks to process all messages, potentially modifying the messages."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "process_last_received_message\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nprocess_last_received_message\n(\nmessages\n)"
+                            }
+                        },
+                        {
+                            "text": "Calls any registered capability hooks to use and potentially modify the text of the last message,\nas long as the last message is not a function call or exit command."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "print_usage_summary\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nprint_usage_summary\n(\nmode\n:\nUnion\n[\nstr\n,\nList\n[\nstr\n]\n]\n=\n[\n\"actual\"\n,\n\"total\"\n]\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Print the usage summary."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_actual_usage\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_actual_usage\n(\n)\n-\n>\nUnion\n[\nNone\n,\nDict\n[\nstr\n,\nint\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Get the actual usage summary."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_total_usage\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_total_usage\n(\n)\n-\n>\nUnion\n[\nNone\n,\nDict\n[\nstr\n,\nint\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Get the total usage summary."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "register_function\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nregister_function\n(\nf\n:\nCallable\n[\n.\n.\n.\n,\nAny\n]\n,\n*\n,\ncaller\n:\nConversableAgent\n,\nexecutor\n:\nConversableAgent\n,\nname\n:\nOptional\n[\nstr\n]\n=\nNone\n,\ndescription\n:\nstr\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Register a function to be proposed by an agent and executed for an executor.\n\nThis function can be used instead of function decorators\n@ConversationAgent.register_for_llm\nand\n@ConversationAgent.register_for_execution\n.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,102 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2023/12/23/AgentOptimizer",
+    "title": "AgentOptimizer - An Agentic Way to Train Your LLM Agent",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nTL;DR:\nIntroducing\nAgentOptimizer\n, a new class for training LLM agents in the era of LLMs as a service.\nAgentOptimizer\nis able to prompt LLMs to iteratively optimize function/skills of AutoGen agents according to the historical conversation and performance.\n\nMore information could be found in:\n\nPaper\n:\nhttps://arxiv.org/abs/2402.11359\n.\n\nNotebook\n:\nhttps://github.com/microsoft/autogen/blob/main/notebook/agentchat_agentoptimizer.ipynb\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "In the traditional ML pipeline, we train a model by updating its weights according to the loss on the training set, while in the era of LLM agents, how should we train an agent?\nHere, we take an initial step towards the agent training. Inspired by the\nfunction calling\ncapabilities provided by OpenAI,\nwe draw an analogy between model weights and agent functions/skills, and update an agent’s functions/skills based on its historical performance on a training set.\nSpecifically, we propose to use the function calling capabilities to formulate the actions that optimize the agents’ functions as a set of function calls, to support iteratively\nadding, revising, and removing\nexisting functions.\nWe also include two strategies, roll-back, and early-stop, to streamline the training process to overcome the performance-decreasing problem when training.\nAs an agentic way of training an agent, our approach helps enhance the agents’ abilities without requiring access to the LLM's weights."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "AgentOptimizer\n​",
+            "content": [
+                {
+                    "text": "AgentOptimizer\nis a class designed to optimize the agents by improving their function calls.\nIt contains three main methods:\n\nThis method records the conversation history and performance of the agents in solving one problem.\nIt includes two inputs: conversation_history (List[Dict]) and is_satisfied (bool).\nconversation_history is a list of dictionaries which could be got from chat_messages_for_summary in the\nAgentChat\nclass.\nis_satisfied is a bool value that represents whether the user is satisfied with the solution. If it is none, the user will be asked to input the satisfaction.\n\nExample:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "optimizer\n=\nAgentOptimizer\n(\nmax_actions_per_step\n=\n3\n,\nllm_config\n=\nllm_config\n)\n# ------------ code to solve a problem ------------\n# ......\n# -------------------------------------------------\nhistory\n=\nassistant\n.\nchat_messages_for_summary\n(\nUserProxy\n)\noptimizer\n.\nrecord_one_conversation\n(\nhistory\n,\nis_satisfied\n=\nresult\n)"
+                    }
+                },
+                {
+                    "text": "step()\nis the core method of AgentOptimizer.\nAt each optimization iteration, it will return two fields register_for_llm and register_for_executor, which are subsequently utilized to update the assistant and UserProxy agents, respectively."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "register_for_llm\n,\nregister_for_exector\n=\noptimizer\n.\nstep\n(\n)\nfor\nitem\nin\nregister_for_llm\n:\nassistant\n.\nupdate_function_signature\n(\n**\nitem\n)\nif\nlen\n(\nregister_for_exector\n.\nkeys\n(\n)\n)\n>\n0\n:\nuser_proxy\n.\nregister_function\n(\nfunction_map\n=\nregister_for_exector\n)"
+                    }
+                },
+                {
+                    "text": "This method will reset the optimizer to the initial state, which is useful when you want to train the agent from scratch.\n\nAgentOptimizer\nincludes mechanisms to check the (1) validity of the function and (2) code implementation before returning the register_for_llm, register_for_exector.\nMoreover, it also includes mechanisms to check whether each update is feasible, such as avoiding the removal of a function that is not in the current functions due to hallucination."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Pseudocode for the optimization process\n​",
+            "content": [
+                {
+                    "text": "The optimization process is as follows:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "optimizer\n=\nAgentOptimizer\n(\nmax_actions_per_step\n=\n3\n,\nllm_config\n=\nllm_config\n)\nfor\ni\nin\nrange\n(\nEPOCH\n)\n:\nis_correct\n=\nuser_proxy\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\nproblem\n)\nhistory\n=\nassistant\n.\nchat_messages_for_summary\n(\nuser_proxy\n)\noptimizer\n.\nrecord_one_conversation\n(\nhistory\n,\nis_satisfied\n=\nis_correct\n)\nregister_for_llm\n,\nregister_for_exector\n=\noptimizer\n.\nstep\n(\n)\nfor\nitem\nin\nregister_for_llm\n:\nassistant\n.\nupdate_function_signature\n(\n**\nitem\n)\nif\nlen\n(\nregister_for_exector\n.\nkeys\n(\n)\n)\n>\n0\n:\nuser_proxy\n.\nregister_function\n(\nfunction_map\n=\nregister_for_exector\n)"
+                    }
+                },
+                {
+                    "text": "Given a prepared training dataset, the agents iteratively solve problems from the training set to obtain conversation history and statistical information.\nThe functions are then improved using AgentOptimizer. Each iteration can be regarded as one training step analogous to traditional machine learning, with the optimization elements being the functions that agents have.\nAfter EPOCH iterations, the agents are expected to obtain better functions that may be used in future tasks"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "The implementation technology behind the AgentOptimizer\n​",
+            "content": [
+                {
+                    "text": "To obtain stable and structured function signatures and code implementations from AgentOptimizer,\nwe leverage the function calling capabilities provided by OpenAI to formulate the actions that manipulate the functions as a set of function calls.\nSpecifically, we introduce three function calls to manipulate the current functions at each step:\nadd_function\n,\nremove_function\n, and\nrevise_function\n.\nThese calls add, remove, and revise functions in the existing function list, respectively.\nThis practice could fully leverage the function calling capabilities of GPT-4 and output structured functions with more stable signatures and code implementation.\nBelow is the JSON schema of these function calls:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "ADD_FUNC\n=\n{\n\"type\"\n:\n\"function\"\n,\n\"function\"\n:\n{\n\"name\"\n:\n\"add_function\"\n,\n\"description\"\n:\n\"Add a function in the context of the conversation. Necessary Python packages must be declared. The name of the function MUST be the same with the function name in the code you generated.\"\n,\n\"parameters\"\n:\n{\n\"type\"\n:\n\"object\"\n,\n\"properties\"\n:\n{\n\"name\"\n:\n{\n\"type\"\n:\n\"string\"\n,\n\"description\"\n:\n\"The name of the function in the code implementation.\"\n}\n,\n\"description\"\n:\n{\n\"type\"\n:\n\"string\"\n,\n\"description\"\n:\n\"A short description of the function.\"\n}\n,\n\"arguments\"\n:\n{\n\"type\"\n:\n\"string\"\n,\n\"description\"\n:\n'JSON schema of arguments encoded as a string. Please note that the JSON schema only supports specific types including string, integer, object, array, boolean. (do not have float type) For example: { \"url\": { \"type\": \"string\", \"description\": \"The URL\", }}. Please avoid the error \\'array schema missing items\\' when using array type.'\n,\n}\n,\n\"packages\"\n:\n{\n\"type\"\n:\n\"string\"\n,\n\"description\"\n:\n\"A list of package names imported by the function, and that need to be installed with pip prior to invoking the function. This solves ModuleNotFoundError. It should be string, not list.\"\n,\n}\n,\n\"code\"\n:\n{\n\"type\"\n:\n\"string\"\n,\n\"description\"\n:\n\"The implementation in Python. Do not include the function declaration.\"\n,\n}\n,\n}\n,\n\"required\"\n:\n[\n\"name\"\n,\n\"description\"\n,\n\"arguments\"\n,\n\"packages\"\n,\n\"code\"\n]\n,\n}\n,\n}\n,\n}"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "REVISE_FUNC\n=\n{\n\"type\"\n:\n\"function\"\n,\n\"function\"\n:\n{\n\"name\"\n:\n\"revise_function\"\n,\n\"description\"\n:\n\"Revise a function in the context of the conversation. Necessary Python packages must be declared. The name of the function MUST be the same with the function name in the code you generated.\"\n,\n\"parameters\"\n:\n{\n\"type\"\n:\n\"object\"\n,\n\"properties\"\n:\n{\n\"name\"\n:\n{\n\"type\"\n:\n\"string\"\n,\n\"description\"\n:\n\"The name of the function in the code implementation.\"\n}\n,\n\"description\"\n:\n{\n\"type\"\n:\n\"string\"\n,\n\"description\"\n:\n\"A short description of the function.\"\n}\n,\n\"arguments\"\n:\n{\n\"type\"\n:\n\"string\"\n,\n\"description\"\n:\n'JSON schema of arguments encoded as a string. Please note that the JSON schema only supports specific types including string, integer, object, array, boolean. (do not have float type) For example: { \"url\": { \"type\": \"string\", \"description\": \"The URL\", }}. Please avoid the error \\'array schema missing items\\' when using array type.'\n,\n}\n,\n\"packages\"\n:\n{\n\"type\"\n:\n\"string\"\n,\n\"description\"\n:\n\"A list of package names imported by the function, and that need to be installed with pip prior to invoking the function. This solves ModuleNotFoundError. It should be string, not list.\"\n,\n}\n,\n\"code\"\n:\n{\n\"type\"\n:\n\"string\"\n,\n\"description\"\n:\n\"The implementation in Python. Do not include the function declaration.\"\n,\n}\n,\n}\n,\n\"required\"\n:\n[\n\"name\"\n,\n\"description\"\n,\n\"arguments\"\n,\n\"packages\"\n,\n\"code\"\n]\n,\n}\n,\n}\n,\n}"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "REMOVE_FUNC\n=\n{\n\"type\"\n:\n\"function\"\n,\n\"function\"\n:\n{\n\"name\"\n:\n\"remove_function\"\n,\n\"description\"\n:\n\"Remove one function in the context of the conversation. Once remove one function, the assistant will not use this function in future conversation.\"\n,\n\"parameters\"\n:\n{\n\"type\"\n:\n\"object\"\n,\n\"properties\"\n:\n{\n\"name\"\n:\n{\n\"type\"\n:\n\"string\"\n,\n\"description\"\n:\n\"The name of the function in the code implementation.\"\n}\n}\n,\n\"required\"\n:\n[\n\"name\"\n]\n,\n}\n,\n}\n,\n}"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Limitation & Future work\n​",
+            "content": [],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

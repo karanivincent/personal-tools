@@ -1,0 +1,322 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/Use-Cases/enhanced_inference",
+    "title": "Enhanced Inference",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "autogen.OpenAIWrapper\nprovides enhanced LLM inference for\nopenai>=1\n.\nautogen.Completion\nis a drop-in replacement of\nopenai.Completion\nand\nopenai.ChatCompletion\nfor enhanced LLM inference using\nopenai<1\n.\nThere are a number of benefits of using\nautogen\nto perform inference: performance tuning, API unification, caching, error handling, multi-config inference, result filtering, templating and so on."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Tune Inference Parameters (for openai<1)\n​",
+            "content": [
+                {
+                    "text": "Find a list of examples in this page:\nTune Inference Parameters Examples"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Choices to optimize\n​",
+                    "content": [
+                        {
+                            "text": "The cost of using foundation models for text generation is typically measured in terms of the number of tokens in the input and output combined. From the perspective of an application builder using foundation models, the use case is to maximize the utility of the generated text under an inference budget constraint (e.g., measured by the average dollar cost needed to solve a coding problem). This can be achieved by optimizing the hyperparameters of the inference,\nwhich can significantly affect both the utility and the cost of the generated text.\n\nThe tunable hyperparameters include:\n\nThe cost and utility of text generation are intertwined with the joint effect of these hyperparameters.\nThere are also complex interactions among subsets of the hyperparameters. For example,\nthe temperature and top_p are not recommended to be altered from their default values together because they both control the randomness of the generated text, and changing both at the same time can result in conflicting effects; n and best_of are rarely tuned together because if the application can process multiple outputs, filtering on the server side causes unnecessary information loss; both n and max_tokens will affect the total number of tokens generated, which in turn will affect the cost of the request.\nThese interactions and trade-offs make it difficult to manually determine the optimal hyperparameter settings for a given text generation task.\n\nDo the choices matter? Check this\nblogpost\nto find example tuning results about gpt-3.5-turbo and gpt-4.\n\nWith AutoGen, the tuning can be performed with the following information:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Validation data\n​",
+                    "content": [
+                        {
+                            "text": "Collect a diverse set of instances. They can be stored in an iterable of dicts. For example, each instance dict can contain \"problem\" as a key and the description str of a math problem as the value; and \"solution\" as a key and the solution str as the value."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Evaluation function\n​",
+                    "content": [
+                        {
+                            "text": "The evaluation function should take a list of responses, and other keyword arguments corresponding to the keys in each validation data instance as input, and output a dict of metrics. For example,"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\neval_math_responses\n(\nresponses\n:\nList\n[\nstr\n]\n,\nsolution\n:\nstr\n,\n**\nargs\n)\n-\n>\nDict\n:\n# select a response from the list of responses\nanswer\n=\nvoted_answer\n(\nresponses\n)\n# check whether the answer is correct\nreturn\n{\n\"success\"\n:\nis_equivalent\n(\nanswer\n,\nsolution\n)\n}"
+                            }
+                        },
+                        {
+                            "text": "autogen.code_utils\nand\nautogen.math_utils\noffer some example evaluation functions for code generation and math problem solving."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Metric to optimize\n​",
+                    "content": [
+                        {
+                            "text": "The metric to optimize is usually an aggregated metric over all the tuning data instances. For example, users can specify \"success\" as the metric and \"max\" as the optimization mode. By default, the aggregation function is taking the average. Users can provide a customized aggregation function if needed."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Search space\n​",
+                    "content": [
+                        {
+                            "text": "Users can specify the (optional) search range for each hyperparameter."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Budgets\n​",
+                    "content": [
+                        {
+                            "text": "One can specify an inference budget and an optimization budget.\nThe inference budget refers to the average inference cost per data instance.\nThe optimization budget refers to the total budget allowed in the tuning process. Both are measured by dollars and follow the price per 1000 tokens."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "API unification\n​",
+            "content": [
+                {
+                    "text": "autogen.OpenAIWrapper.create()\ncan be used to create completions for both chat and non-chat models, and both OpenAI API and Azure OpenAI API."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nOpenAIWrapper\n# OpenAI endpoint\nclient\n=\nOpenAIWrapper\n(\n)\n# ChatCompletion\nresponse\n=\nclient\n.\ncreate\n(\nmessages\n=\n[\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"2+2=\"\n}\n]\n,\nmodel\n=\n\"gpt-3.5-turbo\"\n)\n# extract the response text\nprint\n(\nclient\n.\nextract_text_or_completion_object\n(\nresponse\n)\n)\n# get cost of this completion\nprint\n(\nresponse\n.\ncost\n)\n# Azure OpenAI endpoint\nclient\n=\nOpenAIWrapper\n(\napi_key\n=\n.\n.\n.\n,\nbase_url\n=\n.\n.\n.\n,\napi_version\n=\n.\n.\n.\n,\napi_type\n=\n\"azure\"\n)\n# Completion\nresponse\n=\nclient\n.\ncreate\n(\nprompt\n=\n\"2+2=\"\n,\nmodel\n=\n\"gpt-3.5-turbo-instruct\"\n)\n# extract the response text\nprint\n(\nclient\n.\nextract_text_or_completion_object\n(\nresponse\n)\n)"
+                    }
+                },
+                {
+                    "text": "For local LLMs, one can spin up an endpoint using a package like\nFastChat\n, and then use the same API to send a request. See\nhere\nfor examples on how to make inference with local LLMs.\n\nFor custom model clients, one can register the client with\nautogen.OpenAIWrapper.register_model_client\nand then use the same API to send a request. See\nhere\nfor examples on how to make inference with custom model clients."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Usage Summary\n​",
+            "content": [
+                {
+                    "text": "The\nOpenAIWrapper\nfrom\nautogen\ntracks token counts and costs of your API calls. Use the\ncreate()\nmethod to initiate requests and\nprint_usage_summary()\nto retrieve a detailed usage report, including total cost and token usage for both cached and actual requests.\n\nReset your session's usage data with\nclear_usage_summary()\nwhen needed.\nView Notebook\n\nExample usage:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nOpenAIWrapper\nclient\n=\nOpenAIWrapper\n(\n)\nclient\n.\ncreate\n(\nmessages\n=\n[\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"Python learning tips.\"\n}\n]\n,\nmodel\n=\n\"gpt-3.5-turbo\"\n)\nclient\n.\nprint_usage_summary\n(\n)\n# Display usage\nclient\n.\nclear_usage_summary\n(\n)\n# Reset usage data"
+                    }
+                },
+                {
+                    "text": "Sample output:"
+                },
+                {
+                    "text": "Note: if using a custom model client (see\nhere\nfor details) and if usage summary is not implemented, then the usage summary will not be available."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Caching\n​",
+            "content": [
+                {
+                    "text": "Moved to\nhere\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Error handling\n​",
+            "content": [],
+            "subsections": [
+                {
+                    "title": "Runtime error\n​",
+                    "content": [
+                        {
+                            "text": "One can pass a list of configurations of different models/endpoints to mitigate the rate limits and other runtime error. For example,"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "client\n=\nOpenAIWrapper\n(\nconfig_list\n=\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n.\nget\n(\n\"AZURE_OPENAI_API_KEY\"\n)\n,\n\"api_type\"\n:\n\"azure\"\n,\n\"base_url\"\n:\nos\n.\nenviron\n.\nget\n(\n\"AZURE_OPENAI_API_BASE\"\n)\n,\n\"api_version\"\n:\n\"2024-02-15-preview\"\n,\n}\n,\n{\n\"model\"\n:\n\"gpt-3.5-turbo\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n.\nget\n(\n\"OPENAI_API_KEY\"\n)\n,\n\"base_url\"\n:\n\"https://api.openai.com/v1\"\n,\n}\n,\n{\n\"model\"\n:\n\"llama2-chat-7B\"\n,\n\"base_url\"\n:\n\"http://127.0.0.1:8080\"\n,\n}\n,\n{\n\"model\"\n:\n\"microsoft/phi-2\"\n,\n\"model_client_cls\"\n:\n\"CustomModelClient\"\n}\n]\n,\n)"
+                            }
+                        },
+                        {
+                            "text": "client.create()\nwill try querying Azure OpenAI gpt-4, OpenAI gpt-3.5-turbo, a locally hosted llama2-chat-7B, and phi-2 using a custom model client class named\nCustomModelClient\n, one by one,\nuntil a valid result is returned. This can speed up the development process where the rate limit is a bottleneck. An error will be raised if the last choice fails. So make sure the last choice in the list has the best availability.\n\nFor convenience, we provide a number of utility functions to load config lists.\n\nWe suggest that you take a look at this\nnotebook\nfor full code examples of the different methods to configure your model endpoints."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Templating\n​",
+            "content": [
+                {
+                    "text": "If the provided prompt or message is a template, it will be automatically materialized with a given context. For example,"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "response\n=\nclient\n.\ncreate\n(\ncontext\n=\n{\n\"problem\"\n:\n\"How many positive integers, not exceeding 100, are multiples of 2 or 3 but not 4?\"\n}\n,\nprompt\n=\n\"{problem} Solve the problem carefully.\"\n,\nallow_format_str_template\n=\nTrue\n,\n**\nconfig\n)"
+                    }
+                },
+                {
+                    "text": "A template is either a format str, like the example above, or a function which produces a str from several input fields, like the example below."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "def\ncontent\n(\nturn\n,\ncontext\n)\n:\nreturn\n\"\\n\"\n.\njoin\n(\n[\ncontext\n[\nf\"user_message_\n{\nturn\n}\n\"\n]\n,\ncontext\n[\nf\"external_info_\n{\nturn\n}\n\"\n]\n]\n)\nmessages\n=\n[\n{\n\"role\"\n:\n\"system\"\n,\n\"content\"\n:\n\"You are a teaching assistant of math.\"\n,\n}\n,\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\npartial\n(\ncontent\n,\nturn\n=\n0\n)\n,\n}\n,\n]\ncontext\n=\n{\n\"user_message_0\"\n:\n\"Could you explain the solution to Problem 1?\"\n,\n\"external_info_0\"\n:\n\"Problem 1: ...\"\n,\n}\nresponse\n=\nclient\n.\ncreate\n(\ncontext\n=\ncontext\n,\nmessages\n=\nmessages\n,\n**\nconfig\n)\nmessages\n.\nappend\n(\n{\n\"role\"\n:\n\"assistant\"\n,\n\"content\"\n:\nclient\n.\nextract_text\n(\nresponse\n)\n[\n0\n]\n}\n)\nmessages\n.\nappend\n(\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\npartial\n(\ncontent\n,\nturn\n=\n1\n)\n,\n}\n,\n)\ncontext\n.\nappend\n(\n{\n\"user_message_1\"\n:\n\"Why can't we apply Theorem 1 to Equation (2)?\"\n,\n\"external_info_1\"\n:\n\"Theorem 1: ...\"\n,\n}\n)\nresponse\n=\nclient\n.\ncreate\n(\ncontext\n=\ncontext\n,\nmessages\n=\nmessages\n,\n**\nconfig\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Logging\n​",
+            "content": [
+                {
+                    "text": "When debugging or diagnosing an LLM-based system, it is often convenient to log the API calls and analyze them."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "For openai >= 1\n​",
+                    "content": [
+                        {
+                            "text": "Logging example:\nView Notebook"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "import\nautogen\n.\nruntime_logging\nautogen\n.\nruntime_logging\n.\nstart\n(\nlogger_type\n=\n\"sqlite\"\n,\nconfig\n=\n{\n\"dbname\"\n:\n\"YOUR_DB_NAME\"\n}\n)"
+                            }
+                        },
+                        {
+                            "text": "logger_type\nand\nconfig\nare both optional. Default logger type is SQLite logger, that's the only one available in autogen at the moment. If you want to customize the database name, you can pass in through config, default is\nlogs.db\n."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "autogen\n.\nruntime_logging\n.\nstop\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "AutoGen logging supports OpenAI's llm message schema. Each LLM run is saved in\nchat_completions\ntable includes:"
+                        },
+                        {
+                            "code": {
+                                "language": "json",
+                                "script": "{\n\"messages\":[\n{\n\"content\":\"system_message_1\",\n\"role\":\"system\"\n},\n{\n\"content\":\"user_message_1\",\n\"role\":\"user\"\n}\n],\n\"model\":\"gpt-4\",\n\"temperature\": 0.9\n}"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "json",
+                                "script": "{\n\"id\": \"id_1\",\n\"choices\": [\n{\n\"finish_reason\": \"stop\",\n\"index\": 0,\n\"logprobs\": null,\n\"message\": {\n\"content\": \"assistant_message_1\",\n\"role\": \"assistant\",\n\"function_call\": null,\n\"tool_calls\": null\n}\n}\n],\n\"created\": \"<timestamp>\",\n\"model\": \"gpt-4\",\n\"object\": \"chat.completion\",\n\"system_fingerprint\": null,\n\"usage\": {\n\"completion_tokens\": 155,\n\"prompt_tokens\": 53,\n\"total_tokens\": 208\n}\n}"
+                            }
+                        },
+                        {
+                            "text": "Learn more about\nrequest and response format"
+                        }
+                    ],
+                    "subsections": [
+                        {
+                            "title": "Start logging:\n​",
+                            "content": [],
+                            "subsections": []
+                        },
+                        {
+                            "title": "Stop logging:\n​",
+                            "content": [],
+                            "subsections": []
+                        },
+                        {
+                            "title": "LLM Runs\n​",
+                            "content": [],
+                            "subsections": []
+                        }
+                    ]
+                },
+                {
+                    "title": "For openai < 1\n​",
+                    "content": [
+                        {
+                            "text": "autogen.Completion\nand\nautogen.ChatCompletion\noffer an easy way to collect the API call histories. For example, to log the chat histories, simply run:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "autogen\n.\nChatCompletion\n.\nstart_logging\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "The API calls made after this will be automatically logged. They can be retrieved at any time by:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "autogen\n.\nChatCompletion\n.\nlogged_history"
+                            }
+                        },
+                        {
+                            "text": "There is a function that can be used to print usage summary (total cost, and token count usage from each model):"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "autogen\n.\nChatCompletion\n.\nprint_usage_summary\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "To stop logging, use"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "autogen\n.\nChatCompletion\n.\nstop_logging\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "If one would like to append the history to an existing dict, pass the dict like:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "autogen\n.\nChatCompletion\n.\nstart_logging\n(\nhistory_dict\n=\nexisting_history_dict\n)"
+                            }
+                        },
+                        {
+                            "text": "By default, the counter of API calls will be reset at\nstart_logging()\n. If no reset is desired, set\nreset_counter=False\n.\n\nThere are two types of logging formats: compact logging and individual API call logging. The default format is compact.\nSet\ncompact=False\nin\nstart_logging()\nto switch."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "{\n\"\"\"\n[\n{\n'role': 'system',\n'content': system_message,\n},\n{\n'role': 'user',\n'content': user_message_1,\n},\n{\n'role': 'assistant',\n'content': assistant_message_1,\n},\n{\n'role': 'user',\n'content': user_message_2,\n},\n{\n'role': 'assistant',\n'content': assistant_message_2,\n},\n]\"\"\"\n:\n{\n\"created_at\"\n:\n[\n0\n,\n1\n]\n,\n\"cost\"\n:\n[\n0.1\n,\n0.2\n]\n,\n}\n}"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "{\n0\n:\n{\n\"request\"\n:\n{\n\"messages\"\n:\n[\n{\n\"role\"\n:\n\"system\"\n,\n\"content\"\n:\nsystem_message\n,\n}\n,\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\nuser_message_1\n,\n}\n]\n,\n.\n.\n.\n# other parameters in the request\n}\n,\n\"response\"\n:\n{\n\"choices\"\n:\n[\n\"messages\"\n:\n{\n\"role\"\n:\n\"assistant\"\n,\n\"content\"\n:\nassistant_message_1\n,\n}\n,\n]\n,\n.\n.\n.\n# other fields in the response\n}\n}\n,\n1\n:\n{\n\"request\"\n:\n{\n\"messages\"\n:\n[\n{\n\"role\"\n:\n\"system\"\n,\n\"content\"\n:\nsystem_message\n,\n}\n,\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\nuser_message_1\n,\n}\n,\n{\n\"role\"\n:\n\"assistant\"\n,\n\"content\"\n:\nassistant_message_1\n,\n}\n,\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\nuser_message_2\n,\n}\n,\n]\n,\n.\n.\n.\n# other parameters in the request\n}\n,\n\"response\"\n:\n{\n\"choices\"\n:\n[\n\"messages\"\n:\n{\n\"role\"\n:\n\"assistant\"\n,\n\"content\"\n:\nassistant_message_2\n,\n}\n,\n]\n,\n.\n.\n.\n# other fields in the response\n}\n}\n,\n}"
+                            }
+                        },
+                        {
+                            "text": "It can be seen that the individual API call history contains redundant information of the conversation. For a long conversation the degree of redundancy is high.\nThe compact history is more efficient and the individual API call history contains more details."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

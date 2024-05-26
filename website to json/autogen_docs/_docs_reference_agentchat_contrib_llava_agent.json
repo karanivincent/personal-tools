@@ -1,0 +1,50 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/llava_agent",
+    "title": "agentchat.contrib.llava_agent",
+    "sections": [
+        {
+            "title": "LLaVAAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nLLaVAAgent\n(\nMultimodalConversableAgent\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nname\n:\nstr\n,\nsystem_message\n:\nOptional\n[\nTuple\n[\nstr\n,\nList\n]\n]\n=\nDEFAULT_LLAVA_SYS_MSG\n,\n*\nargs\n,\n**\nkwargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "llava_call\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nllava_call\n(\nprompt\n:\nstr\n,\nllm_config\n:\ndict\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Makes a call to the LLaVA service to generate text based on a given prompt"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

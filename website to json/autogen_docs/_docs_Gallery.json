@@ -1,0 +1,34 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/Gallery",
+    "title": "Gallery",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "This page contains a list of demos that use AutoGen in various applications from the community.\n\nContribution guide:\nBuilt something interesting with AutoGen? Submit a PR to add it to the list! See the\nContribution Guide below\nfor more details."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Contributing\n​",
+            "content": [
+                {
+                    "text": "To contribute, please open a PR that adds an entry to the\ndata/gallery.json\nfile in the\nsrc\ndirectory. The entry should be an object with the following properties:"
+                },
+                {
+                    "code": {
+                        "language": "js",
+                        "script": "{\n\"title\"\n:\n\"AutoGen Playground\"\n,\n\"link\"\n:\n\"https://huggingface.co/spaces/thinkall/AutoGen_Playground\"\n,\n\"description\"\n:\n\"A space to explore the capabilities of AutoGen.\"\n,\n\"image\"\n:\n\"default.png\"\n,\n\"tags\"\n:\n[\n\"ui\"\n]\n}"
+                    }
+                },
+                {
+                    "text": "The\nimage\nproperty should be the name of a file in the\nstatic/img/gallery\ndirectory.\nThe\ntags\nproperty should be an array of strings that describe the demo. We recommend using no more than two tags for clarity.\nHere are the meanings of several tags for reference:\n\nif the existing ones do not precisely portray your own demos, new tags are also encouraged to add."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

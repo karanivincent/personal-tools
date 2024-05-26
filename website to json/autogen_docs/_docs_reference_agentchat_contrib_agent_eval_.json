@@ -1,0 +1,32 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/agent_eval/",
+    "title": "agentchat.contrib.agent_eval.agent_eval",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Creates a list of criteria for evaluating the utility of a given task.\n\nArguments\n:\n\nReturns\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "quantify_criteria\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nquantify_criteria\n(\nllm_config\n:\nOptional\n[\nUnion\n[\nDict\n,\nLiteral\n[\nFalse\n]\n]\n]\n=\nNone\n,\ncriteria\n:\nList\n[\nCriterion\n]\n=\nNone\n,\ntask\n:\nTask\n=\nNone\n,\ntest_case\n:\nstr\n=\n\"\"\n,\nground_truth\n:\nstr\n=\n\"\"\n)"
+                            }
+                        },
+                        {
+                            "text": "Quantifies the performance of a system using the provided criteria.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

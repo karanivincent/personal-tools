@@ -1,0 +1,126 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2023/07/14/Local-LLMs",
+    "title": "Use AutoGen for Local LLMs",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "TL;DR:\nWe demonstrate how to use autogen for local LLM application. As an example, we will initiate an endpoint using\nFastChat\nand perform inference on\nChatGLMv2-6b\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Preparations\n​",
+            "content": [],
+            "subsections": [
+                {
+                    "title": "Clone FastChat\n​",
+                    "content": [
+                        {
+                            "text": "FastChat provides OpenAI-compatible APIs for its supported models, so you can use FastChat as a local drop-in replacement for OpenAI APIs. However, its code needs minor modification in order to function properly."
+                        },
+                        {
+                            "code": {
+                                "language": "bash",
+                                "script": "git clone https://github.com/lm-sys/FastChat.git\ncd FastChat"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Initiate server\n​",
+            "content": [
+                {
+                    "text": "First, launch the controller"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "python -m fastchat.serve.controller"
+                    }
+                },
+                {
+                    "text": "Then, launch the model worker(s)"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "python -m fastchat.serve.model_worker --model-path chatglm2-6b"
+                    }
+                },
+                {
+                    "text": "Finally, launch the RESTful API server"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "python -m fastchat.serve.openai_api_server --host localhost --port 8000"
+                    }
+                },
+                {
+                    "text": "Normally this will work. However, if you encounter error like\nthis\n, commenting out all the lines containing\nfinish_reason\nin\nfastchat/protocol/api_protocol.py\nand\nfastchat/protocol/openai_api_protocol.py\nwill fix the problem. The modified code looks like:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCompletionResponseChoice\n(\nBaseModel\n)\n:\nindex\n:\nint\ntext\n:\nstr\nlogprobs\n:\nOptional\n[\nint\n]\n=\nNone\n# finish_reason: Optional[Literal[\"stop\", \"length\"]]\nclass\nCompletionResponseStreamChoice\n(\nBaseModel\n)\n:\nindex\n:\nint\ntext\n:\nstr\nlogprobs\n:\nOptional\n[\nfloat\n]\n=\nNone\n# finish_reason: Optional[Literal[\"stop\", \"length\"]] = None"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Interact with model using\noai.Completion\n(requires openai<1)\n​",
+            "content": [
+                {
+                    "text": "Now the models can be directly accessed through openai-python library as well as\nautogen.oai.Completion\nand\nautogen.oai.ChatCompletion\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\noai\n# create a text completion request\nresponse\n=\noai\n.\nCompletion\n.\ncreate\n(\nconfig_list\n=\n[\n{\n\"model\"\n:\n\"chatglm2-6b\"\n,\n\"base_url\"\n:\n\"http://localhost:8000/v1\"\n,\n\"api_type\"\n:\n\"openai\"\n,\n\"api_key\"\n:\n\"NULL\"\n,\n# just a placeholder\n}\n]\n,\nprompt\n=\n\"Hi\"\n,\n)\nprint\n(\nresponse\n)\n# create a chat completion request\nresponse\n=\noai\n.\nChatCompletion\n.\ncreate\n(\nconfig_list\n=\n[\n{\n\"model\"\n:\n\"chatglm2-6b\"\n,\n\"base_url\"\n:\n\"http://localhost:8000/v1\"\n,\n\"api_type\"\n:\n\"openai\"\n,\n\"api_key\"\n:\n\"NULL\"\n,\n}\n]\n,\nmessages\n=\n[\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"Hi\"\n}\n]\n)\nprint\n(\nresponse\n)"
+                    }
+                },
+                {
+                    "text": "If you would like to switch to different models, download their checkpoints and specify model path when launching model worker(s)."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "interacting with multiple local LLMs\n​",
+            "content": [
+                {
+                    "text": "If you would like to interact with multiple LLMs on your local machine, replace the\nmodel_worker\nstep above with a multi model variant:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "python -m fastchat.serve.multi_model_worker \\\n--model-path lmsys/vicuna-7b-v1.3 \\\n--model-names vicuna-7b-v1.3 \\\n--model-path chatglm2-6b \\\n--model-names chatglm2-6b"
+                    }
+                },
+                {
+                    "text": "The inference code would be:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\noai\n# create a chat completion request\nresponse\n=\noai\n.\nChatCompletion\n.\ncreate\n(\nconfig_list\n=\n[\n{\n\"model\"\n:\n\"chatglm2-6b\"\n,\n\"base_url\"\n:\n\"http://localhost:8000/v1\"\n,\n\"api_type\"\n:\n\"openai\"\n,\n\"api_key\"\n:\n\"NULL\"\n,\n}\n,\n{\n\"model\"\n:\n\"vicuna-7b-v1.3\"\n,\n\"base_url\"\n:\n\"http://localhost:8000/v1\"\n,\n\"api_type\"\n:\n\"openai\"\n,\n\"api_key\"\n:\n\"NULL\"\n,\n}\n]\n,\nmessages\n=\n[\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"Hi\"\n}\n]\n)\nprint\n(\nresponse\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "For Further Reading\n​",
+            "content": [],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

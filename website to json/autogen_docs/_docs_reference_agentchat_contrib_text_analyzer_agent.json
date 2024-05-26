@@ -1,0 +1,53 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/text_analyzer_agent",
+    "title": "agentchat.contrib.text_analyzer_agent",
+    "sections": [
+        {
+            "title": "TextAnalyzerAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nTextAnalyzerAgent\n(\nConversableAgent\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) Text Analysis agent, a subclass of ConversableAgent designed to analyze text as instructed."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nname\n=\n\"analyzer\"\n,\nsystem_message\n:\nOptional\n[\nstr\n]\n=\nsystem_message\n,\nhuman_input_mode\n:\nOptional\n[\nstr\n]\n=\n\"NEVER\"\n,\nllm_config\n:\nOptional\n[\nUnion\n[\nDict\n,\nbool\n]\n]\n=\nNone\n,\n**\nkwargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "analyze_text\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nanalyze_text\n(\ntext_to_analyze\n,\nanalysis_instructions\n)"
+                            }
+                        },
+                        {
+                            "text": "Analyzes the given text as instructed, and returns the analysis."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

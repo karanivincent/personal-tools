@@ -1,0 +1,61 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2023/06/28/MathChat",
+    "title": "MathChat - An Conversational Framework to Solve Math Problems",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "TL;DR:\n\nRecent Large Language Models (LLMs) like GTP-3.5 and GPT-4 have demonstrated astonishing abilities over previous models on various tasks, such as text generation, question answering, and code generation. Moreover, these models can communicate with humans through conversations and remember previous contexts, making it easier for humans to interact with them. These models play an increasingly important role in our daily lives assisting people with different tasks, such as writing emails, summarizing documents, and writing code.\n\nIn this blog post, we probe into the problem-solving capabilities of LLMs. Specifically, we are interested in their capabilities to solve advanced math problems, which could be representative of a broader class of problems that require precise reasoning and also have deterministic solutions.\n\nWe introduce MathChat, a conversational framework designed for solving challenging math problems with LLMs. This framework takes advantage of the chat-optimized feature of state-of-the-art LLMs, where a user proxy agent and an LLM assistant work together to tackle math problems. We also test previous prompting techniques for comparison."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "The MathChat Framework\n​",
+            "content": [
+                {
+                    "text": "MathChat simulates a conversation between the LLM assistant and a user proxy agent. As the name indicates, the user proxy agent acts as a proxy for the user, which is responsible for communicating with the LLM assistant and continuing the conversation in a desired manner.\n\nThe proxy agent first presents a math problem to the LLM assistant, framed by an initial prompt that guides the assistant in how it should work collaboratively to solve the problem. We incorporate existing prompting methods such as CoT (chain-of-thought) and tool-using are incorporated in the initial prompt. Key components of the prompt include:\n\nTool-using Prompt:\nThis guides the LLM assistant to use Python code in the correct format to address the problem, allowing the user proxy agent to parse the code and provide the appropriate results.\n\nProblem-Solving Strategy Selection Prompt:\nThe assistant is instructed to choose one of three potential problem-solving strategies, including:\n\nFinal Answer Encapsulation Prompt:\nThis part instructs the assistant to put the final answer in\n\\boxed\n.\n\nThe prompt design in MathChat is flexible and can easily be refined to include other tools, such as Wolfram Alpha.\n\nLet's take a look at an example between the\nUser Proxy Agent\nand the\nLLM Assistant\n(GPT-4). The conversation focuses on how to solve inequality using Python.\n(The conversation is modified for readability.)"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Experiment Setup\n​",
+            "content": [
+                {
+                    "text": "We evaluate the improvement brought by MathChat.\n\nFor the experiment, we focus on the level-5 problems from the MATH dataset, which are composed of high school competition problems. These problems include the application of theorems and complex equation derivation and are challenging even for undergraduate students. We evaluate 6 of 7 categories from the dataset (excluding Geometry): Prealgebra, Algebra, Number Theory, Counting and Probability, Intermediate Algebra, and Precalculus.\n\nWe evaluate GPT-4 and use the default configuration of the OpenAI API. To access the final performance, we manually compare the final answer with the correct answer. For the vanilla prompt, Program Synthesis, and MathChat, we have GPT-4 enclose the final answer in\n\\boxed\n, and we take the return of the function in PoT as the final answer.\n\nWe also evaluate the following methods for comparison:\n\nVanilla prompting:\nEvaluates GPT-4's direct problem-solving capability. The prompt used is:\n\" Solve the problem carefully. Put the final answer in \\boxed\n\"\n.\n\nProgram of Thoughts (PoT):\nUses a zero-shot PoT prompt that requests the model to create a\nSolver\nfunction to solve the problem and return the final answer.\n\nProgram Synthesis (PS) prompting:\nLike PoT, it prompts the model to write a program to solve the problem. The prompt used is:\n\"Write a program that answers the following question: {Problem}\"\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Experiment Results\n​",
+            "content": [
+                {
+                    "text": "The accuracy on all the problems with difficulty level-5 from different categories of the MATH dataset with different methods is shown below:\n\n\n\nWe found that compared to basic prompting, which demonstrates the innate capabilities of GPT-4, utilizing Python within the context of PoT or PS strategy improved the overall accuracy by about 10%. This increase was mostly seen in categories involving more numerical manipulations, such as Counting & Probability and Number Theory, and in more complex categories like Intermediate Algebra and Precalculus.\n\nFor categories like Algebra and Prealgebra, PoT and PS showed little improvement, and in some instances, even led to a decrease in accuracy. However, MathChat was able to enhance total accuracy by around 6% compared to PoT and PS, showing competitive performance across all categories. Remarkably, MathChat improved accuracy in the Algebra category by about 15% over other methods. Note that categories like Intermediate Algebra and Precalculus remained challenging for all methods, with only about 20% of problems solved accurately.\n\nThe code for experiments can be found at this\nrepository\n.\nWe now provide an implementation of MathChat using the interactive agents in AutoGen. See this\nnotebook\nfor example usage."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Future Directions\n​",
+            "content": [
+                {
+                    "text": "Despite MathChat's improvements over previous methods, the results show that complex math problem is still challenging for recent powerful LLMs, like GPT-4, even with help from external tools.\n\nFurther work can be done to enhance this framework or math problem-solving in general:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "For Further Reading\n​",
+            "content": [
+                {
+                    "text": "Are you working on applications that involve math problem-solving? Would you appreciate additional research or support on the application of LLM-based agents for math problem-solving? Please join our\nDiscord\nserver for discussion."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

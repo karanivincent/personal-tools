@@ -1,0 +1,128 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/cache/cosmos_db_cache",
+    "title": "cache.cosmos_db_cache",
+    "sections": [
+        {
+            "title": "CosmosDBCache\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCosmosDBCache\n(\nAbstractCache\n)"
+                    }
+                },
+                {
+                    "text": "Synchronous implementation of AbstractCache using Azure Cosmos DB NoSQL API.\n\nThis class provides a concrete implementation of the AbstractCache\ninterface using Azure Cosmos DB for caching data, with synchronous operations.\n\nAttributes\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nseed\n:\nUnion\n[\nstr\n,\nint\n]\n,\ncosmosdb_config\n:\nCosmosDBConfig\n)"
+                            }
+                        },
+                        {
+                            "text": "Initialize the CosmosDBCache instance.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "create_cache\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@classmethod\ndef\ncreate_cache\n(\ncls\n,\nseed\n:\nUnion\n[\nstr\n,\nint\n]\n,\ncosmosdb_config\n:\nCosmosDBConfig\n)"
+                            }
+                        },
+                        {
+                            "text": "Factory method to create a CosmosDBCache instance based on the provided configuration.\nThis method decides whether to use an existing CosmosClient or create a new one."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget\n(\nkey\n:\nstr\n,\ndefault\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nOptional\n[\nAny\n]"
+                            }
+                        },
+                        {
+                            "text": "Retrieve an item from the Cosmos DB cache.\n\nArguments\n:\n\nReturns\n:\n\nThe deserialized value associated with the key if found, else the default value."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "set\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nset\n(\nkey\n:\nstr\n,\nvalue\n:\nAny\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Set an item in the Cosmos DB cache.\n\nArguments\n:\n\nNotes\n:\n\nThe value is serialized using pickle before being stored."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "close\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nclose\n(\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Close the Cosmos DB client.\n\nPerform any necessary cleanup, such as closing network connections."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "__enter__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__enter__\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "Context management entry.\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "__exit__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__exit__\n(\nexc_type\n:\nOptional\n[\ntype\n]\n,\nexc_value\n:\nOptional\n[\nException\n]\n,\ntraceback\n:\nOptional\n[\nAny\n]\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Context management exit.\n\nPerform cleanup actions such as closing the Cosmos DB client."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

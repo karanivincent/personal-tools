@@ -1,0 +1,106 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/tutorial/human-in-the-loop",
+    "title": "Allowing Human Feedback in Agents",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nIn the last two chapters we introduced the\nConversableAgent\nclass and\nshowed how you can use it to create autonomous\n(\nhuman_input_mode=NEVER\n) agents that can accomplish tasks. We also\nshowed how to properly terminate a conversation between agents.\n\nBut many applications may require putting humans in-the-loop with\nagents. For example, to allow human feedback to steer agents in the\nright direction, specify goals, etc. In this chapter, we will show how\nAutoGen supports human intervention.\n\nIn AutoGen’s\nConversableAgent\n, the human-the-loop component sits in\nfront of the auto-reply components. It can intercept the incoming\nmessages and decide whether to pass them to the auto-reply components or\nto provide human feedback. The figure below illustrates the design.\n\n\n\nThe human-in-the-loop component can be customized through the\nhuman_input_mode\nparameter. We will show you how to use it in the\nfollowing sections."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Human Input Modes\n​",
+            "content": [
+                {
+                    "text": "Currently AutoGen supports three modes for human input. The mode is\nspecified through the\nhuman_input_mode\nargument of the\nConversableAgent\n. The three modes are:\n\nThe previous chapters already showed many examples of the cases when\nhuman_input_mode\nis\nNEVER\n. Below we show one such example again and\nthen show the differences when this mode is set to\nALWAYS\nand\nNEVER\ninstead."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Human Input Mode =\nNEVER\n​",
+            "content": [
+                {
+                    "text": "In this mode, human input is never requested and the termination\nconditions are used to terminate. This mode is useful when you want your\nagents to act fully autonomously.\n\nHere is an example of using this mode to run a simple guess-a-number\ngame between two agents, the termination message is set to check for the\nnumber that is the correct guess."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nos\nfrom\nautogen\nimport\nConversableAgent\nagent_with_number\n=\nConversableAgent\n(\n\"agent_with_number\"\n,\nsystem_message\n=\n\"You are playing a game of guess-my-number. You have the \"\n\"number 53 in your mind, and I will try to guess it. \"\n\"If I guess too high, say 'too high', if I guess too low, say 'too low'. \"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\nis_termination_msg\n=\nlambda\nmsg\n:\n\"53\"\nin\nmsg\n[\n\"content\"\n]\n,\n# terminate if the number is guessed by the other agent\nhuman_input_mode\n=\n\"NEVER\"\n,\n# never ask for human input\n)\nagent_guess_number\n=\nConversableAgent\n(\n\"agent_guess_number\"\n,\nsystem_message\n=\n\"I have a number in my mind, and you will try to guess it. \"\n\"If I say 'too high', you should guess a lower number. If I say 'too low', \"\n\"you should guess a higher number. \"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)\nresult\n=\nagent_with_number\n.\ninitiate_chat\n(\nagent_guess_number\n,\nmessage\n=\n\"I have a number between 1 and 100. Guess it!\"\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "agent_with_number\n(\nto\nagent_guess_number\n)\n:\nI have a number between 1 and 100. Guess it!\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 50?\n--------------------------------------------------------------------------------\nagent_with_number\n(\nto\nagent_guess_number\n)\n:\nToo low.\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 75?\n--------------------------------------------------------------------------------\nagent_with_number\n(\nto\nagent_guess_number\n)\n:\nToo high.\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 63?\n--------------------------------------------------------------------------------\nagent_with_number\n(\nto\nagent_guess_number\n)\n:\nToo high.\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 57?\n--------------------------------------------------------------------------------\nagent_with_number\n(\nto\nagent_guess_number\n)\n:\nToo high.\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 54?\n--------------------------------------------------------------------------------\nagent_with_number\n(\nto\nagent_guess_number\n)\n:\nToo high.\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 52?\n--------------------------------------------------------------------------------\nagent_with_number\n(\nto\nagent_guess_number\n)\n:\nToo low.\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 53?\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "Yay! The game is over. The guessing agent got the number correctly using\nbinary search – very efficient! You can see that the conversation was\nterminated after the guessing agent said the correct number, which\ntriggered the message-based termination condition."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Human Input Mode =\nALWAYS\n​",
+            "content": [
+                {
+                    "text": "In this mode, human input is always requested and the human can choose\nto skip, intercept , or terminate the conversation. Let us see this mode\nin action by playing the same game as before with the agent with the\nnumber, but this time participating in the game as a human. We will be\nthe agent that is guessing the number, and play against the agent with\nthe number from before."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "human_proxy\n=\nConversableAgent\n(\n\"human_proxy\"\n,\nllm_config\n=\nFalse\n,\n# no LLM used for human proxy\nhuman_input_mode\n=\n\"ALWAYS\"\n,\n# always ask for human input\n)\n# Start a chat with the agent with number with an initial guess.\nresult\n=\nhuman_proxy\n.\ninitiate_chat\n(\nagent_with_number\n,\n# this is the same agent with the number as before\nmessage\n=\n\"10\"\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "human_proxy\n(\nto\nagent_with_number\n)\n:\n10\n--------------------------------------------------------------------------------\nagent_with_number\n(\nto\nhuman_proxy\n)\n:\nToo low.\n--------------------------------------------------------------------------------\nhuman_proxy\n(\nto\nagent_with_number\n)\n:\n79\n--------------------------------------------------------------------------------\nagent_with_number\n(\nto\nhuman_proxy\n)\n:\nToo high.\n--------------------------------------------------------------------------------\nhuman_proxy\n(\nto\nagent_with_number\n)\n:\n76\n--------------------------------------------------------------------------------\nagent_with_number\n(\nto\nhuman_proxy\n)\n:\nToo high.\n--------------------------------------------------------------------------------\nhuman_proxy\n(\nto\nagent_with_number\n)\n:\nI give up\n--------------------------------------------------------------------------------\nagent_with_number\n(\nto\nhuman_proxy\n)\n:\nThat's okay! The number I was thinking of was 53.\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "If you run the code above, you will be prompt to enter a response each\ntime it is your turn to speak. You can see the human in the conversation\nwas not very good at guessing the number… but hey the agent was nice\nenough to give out the number in the end."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Human Input Mode =\nTERMINATE\n​",
+            "content": [
+                {
+                    "text": "In this mode, human input is only requested when a termination condition\nis met.\nIf the human choose to intercept and reply, the counter will\nbe reset\n; if the human choose to skip, automatic reply mechanism will\nbe used; if the human choose to terminate, the conversation will be\nterminated.\n\nLet us see this mode in action by playing the same game again, but this\ntime the guessing agent will only have two chances to guess the number,\nand if it fails, the human will be asked to provide feedback, and the\nguessing agent gets two more chances. If the correct number is guessed\neventually, the conversation will be terminated."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "agent_with_number\n=\nConversableAgent\n(\n\"agent_with_number\"\n,\nsystem_message\n=\n\"You are playing a game of guess-my-number. \"\n\"In the first game, you have the \"\n\"number 53 in your mind, and I will try to guess it. \"\n\"If I guess too high, say 'too high', if I guess too low, say 'too low'. \"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\nmax_consecutive_auto_reply\n=\n1\n,\n# maximum number of consecutive auto-replies before asking for human input\nis_termination_msg\n=\nlambda\nmsg\n:\n\"53\"\nin\nmsg\n[\n\"content\"\n]\n,\n# terminate if the number is guessed by the other agent\nhuman_input_mode\n=\n\"TERMINATE\"\n,\n# ask for human input until the game is terminated\n)\nagent_guess_number\n=\nConversableAgent\n(\n\"agent_guess_number\"\n,\nsystem_message\n=\n\"I have a number in my mind, and you will try to guess it. \"\n\"If I say 'too high', you should guess a lower number. If I say 'too low', \"\n\"you should guess a higher number. \"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)\nresult\n=\nagent_with_number\n.\ninitiate_chat\n(\nagent_guess_number\n,\nmessage\n=\n\"I have a number between 1 and 100. Guess it!\"\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "agent_with_number\n(\nto\nagent_guess_number\n)\n:\nI have a number between 1 and 100. Guess it!\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 50?\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nagent_with_number\n(\nto\nagent_guess_number\n)\n:\nToo low.\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 75?\n--------------------------------------------------------------------------------\nagent_with_number\n(\nto\nagent_guess_number\n)\n:\nIt is too high my friend.\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 60?\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nagent_with_number\n(\nto\nagent_guess_number\n)\n:\nToo high.\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 55?\n--------------------------------------------------------------------------------\nagent_with_number\n(\nto\nagent_guess_number\n)\n:\nstill too high, but you are very close.\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 52?\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nagent_with_number\n(\nto\nagent_guess_number\n)\n:\nToo low.\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 54?\n--------------------------------------------------------------------------------\nagent_with_number\n(\nto\nagent_guess_number\n)\n:\nAlmost there!\n--------------------------------------------------------------------------------\nagent_guess_number\n(\nto\nagent_with_number\n)\n:\nIs it 53?\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "In the previous conversation,\n\nEach time after one auto-reply from the agent with the number, the human\nwas asked to provide feedback. Once the human provided feedback, the\ncounter was reset. The conversation was terminated after the agent\ncorrectly guessed “53”."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Summary\n​",
+            "content": [
+                {
+                    "text": "In this chapter, we showed you how to use the human-in-the-loop\ncomponent to provide human feedback to agent and to terminate\nconversation. We also showed you the different human input modes and how\nthey affect the behavior of the human-in-the-loop component.\n\nThe next chapter will be all about code executor – the most powerful\ncomponent second only to LLMs."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,128 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_groupchat_finite_state_machine",
+    "title": "FSM - User can input speaker transition constraints",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nAutoGen offers conversable agents powered by LLM, tool, or human, which\ncan be used to perform tasks collectively via automated chat. This\nframework allows tool use and human participation through multi-agent\nconversation. Please find documentation about this feature\nhere\n.\n\nThis notebook is about using graphs to define the transition paths\namongst speakers.\n\nBenefits - This contribution fills the gap between the current modes of\nGroupChat Class (auto, manual, round_robin) and an expressive directed\ngraph. See Motivation for more detailed discussion.\n\nInstall\npyautogen\n:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen"
+                    }
+                },
+                {
+                    "text": "For more information, please refer to the\ninstallation guide\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "%\n%\ncapture\n-\n-\nno\n-\nstderr\n%\npip install pyautogen\n[\ngraph\n]\n>=\n0.2\n.11"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nrandom\n# noqa E402\nimport\nmatplotlib\n.\npyplot\nas\nplt\n# noqa E402\nimport\nnetworkx\nas\nnx\n# noqa E402\nimport\nautogen\n# noqa E402\nfrom\nautogen\n.\nagentchat\n.\nconversable_agent\nimport\nConversableAgent\n# noqa E402\nfrom\nautogen\n.\nagentchat\n.\nassistant_agent\nimport\nAssistantAgent\n# noqa E402\nfrom\nautogen\n.\nagentchat\n.\ngroupchat\nimport\nGroupChat\n# noqa E402\nfrom\nautogen\n.\ngraph_utils\nimport\nvisualize_speaker_transitions_dict\n# noqa E402"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "print\n(\nautogen\n.\n__version__\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "0.2.25"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Motivation\n​",
+            "content": [
+                {
+                    "text": "The current GroupChat class allows transitioning to any agent (with or\nwithout the decision of the LLM), some use cases might demand for more\ncontrol over transition. A graph is a possible way to control the\ntransition paths, where each node represents an agent and each directed\nedge represents possible transition paths. Let’s illustrate the current\ntransition paths for a GroupChat with five agents."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "config_list_gpt4\n=\n{\n\"timeout\"\n:\n600\n,\n\"cache_seed\"\n:\n44\n,\n# change the seed for different trials\n\"config_list\"\n:\nautogen\n.\nconfig_list_from_json\n(\n\"OAI_CONFIG_LIST\"\n,\nfilter_dict\n=\n{\n\"tags\"\n:\n[\n\"gpt-4\"\n,\n\"gpt-4-32k\"\n]\n}\n,\n# comment out to get all\n)\n,\n\"temperature\"\n:\n0\n,\n}"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "agents\n=\n[\nConversableAgent\n(\nname\n=\nf\"Agent\n{\ni\n}\n\"\n,\nllm_config\n=\nFalse\n)\nfor\ni\nin\nrange\n(\n5\n)\n]\nallowed_speaker_transitions_dict\n=\n{\nagent\n:\n[\nother_agent\nfor\nother_agent\nin\nagents\n]\nfor\nagent\nin\nagents\n}\nvisualize_speaker_transitions_dict\n(\nallowed_speaker_transitions_dict\n,\nagents\n)"
+                    }
+                },
+                {
+                    "text": ""
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Demonstration\n​",
+            "content": [
+                {
+                    "text": "GroupChat\nnow takes in two optional arguments. -\nallowed_or_disallowed_speaker_transitions: The keys are source agents,\nand the values are agents that the key agent can/can’t transit to,\ndepending on speaker_transitions_type. Default is None, which means all\nagents can transit to all other agents. - speaker_transitions_type:\nwhether the speaker_transitions_type is a dictionary containing lists of\nallowed agents or disallowed agents. “allowed” means the\nallowed_or_disallowed_speaker_transitions\nis a dictionary containing\nlists of allowed agents."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Team Operations\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "# Create an empty directed graph\nagents\n=\n[\n]\nspeaker_transitions_dict\n=\n{\n}\nsecret_values\n=\n{\n}\n# Outer loop for prefixes 'A', 'B', 'C'\nfor\nprefix\nin\n[\n\"A\"\n,\n\"B\"\n,\n\"C\"\n]\n:\n# Add 3 nodes with each prefix to the graph using a for loop\nfor\ni\nin\nrange\n(\n3\n)\n:\nnode_id\n=\nf\"\n{\nprefix\n}\n{\ni\n}\n\"\nsecret_value\n=\nrandom\n.\nrandint\n(\n1\n,\n5\n)\n# Generate a random secret value\nsecret_values\n[\nnode_id\n]\n=\nsecret_value\n# Create an AssistantAgent for each node (assuming AssistantAgent is a defined class)\nagents\n.\nappend\n(\nAssistantAgent\n(\nname\n=\nnode_id\n,\nsystem_message\n=\nf\"\"\"Your name is\n{\nnode_id\n}\n.\nDo not respond as the speaker named in the NEXT tag if your name is not in the NEXT tag. Instead, suggest a relevant team leader to handle the mis-tag, with the NEXT: tag.\nYou have\n{\nsecret_value\n}\nchocolates.\nThe list of players are [A0, A1, A2, B0, B1, B2, C0, C1, C2].\nYour first character of your name is your team, and your second character denotes that you are a team leader if it is 0.\nCONSTRAINTS: Team members can only talk within the team, whilst team leader can talk to team leaders of other teams but not team members of other teams.\nYou can use NEXT: to suggest the next speaker. You have to respect the CONSTRAINTS, and can only suggest one player from the list of players, i.e., do not suggest A3 because A3 is not from the list of players.\nTeam leaders must make sure that they know the sum of the individual chocolate count of all three players in their own team, i.e., A0 is responsible for team A only.\nKeep track of the player's tally using a JSON format so that others can check the total tally. Use\nA0:?, A1:?, A2:?,\nB0:?, B1:?, B2:?,\nC0:?, C1:?, C2:?\nIf you are the team leader, you should aggregate your team's total chocolate count to cooperate.\nOnce the team leader know their team's tally, they can suggest another team leader for them to find their team tally, because we need all three team tallys to succeed.\nUse NEXT: to suggest the next speaker, e.g., NEXT: A0.\nOnce we have the total tally from all nine players, sum up all three teams' tally, then terminate the discussion using TERMINATE.\n\"\"\"\n,\nllm_config\n=\nconfig_list_gpt4\n,\n)\n)\nspeaker_transitions_dict\n[\nagents\n[\n-\n1\n]\n]\n=\n[\n]\n# Add edges between nodes with the same prefix using a nested for loop\nfor\nsource_node\nin\nrange\n(\n3\n)\n:\nsource_id\n=\nf\"\n{\nprefix\n}\n{\nsource_node\n}\n\"\nfor\ntarget_node\nin\nrange\n(\n3\n)\n:\ntarget_id\n=\nf\"\n{\nprefix\n}\n{\ntarget_node\n}\n\"\nif\nsource_node\n!=\ntarget_node\n:\n# To avoid self-loops\nspeaker_transitions_dict\n[\nget_agent_of_name\n(\nagents\n,\nsource_id\n)\n]\n.\nappend\n(\nget_agent_of_name\n(\nagents\n,\nname\n=\ntarget_id\n)\n)\n# Adding edges between teams\nspeaker_transitions_dict\n[\nget_agent_of_name\n(\nagents\n,\n\"A0\"\n)\n]\n.\nappend\n(\nget_agent_of_name\n(\nagents\n,\nname\n=\n\"B0\"\n)\n)\nspeaker_transitions_dict\n[\nget_agent_of_name\n(\nagents\n,\n\"A0\"\n)\n]\n.\nappend\n(\nget_agent_of_name\n(\nagents\n,\nname\n=\n\"C0\"\n)\n)\nspeaker_transitions_dict\n[\nget_agent_of_name\n(\nagents\n,\n\"B0\"\n)\n]\n.\nappend\n(\nget_agent_of_name\n(\nagents\n,\nname\n=\n\"A0\"\n)\n)\nspeaker_transitions_dict\n[\nget_agent_of_name\n(\nagents\n,\n\"B0\"\n)\n]\n.\nappend\n(\nget_agent_of_name\n(\nagents\n,\nname\n=\n\"C0\"\n)\n)\nspeaker_transitions_dict\n[\nget_agent_of_name\n(\nagents\n,\n\"C0\"\n)\n]\n.\nappend\n(\nget_agent_of_name\n(\nagents\n,\nname\n=\n\"A0\"\n)\n)\nspeaker_transitions_dict\n[\nget_agent_of_name\n(\nagents\n,\n\"C0\"\n)\n]\n.\nappend\n(\nget_agent_of_name\n(\nagents\n,\nname\n=\n\"B0\"\n)\n)\n# Visualization only\ngraph\n=\nnx\n.\nDiGraph\n(\n)\n# Add nodes\ngraph\n.\nadd_nodes_from\n(\n[\nagent\n.\nname\nfor\nagent\nin\nagents\n]\n)\n# Add edges\nfor\nkey\n,\nvalue\nin\nspeaker_transitions_dict\n.\nitems\n(\n)\n:\nfor\nagent\nin\nvalue\n:\ngraph\n.\nadd_edge\n(\nkey\n.\nname\n,\nagent\n.\nname\n)\n# Visualize\n# Draw the graph with secret values annotated\nplt\n.\nfigure\n(\nfigsize\n=\n(\n12\n,\n10\n)\n)\npos\n=\nnx\n.\nspring_layout\n(\ngraph\n)\n# positions for all nodes\n# Draw nodes with their colors\nnx\n.\ndraw\n(\ngraph\n,\npos\n,\nwith_labels\n=\nTrue\n,\nfont_weight\n=\n\"bold\"\n)\n# Annotate secret values\nfor\nnode\n,\n(\nx\n,\ny\n)\nin\npos\n.\nitems\n(\n)\n:\nsecret_value\n=\nsecret_values\n[\nnode\n]\nplt\n.\ntext\n(\nx\n,\ny\n+\n0.1\n,\ns\n=\nf\"Secret:\n{\nsecret_value\n}\n\"\n,\nhorizontalalignment\n=\n\"center\"\n)\nplt\n.\nshow\n(\n)"
+                            }
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "# Termination message detection\ndef\nis_termination_msg\n(\ncontent\n)\n-\n>\nbool\n:\nhave_content\n=\ncontent\n.\nget\n(\n\"content\"\n,\nNone\n)\nis\nnot\nNone\nif\nhave_content\nand\n\"TERMINATE\"\nin\ncontent\n[\n\"content\"\n]\n:\nreturn\nTrue\nreturn\nFalse\n# Terminates the conversation when TERMINATE is detected.\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"User_proxy\"\n,\nsystem_message\n=\n\"Terminator admin.\"\n,\ncode_execution_config\n=\nFalse\n,\nis_termination_msg\n=\nis_termination_msg\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)\nagents\n.\nappend\n(\nuser_proxy\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "group_chat\n=\nGroupChat\n(\nagents\n=\nagents\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n20\n,\nallowed_or_disallowed_speaker_transitions\n=\nspeaker_transitions_dict\n,\nspeaker_transitions_type\n=\n\"allowed\"\n,\n)\n# Create the manager\nmanager\n=\nautogen\n.\nGroupChatManager\n(\ngroupchat\n=\ngroup_chat\n,\nllm_config\n=\nconfig_list_gpt4\n,\ncode_execution_config\n=\nFalse\n,\nis_termination_msg\n=\nis_termination_msg\n,\n)\n# Initiates the chat with Alice\nagents\n[\n0\n]\n.\ninitiate_chat\n(\nmanager\n,\nmessage\n=\n\"\"\"\nThere are 9 players in this game, split equally into Teams A, B, C. Therefore each team has 3 players, including the team leader.\nThe task is to find out the sum of chocolate count from all nine players. I will now start with my team.\nNEXT: A1\"\"\"\n,\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "WARNING:root:Warning: There are isolated agent nodes, there are not incoming nor outgoing edges. Isolated agents: ['User_proxy']\nWARNING:root:Warning: The set of agents in allowed_speaker_transitions do not match agents. Offending agents: ['User_proxy']"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "A0\n(\nto\nchat_manager\n)\n:\nThere are 9 players in this game, split equally into Teams A, B, C. Therefore each team has 3 players, including the team leader.\nThe task is to find out the sum of chocolate count from all nine players. I will now start with my team.\nNEXT: A1\n--------------------------------------------------------------------------------\nA1\n(\nto\nchat_manager\n)\n:\nAs the team leader of Team A, it's my responsibility to gather the chocolate count from my team members. I have 1 chocolate.\nA0:?, A1:1, A2:?,\nB0:?, B1:?, B2:?,\nC0:?, C1:?, C2:?\nNEXT: A2\n--------------------------------------------------------------------------------\nA2\n(\nto\nchat_manager\n)\n:\nI have 5 chocolates.\nA0:?, A1:1, A2:5,\nB0:?, B1:?, B2:?,\nC0:?, C1:?, C2:?\nNEXT: A0\n--------------------------------------------------------------------------------\nA0\n(\nto\nchat_manager\n)\n:\nI have 1 chocolate. Now that I have the counts from A1 and A2, I can calculate our team's total.\nA0:1, A1:1, A2:5,\nB0:?, B1:?, B2:?,\nC0:?, C1:?, C2:?\nTeam A's total tally is 7 chocolates. It's time to find out the tally from another team. I'll pass this to the next team leader.\nNEXT: B0\n--------------------------------------------------------------------------------\nB0\n(\nto\nchat_manager\n)\n:\nAs the team leader of Team B, it's my responsibility to gather the chocolate count from my team members. I have 1 chocolate.\nA0:1, A1:1, A2:5,\nB0:1, B1:?, B2:?,\nC0:?, C1:?, C2:?\nNow, I need to find out the chocolate counts from B1 and B2.\nNEXT: B1\n--------------------------------------------------------------------------------\nB1\n(\nto\nchat_manager\n)\n:\nI have 3 chocolates.\nA0:1, A1:1, A2:5,\nB0:1, B1:3, B2:?,\nC0:?, C1:?, C2:?\nNEXT: B2\n--------------------------------------------------------------------------------\nB2\n(\nto\nchat_manager\n)\n:\nI have 4 chocolates. Now that I have the counts from B0 and B1, I can calculate our team's total.\nA0:1, A1:1, A2:5,\nB0:1, B1:3, B2:4,\nC0:?, C1:?, C2:?\nTeam B's total tally is 8 chocolates. It's time to find out the tally from the last team. I'll pass this to the next team leader.\nNEXT: C0\n--------------------------------------------------------------------------------\nB0\n(\nto\nchat_manager\n)\n:\nI'm sorry for any confusion, but it seems there's been a misunderstanding in the flow of communication. As B0, I should be the one to summarize the tally for Team B and pass the conversation to the next team leader. Let me correct that.\nA0:1, A1:1, A2:5,\nB0:1, B1:3, B2:4,\nC0:?, C1:?, C2:?\nWith the counts from B1 and B2, Team B's total tally is indeed 8 chocolates. Now, it's time to find out the tally from Team C. I'll pass this to the next team leader.\nNEXT: C0\n--------------------------------------------------------------------------------\nC0\n(\nto\nchat_manager\n)\n:\nAs the team leader of Team C, it's my responsibility to gather the chocolate count from my team members. I have 3 chocolates.\nA0:1, A1:1, A2:5,\nB0:1, B1:3, B2:4,\nC0:3, C1:?, C2:?\nNow, I need to find out the chocolate counts from C1 and C2.\nNEXT: C1\n--------------------------------------------------------------------------------\nC1\n(\nto\nchat_manager\n)\n:\nI have 3 chocolates.\nA0:1, A1:1, A2:5,\nB0:1, B1:3, B2:4,\nC0:3, C1:3, C2:?\nNEXT: C2\n--------------------------------------------------------------------------------\nC2\n(\nto\nchat_manager\n)\n:\nI have 2 chocolates. Now that I have the counts from C0 and C1, I can calculate our team's total.\nA0:1, A1:1, A2:5,\nB0:1, B1:3, B2:4,\nC0:3, C1:3, C2:2\nTeam C's total tally is 8 chocolates. Now that we have the tallies from all teams, we can sum them up.\nTeam A's total is 7 chocolates, Team B's total is 8 chocolates, and Team C's total is 8 chocolates. The grand total is 23 chocolates.\nTERMINATE\n--------------------------------------------------------------------------------"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "ChatResult(chat_id=None, chat_history=[{'content': '\\n                        There are 9 players in this game, split equally into Teams A, B, C. Therefore each team has 3 players, including the team leader.\\n                        The task is to find out the sum of chocolate count from all nine players. I will now start with my team.\\n                        NEXT: A1', 'role': 'assistant'}, {'content': \"As the team leader of Team A, it's my responsibility to gather the chocolate count from my team members. I have 1 chocolate. \\n\\nA0:?, A1:1, A2:?,\\n\\nB0:?, B1:?, B2:?,\\n\\nC0:?, C1:?, C2:?\\n\\nNEXT: A2\", 'name': 'A1', 'role': 'user'}, {'content': 'I have 5 chocolates.\\n\\nA0:?, A1:1, A2:5,\\n\\nB0:?, B1:?, B2:?,\\n\\nC0:?, C1:?, C2:?\\n\\nNEXT: A0', 'name': 'A2', 'role': 'user'}, {'content': \"I have 1 chocolate. Now that I have the counts from A1 and A2, I can calculate our team's total.\\n\\nA0:1, A1:1, A2:5,\\n\\nB0:?, B1:?, B2:?,\\n\\nC0:?, C1:?, C2:?\\n\\nTeam A's total tally is 7 chocolates. It's time to find out the tally from another team. I'll pass this to the next team leader.\\n\\nNEXT: B0\", 'role': 'assistant'}, {'content': \"As the team leader of Team B, it's my responsibility to gather the chocolate count from my team members. I have 1 chocolate.\\n\\nA0:1, A1:1, A2:5,\\n\\nB0:1, B1:?, B2:?,\\n\\nC0:?, C1:?, C2:?\\n\\nNow, I need to find out the chocolate counts from B1 and B2.\\n\\nNEXT: B1\", 'name': 'B0', 'role': 'user'}, {'content': 'I have 3 chocolates.\\n\\nA0:1, A1:1, A2:5,\\n\\nB0:1, B1:3, B2:?,\\n\\nC0:?, C1:?, C2:?\\n\\nNEXT: B2', 'name': 'B1', 'role': 'user'}, {'content': \"I have 4 chocolates. Now that I have the counts from B0 and B1, I can calculate our team's total.\\n\\nA0:1, A1:1, A2:5,\\n\\nB0:1, B1:3, B2:4,\\n\\nC0:?, C1:?, C2:?\\n\\nTeam B's total tally is 8 chocolates. It's time to find out the tally from the last team. I'll pass this to the next team leader.\\n\\nNEXT: C0\", 'name': 'B2', 'role': 'user'}, {'content': \"I'm sorry for any confusion, but it seems there's been a misunderstanding in the flow of communication. As B0, I should be the one to summarize the tally for Team B and pass the conversation to the next team leader. Let me correct that.\\n\\nA0:1, A1:1, A2:5,\\n\\nB0:1, B1:3, B2:4,\\n\\nC0:?, C1:?, C2:?\\n\\nWith the counts from B1 and B2, Team B's total tally is indeed 8 chocolates. Now, it's time to find out the tally from Team C. I'll pass this to the next team leader.\\n\\nNEXT: C0\", 'name': 'B0', 'role': 'user'}, {'content': \"As the team leader of Team C, it's my responsibility to gather the chocolate count from my team members. I have 3 chocolates.\\n\\nA0:1, A1:1, A2:5,\\n\\nB0:1, B1:3, B2:4,\\n\\nC0:3, C1:?, C2:?\\n\\nNow, I need to find out the chocolate counts from C1 and C2.\\n\\nNEXT: C1\", 'name': 'C0', 'role': 'user'}, {'content': 'I have 3 chocolates.\\n\\nA0:1, A1:1, A2:5,\\n\\nB0:1, B1:3, B2:4,\\n\\nC0:3, C1:3, C2:?\\n\\nNEXT: C2', 'name': 'C1', 'role': 'user'}, {'content': \"I have 2 chocolates. Now that I have the counts from C0 and C1, I can calculate our team's total.\\n\\nA0:1, A1:1, A2:5,\\n\\nB0:1, B1:3, B2:4,\\n\\nC0:3, C1:3, C2:2\\n\\nTeam C's total tally is 8 chocolates. Now that we have the tallies from all teams, we can sum them up.\\n\\nTeam A's total is 7 chocolates, Team B's total is 8 chocolates, and Team C's total is 8 chocolates. The grand total is 23 chocolates.\\n\\nTERMINATE\", 'name': 'C2', 'role': 'user'}], summary=\"I have 2 chocolates. Now that I have the counts from C0 and C1, I can calculate our team's total.\\n\\nA0:1, A1:1, A2:5,\\n\\nB0:1, B1:3, B2:4,\\n\\nC0:3, C1:3, C2:2\\n\\nTeam C's total tally is 8 chocolates. Now that we have the tallies from all teams, we can sum them up.\\n\\nTeam A's total is 7 chocolates, Team B's total is 8 chocolates, and Team C's total is 8 chocolates. The grand total is 23 chocolates.\\n\\n\", cost={'usage_including_cached_inference': {'total_cost': 0.5525399999999999, 'gpt-4': {'cost': 0.5525399999999999, 'prompt_tokens': 18174, 'completion_tokens': 122, 'total_tokens': 18296}}, 'usage_excluding_cached_inference': {'total_cost': 0.5525399999999999, 'gpt-4': {'cost': 0.5525399999999999, 'prompt_tokens': 18174, 'completion_tokens': 122, 'total_tokens': 18296}}}, human_input=[])"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

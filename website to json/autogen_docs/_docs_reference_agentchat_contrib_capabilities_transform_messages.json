@@ -1,0 +1,53 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/capabilities/transform_messages",
+    "title": "agentchat.contrib.capabilities.transform_messages",
+    "sections": [
+        {
+            "title": "TransformMessages\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nTransformMessages\n(\n)"
+                    }
+                },
+                {
+                    "text": "Agent capability for transforming messages before reply generation.\n\nThis capability allows you to apply a series of message transformations to\na ConversableAgent's incoming messages before they are processed for response\ngeneration. This is useful for tasks such as:\n\nTo use\nTransformMessages\n:\n\nNOTE: Order of message transformations is important. You could get different results based on\nthe order of transformations.\n\nExample\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\n*\n,\ntransforms\n:\nList\n[\nMessageTransform\n]\n=\n[\n]\n,\nverbose\n:\nbool\n=\nTrue\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "add_to_agent\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nadd_to_agent\n(\nagent\n:\nConversableAgent\n)"
+                            }
+                        },
+                        {
+                            "text": "Adds the message transformations capability to the specified ConversableAgent.\n\nThis function performs the following modifications to the agent:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

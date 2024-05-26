@@ -1,0 +1,32 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/vectordb/utils",
+    "title": "agentchat.contrib.vectordb.utils",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Filters results based on a distance threshold.\n\nArguments\n:\n\nReturns\n:\n\nQueryResults | A filtered results containing only distances smaller than the threshold."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "chroma_results_to_query_results\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nchroma_results_to_query_results\n(\ndata_dict\n:\nDict\n[\nstr\n,\nList\n[\nList\n[\nAny\n]\n]\n]\n,\nspecial_key\n=\n\"distances\"\n)\n-\n>\nQueryResults"
+                            }
+                        },
+                        {
+                            "text": "Converts a dictionary with list-of-list values to a list of tuples.\n\nArguments\n:\n\nReturns\n:\n\nA list of tuples, where each tuple contains a sub-dictionary with\nsome keys from the original dictionary and the value from the\nspecial_key.\n\nExample\n:\n\ndata_dict = {\n\n\"key1s\"\n- [[1, 2, 3], [4, 5, 6], [7, 8, 9]],\n\n\"key2s\"\n- [[\"a\", \"b\", \"c\"], [\"c\", \"d\", \"e\"], [\"e\", \"f\", \"g\"]],\n\n\"key3s\"\n- None,\n\n\"key4s\"\n- [[\"x\", \"y\", \"z\"], [\"1\", \"2\", \"3\"], [\"4\", \"5\", \"6\"]],\n\n\"distances\"\n- [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9]],\n}\n\nresults = [\n[\n\n({\"key1\"\n- 1, \"key2\": \"a\", \"key4\": \"x\"}, 0.1),\n\n({\"key1\"\n- 2, \"key2\": \"b\", \"key4\": \"y\"}, 0.2),\n\n({\"key1\"\n- 3, \"key2\": \"c\", \"key4\": \"z\"}, 0.3),\n],\n[\n\n({\"key1\"\n- 4, \"key2\": \"c\", \"key4\": \"1\"}, 0.4),\n\n({\"key1\"\n- 5, \"key2\": \"d\", \"key4\": \"2\"}, 0.5),\n\n({\"key1\"\n- 6, \"key2\": \"e\", \"key4\": \"3\"}, 0.6),\n],\n[\n\n({\"key1\"\n- 7, \"key2\": \"e\", \"key4\": \"4\"}, 0.7),\n\n({\"key1\"\n- 8, \"key2\": \"f\", \"key4\": \"5\"}, 0.8),\n\n({\"key1\"\n- 9, \"key2\": \"g\", \"key4\": \"6\"}, 0.9),\n],\n]"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

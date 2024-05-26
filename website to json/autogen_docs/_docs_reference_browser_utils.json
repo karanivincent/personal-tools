@@ -1,0 +1,83 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/browser_utils",
+    "title": "browser_utils",
+    "sections": [
+        {
+            "title": "SimpleTextBrowser\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nSimpleTextBrowser\n(\n)"
+                    }
+                },
+                {
+                    "text": "(In preview) An extremely simple text-based web browser comparable to Lynx. Suitable for Agentic use."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "address\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\naddress\n(\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Return the address of the current page."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "viewport\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nviewport\n(\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Return the content of the current viewport."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "page_content\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\npage_content\n(\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Return the full contents of the current page."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "visit_page\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nvisit_page\n(\npath_or_uri\n:\nstr\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Update the address, visit the page, and return the content of the viewport."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

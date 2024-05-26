@@ -1,0 +1,88 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/contributor-guide/documentation",
+    "title": "Documentation",
+    "sections": [
+        {
+            "title": "How to get a notebook rendered on the website\n​",
+            "content": [
+                {
+                    "text": "See\nhere\nfor instructions on how to get a notebook in the\nnotebook\ndirectory rendered on the website."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Build documentation locally\n​",
+            "content": [
+                {
+                    "text": "1. To build and test documentation locally, first install\nNode.js\n. For example,"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "nvm install --lts"
+                    }
+                },
+                {
+                    "text": "Then, install\nyarn\nand other required packages:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "npm install --global yarn\npip install pydoc-markdown pyyaml termcolor"
+                    }
+                },
+                {
+                    "text": "2. You also need to install quarto. Please click on the\nPre-release\ntab from\nthis website\nto download the latest version of\nquarto\nand install it. Ensure that the\nquarto\nversion is\n1.5.23\nor higher.\n\n3. Finally, run the following commands to build:"
+                },
+                {
+                    "code": {
+                        "language": "console",
+                        "script": "cd website\nyarn install --frozen-lockfile --ignore-engines\npydoc-markdown\npython process_notebooks.py render\nyarn start"
+                    }
+                },
+                {
+                    "text": "The last command starts a local development server and opens up a browser window.\nMost changes are reflected live without having to restart the server."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Build with Docker\n​",
+            "content": [
+                {
+                    "text": "To build and test documentation within a docker container. Use the Dockerfile in the\ndev\nfolder as described above to build your image:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "docker build -f .devcontainer/dev/Dockerfile -t autogen_dev_img https://github.com/microsoft/autogen.git#main"
+                    }
+                },
+                {
+                    "text": "Then start the container like so, this will log you in and ensure that Docker port 3000 is mapped to port 8081 on your local machine"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "docker run -it -p 8081:3000 -v `pwd`/autogen-newcode:newstuff/ autogen_dev_img bash"
+                    }
+                },
+                {
+                    "text": "Once at the CLI in Docker run the following commands:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "cd website\nyarn install --frozen-lockfile --ignore-engines\npydoc-markdown\npython process_notebooks.py render\nyarn start --host 0.0.0.0 --port 3000"
+                    }
+                },
+                {
+                    "text": "Once done you should be able to access the documentation at\nhttp://127.0.0.1:8081/autogen"
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

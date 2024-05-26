@@ -1,0 +1,210 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/code_utils",
+    "title": "code_utils",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Converts the\ncontent\nfield of an OpenAI message into a string format.\n\nThis function processes content that may be a string, a list of mixed text and image URLs, or None,\nand converts it into a string. Text is directly appended to the result string, while image URLs are\nrepresented by a placeholder image token. If the content is None, an empty string is returned.\n\nArguments\n:\n\nReturns\n:\n\nNotes\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "infer_lang\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ninfer_lang\n(\ncode\n:\nstr\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "infer the language for the code.\nTODO: make it robust."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "extract_code\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nextract_code\n(\ntext\n:\nUnion\n[\nstr\n,\nList\n]\n,\npattern\n:\nstr\n=\nCODE_BLOCK_PATTERN\n,\ndetect_single_line_code\n:\nbool\n=\nFalse\n)\n-\n>\nList\n[\nTuple\n[\nstr\n,\nstr\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Extract code from a text.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "generate_code\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_code\n(\npattern\n:\nstr\n=\nCODE_BLOCK_PATTERN\n,\n**\nconfig\n)\n-\n>\nTuple\n[\nstr\n,\nfloat\n]"
+                            }
+                        },
+                        {
+                            "text": "(openai<1) Generate code.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "improve_function\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nimprove_function\n(\nfile_name\n,\nfunc_name\n,\nobjective\n,\n**\nconfig\n)"
+                            }
+                        },
+                        {
+                            "text": "(openai<1) Improve the function to achieve the objective."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "improve_code\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nimprove_code\n(\nfiles\n,\nobjective\n,\nsuggest_only\n=\nTrue\n,\n**\nconfig\n)"
+                            }
+                        },
+                        {
+                            "text": "(openai<1) Improve the code to achieve a given objective.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "is_docker_running\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nis_docker_running\n(\n)\n-\n>\nbool"
+                            }
+                        },
+                        {
+                            "text": "Check if docker is running.\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "in_docker_container\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nin_docker_container\n(\n)\n-\n>\nbool"
+                            }
+                        },
+                        {
+                            "text": "Check if the code is running in a docker container.\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "execute_code\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nexecute_code\n(\ncode\n:\nOptional\n[\nstr\n]\n=\nNone\n,\ntimeout\n:\nOptional\n[\nint\n]\n=\nNone\n,\nfilename\n:\nOptional\n[\nstr\n]\n=\nNone\n,\nwork_dir\n:\nOptional\n[\nstr\n]\n=\nNone\n,\nuse_docker\n:\nUnion\n[\nList\n[\nstr\n]\n,\nstr\n,\nbool\n]\n=\nSENTINEL\n,\nlang\n:\nOptional\n[\nstr\n]\n=\n\"python\"\n)\n-\n>\nTuple\n[\nint\n,\nstr\n,\nOptional\n[\nstr\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Execute code in a docker container.\nThis function is not tested on MacOS.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "generate_assertions\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_assertions\n(\ndefinition\n:\nstr\n,\n**\nconfig\n)\n-\n>\nTuple\n[\nstr\n,\nfloat\n]"
+                            }
+                        },
+                        {
+                            "text": "(openai<1) Generate assertions for a function.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "PassAssertionFilter\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nPassAssertionFilter\n(\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "pass_assertions\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\npass_assertions\n(\ncontext\n,\nresponse\n,\n**\n_\n)"
+                            }
+                        },
+                        {
+                            "text": "(openai<1) Check if the response passes the assertions."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "implement\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nimplement\n(\ndefinition\n:\nstr\n,\nconfigs\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nassertions\n:\nOptional\n[\nUnion\n[\nstr\n,\nCallable\n[\n[\nstr\n]\n,\nTuple\n[\nstr\n,\nfloat\n]\n]\n]\n]\n=\ngenerate_assertions\n)\n-\n>\nTuple\n[\nstr\n,\nfloat\n]"
+                            }
+                        },
+                        {
+                            "text": "(openai<1) Implement a function from a definition.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "create_virtual_env\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncreate_virtual_env\n(\ndir_path\n:\nstr\n,\n**\nenv_args\n)\n-\n>\nSimpleNamespace"
+                            }
+                        },
+                        {
+                            "text": "Creates a python virtual environment and returns the context.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

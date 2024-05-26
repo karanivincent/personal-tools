@@ -1,0 +1,150 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/math_user_proxy_agent",
+    "title": "agentchat.contrib.math_user_proxy_agent",
+    "sections": [
+        {
+            "title": "MathUserProxyAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nMathUserProxyAgent\n(\nUserProxyAgent\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) A MathChat agent that can handle math problems."
+                },
+                {
+                    "text": "maximum number of consecutive auto replies (subject to future change)"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nname\n:\nOptional\n[\nstr\n]\n=\n\"MathChatAgent\"\n,\nis_termination_msg\n:\nOptional\n[\nCallable\n[\n[\nDict\n]\n,\nbool\n]\n]\n=\n_is_termination_msg_mathchat\n,\nhuman_input_mode\n:\nOptional\n[\nstr\n]\n=\n\"NEVER\"\n,\ndefault_auto_reply\n:\nOptional\n[\nUnion\n[\nstr\n,\nDict\n,\nNone\n]\n]\n=\nDEFAULT_REPLY\n,\nmax_invalid_q_per_step\n=\n3\n,\n**\nkwargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "message_generator\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\nmessage_generator\n(\nsender\n,\nrecipient\n,\ncontext\n)"
+                            }
+                        },
+                        {
+                            "text": "Generate a prompt for the assistant agent with the given problem and prompt.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "execute_one_python_code\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nexecute_one_python_code\n(\npycode\n)"
+                            }
+                        },
+                        {
+                            "text": "Execute python code blocks.\n\nPrevious python code will be saved and executed together with the new code.\nthe \"print\" function will also be added to the last line of the code if needed"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "execute_one_wolfram_query\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nexecute_one_wolfram_query\n(\nquery\n:\nstr\n)"
+                            }
+                        },
+                        {
+                            "text": "Run one wolfram query and return the output.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "WolframAlphaAPIWrapper\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nWolframAlphaAPIWrapper\n(\nBaseModel\n)"
+                    }
+                },
+                {
+                    "text": "Wrapper for Wolfram Alpha.\n\nDocs for using:"
+                },
+                {
+                    "text": ":meta private:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Config\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nConfig\n(\n)"
+                    }
+                },
+                {
+                    "text": "Configuration for this pydantic object."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "validate_environment\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@root_validator\n(\nskip_on_failure\n=\nTrue\n)\ndef\nvalidate_environment\n(\ncls\n,\nvalues\n:\nDict\n)\n-\n>\nDict"
+                            }
+                        },
+                        {
+                            "text": "Validate that api key and python package exists in environment."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "run\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nrun\n(\nquery\n:\nstr\n)\n-\n>\nTuple\n[\nstr\n,\nbool\n]"
+                            }
+                        },
+                        {
+                            "text": "Run query through WolframAlpha and parse result."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

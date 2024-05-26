@@ -1,0 +1,22 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/contributor-guide/file-bug-report",
+    "title": "File A Bug Report",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "When you submit an issue to\nGitHub\n, please do your best to\nfollow these guidelines! This will make it a lot easier to provide you with good\nfeedback:\n\nThe ideal bug report contains a short reproducible code snippet. This way\nanyone can try to reproduce the bug easily (see\nthis\nfor more details). If your snippet is\nlonger than around 50 lines, please link to a\ngist\nor a GitHub repo.\n\nIf an exception is raised, please\nprovide the full traceback\n.\n\nPlease include your\noperating system type and version number\n, as well as\nyour\nPython, autogen, scikit-learn versions\n. The version of autogen\ncan be found by running the following code snippet:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nautogen\nprint\n(\nautogen\n.\n__version__\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

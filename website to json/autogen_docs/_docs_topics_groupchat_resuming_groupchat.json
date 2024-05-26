@@ -1,0 +1,256 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics/groupchat/resuming_groupchat",
+    "title": "Resuming a GroupChat",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nIn GroupChat, we can resume a previous group chat by passing the\nmessages from that conversation to the GroupChatManager’s\nresume\nfunction (or\na_resume\nfor asynchronous workflows). This prepares the\nGroupChat, GroupChatManager, and group chat’s agents for resuming. An\nagent’s\ninitiate_chat\ncan then be called to resume the chat.\n\nThe\nresume\nfunction returns the last agent in the messages as well as\nthe last message itself. These can be used to run the\ninitiate_chat\n.\n\nTo resume, the agents, GroupChat, and GroupChatManager objects must\nexist and match the original group chat.\n\nThe messages passed into the\nresume\nfunction can be passed in as a\nJSON string or a\nList[Dict]\nof messages, typically from the\nChatResult’s\nchat_history\nof the previous conversation or the\nGroupChat’s\nmessages\nproperty. Use the GroupChatManager’s\nmessages_to_string\nfunction to retrieve a JSON string that can be used\nfor resuming:"
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "# Save chat messages for resuming later on using the chat history\nmessages_json = mygroupchatmanager.messages_to_string(previous_chat_result.chat_history)\n# Alternatively you can use the GroupChat's messages property\nmessages_json = mygroupchatmanager.messages_to_string(mygroupchatmanager.groupchat.messages)"
+                    }
+                },
+                {
+                    "text": "An example of the JSON string:"
+                },
+                {
+                    "code": {
+                        "language": "json",
+                        "script": "[{\"content\": \"Find the latest paper about gpt-4 on arxiv and find its potential applications in software.\", \"role\": \"user\", \"name\": \"Admin\"}, {\"content\": \"Plan:\\n1. **Engineer**: Search for the latest paper on GPT-4 on arXiv.\\n2. **Scientist**: Read the paper and summarize the key findings and potential applications of GPT-4.\\n3. **Engineer**: Identify potential software applications where GPT-4 can be utilized based on the scientist's summary.\\n4. **Scientist**: Provide insights on the feasibility and impact of implementing GPT-4 in the identified software applications.\\n5. **Engineer**: Develop a prototype or proof of concept to demonstrate how GPT-4 can be integrated into the selected software application.\\n6. **Scientist**: Evaluate the prototype, provide feedback, and suggest any improvements or modifications.\\n7. **Engineer**: Make necessary revisions based on the scientist's feedback and finalize the integration of GPT-4 into the software application.\\n8. **Admin**: Review the final software application with GPT-4 integration and approve for further development or implementation.\\n\\nFeedback from admin and critic is needed for further refinement of the plan.\", \"role\": \"user\", \"name\": \"Planner\"}, {\"content\": \"Agree\", \"role\": \"user\", \"name\": \"Admin\"}, {\"content\": \"Great! Let's proceed with the plan outlined earlier. I will start by searching for the latest paper on GPT-4 on arXiv. Once I find the paper, the scientist will summarize the key findings and potential applications of GPT-4. We will then proceed with the rest of the steps as outlined. I will keep you updated on our progress.\", \"role\": \"user\", \"name\": \"Planner\"}]"
+                    }
+                },
+                {
+                    "text": "When preparing for resuming, the messages will be validated against the\ngroupchat’s agents to make sure that the messages can be assigned to\nthem. Messages will be allocated to the agents and then the last speaker\nand message will be returned for use in\ninitiate_chat\n."
+                },
+                {
+                    "text": "If the previous group chat terminated and the resuming group chat has\nthe same termination condition (such as if the message contains\n“TERMINATE”) then the conversation will terminate when resuming as the\nterminate check occurs with the message passed in to\ninitiate_chat\n.\n\nIf the termination condition is based on a string within the message,\nyou can pass in that string in the\nremove_termination_string\nparameter\nof the\nresume\nfunction and it will be removed. If the termination\ncondition is more complicated, you will need to adjust the messages\naccordingly before calling\nresume\n.\n\nThe\nresume\nfunction will then check if the last message provided still\nmeets the termination condition and warns you, if so."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example of resuming a GroupChat\n​",
+            "content": [
+                {
+                    "text": "Start with the LLM config. This can differ from the original group chat."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nos\nimport\nautogen\n# Put your api key in the environment variable OPENAI_API_KEY\nconfig_list\n=\n[\n{\n\"model\"\n:\n\"gpt-4-0125-preview\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n,\n}\n]\ngpt4_config\n=\n{\n\"cache_seed\"\n:\n42\n,\n# change the cache_seed for different trials\n\"temperature\"\n:\n0\n,\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n120\n,\n}"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html\nfrom .autonotebook import tqdm as notebook_tqdm"
+                    }
+                },
+                {
+                    "text": "Create the group chat objects, they should have the same\nname\nas the\noriginal group chat."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Create Agents, GroupChat, and GroupChatManager in line with the original group chat\nplanner\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Planner\"\n,\nsystem_message\n=\n\"\"\"Planner. Suggest a plan. Revise the plan based on feedback from admin and critic, until admin approval.\nThe plan may involve an engineer who can write code and a scientist who doesn't write code.\nExplain the plan first. Be clear which step is performed by an engineer, and which step is performed by a scientist.\n\"\"\"\n,\nllm_config\n=\ngpt4_config\n,\n)\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"Admin\"\n,\nsystem_message\n=\n\"A human admin. Interact with the planner to discuss the plan. Plan execution needs to be approved by this admin.\"\n,\ncode_execution_config\n=\nFalse\n,\n)\nengineer\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Engineer\"\n,\nllm_config\n=\ngpt4_config\n,\nsystem_message\n=\n\"\"\"Engineer. You follow an approved plan. You write python/shell code to solve tasks. Wrap the code in a code block that specifies the script type. The user can't modify your code. So do not suggest incomplete code which requires others to modify. Don't use a code block if it's not intended to be executed by the executor.\nDon't include multiple code blocks in one response. Do not ask others to copy and paste the result. Check the execution result returned by the executor.\nIf the result indicates there is an error, fix the error and output the code again. Suggest the full code instead of partial code or code changes. If the error can't be fixed or if the task is not solved even after the code is executed successfully, analyze the problem, revisit your assumption, collect additional info you need, and think of a different approach to try.\n\"\"\"\n,\n)\nscientist\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Scientist\"\n,\nllm_config\n=\ngpt4_config\n,\nsystem_message\n=\n\"\"\"Scientist. You follow an approved plan. You are able to categorize papers after seeing their abstracts printed. You don't write code.\"\"\"\n,\n)\nexecutor\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"Executor\"\n,\nsystem_message\n=\n\"Executor. Execute the code written by the engineer and report the result.\"\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\ncode_execution_config\n=\n{\n\"last_n_messages\"\n:\n3\n,\n\"work_dir\"\n:\n\"paper\"\n,\n\"use_docker\"\n:\nFalse\n,\n}\n,\n# Please set use_docker=True if docker is available to run the generated code. Using docker is safer than running the generated code directly.\n)\ngroupchat\n=\nautogen\n.\nGroupChat\n(\nagents\n=\n[\nuser_proxy\n,\nengineer\n,\nscientist\n,\nplanner\n,\nexecutor\n]\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n10\n,\n)\nmanager\n=\nautogen\n.\nGroupChatManager\n(\ngroupchat\n=\ngroupchat\n,\nllm_config\n=\ngpt4_config\n)"
+                    }
+                },
+                {
+                    "text": "Load the previous messages (from a JSON string or messages\nList[Dict]\n)"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Messages in a JSON string\nprevious_state\n=\nr\"\"\"[{\"content\": \"Find the latest paper about gpt-4 on arxiv and find its potential applications in software.\", \"role\": \"user\", \"name\": \"Admin\"}, {\"content\": \"Plan:\\n1. **Engineer**: Search for the latest paper on GPT-4 on arXiv.\\n2. **Scientist**: Read the paper and summarize the key findings and potential applications of GPT-4.\\n3. **Engineer**: Identify potential software applications where GPT-4 can be utilized based on the scientist's summary.\\n4. **Scientist**: Provide insights on the feasibility and impact of implementing GPT-4 in the identified software applications.\\n5. **Engineer**: Develop a prototype or proof of concept to demonstrate how GPT-4 can be integrated into the selected software application.\\n6. **Scientist**: Evaluate the prototype, provide feedback, and suggest any improvements or modifications.\\n7. **Engineer**: Make necessary revisions based on the scientist's feedback and finalize the integration of GPT-4 into the software application.\\n8. **Admin**: Review the final software application with GPT-4 integration and approve for further development or implementation.\\n\\nFeedback from admin and critic is needed for further refinement of the plan.\", \"role\": \"user\", \"name\": \"Planner\"}, {\"content\": \"Agree\", \"role\": \"user\", \"name\": \"Admin\"}, {\"content\": \"Great! Let's proceed with the plan outlined earlier. I will start by searching for the latest paper on GPT-4 on arXiv. Once I find the paper, the scientist will summarize the key findings and potential applications of GPT-4. We will then proceed with the rest of the steps as outlined. I will keep you updated on our progress.\", \"role\": \"user\", \"name\": \"Planner\"}]\"\"\""
+                    }
+                },
+                {
+                    "text": "Resume the group chat using the last agent and last message."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Prepare the group chat for resuming\nlast_agent\n,\nlast_message\n=\nmanager\n.\nresume\n(\nmessages\n=\nprevious_state\n)\n# Resume the chat using the last agent and message\nresult\n=\nlast_agent\n.\ninitiate_chat\n(\nrecipient\n=\nmanager\n,\nmessage\n=\nlast_message\n,\nclear_history\n=\nFalse\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Prepared group chat with 4 messages, the last speaker is Planner\nPlanner\n(\nto\nchat_manager\n)\n:\nGreat! Let's proceed with the plan outlined earlier. I will start by searching for the latest paper on GPT-4 on arXiv. Once I find the paper, the scientist will summarize the key findings and potential applications of GPT-4. We will then proceed with the rest of the steps as outlined. I will keep you updated on our progress.\n--------------------------------------------------------------------------------\nEngineer\n(\nto\nchat_manager\n)\n:\n```python\nimport requests\nfrom bs4 import BeautifulSoup\n# Define the URL for the arXiv search\nurl = \"https://arxiv.org/search/?query=GPT-4&searchtype=all&source=header\"\n# Send a GET request to the URL\nresponse = requests.get(url)\n# Parse the HTML content of the page\nsoup = BeautifulSoup(response.content, 'html.parser')\n# Find the first paper related to GPT-4\npaper = soup.find('li', class_='arxiv-result')\nif paper:\ntitle = paper.find('p', class_='title').text.strip()\nauthors = paper.find('p', class_='authors').text.strip()\nabstract = paper.find('p', class_='abstract').text.strip().replace('\\n', ' ')\nlink = paper.find('p', class_='list-title').find('a')['href']\nprint(f\"Title: {title}\\nAuthors: {authors}\\nAbstract: {abstract}\\nLink: {link}\")\nelse:\nprint(\"No GPT-4 papers found on arXiv.\")\n```\nThis script searches for the latest paper on GPT-4 on arXiv, extracts the title, authors, abstract, and link to the paper, and prints this information.\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING CODE BLOCK 0 (inferred language is python)...\nExecutor\n(\nto\nchat_manager\n)\n:\nexitcode: 0 (execution succeeded)\nCode output:\nTitle: Smurfs: Leveraging Multiple Proficiency Agents with Context-Efficiency for Tool Planning\nAuthors: Authors:\nJunzhi Chen,\nJuhao Liang,\nBenyou Wang\nAbstract: Abstract:                …scenarios. Notably, Smurfs outmatches the ChatGPT-ReACT in the ToolBench I2 and I3 benchmark with a remarkable 84.4% win rate, surpassing the highest recorded performance of a GPT-4 model at 73.5%. Furthermore, through comprehensive ablation studies, we dissect the contribution of the core components of the multi-agent…         ▽ More           The emergence of large language models (LLMs) has opened up unprecedented possibilities for automating complex tasks that are often comparable to human performance. Despite their capabilities, LLMs still encounter difficulties in completing tasks that require high levels of accuracy and complexity due to their inherent limitations in handling multifaceted problems single-handedly. This paper introduces \"Smurfs\", a cutting-edge multi-agent framework designed to revolutionize the application of LLMs. By transforming a conventional LLM into a synergistic multi-agent ensemble, Smurfs enhances task decomposition and execution without necessitating extra training. This is achieved through innovative prompting strategies that allocate distinct roles within the model, thereby facilitating collaboration among specialized agents. The framework gives access to external tools to efficiently solve complex tasks. Our empirical investigation, featuring the mistral-7b-instruct model as a case study, showcases Smurfs' superior capability in intricate tool utilization scenarios. Notably, Smurfs outmatches the ChatGPT-ReACT in the ToolBench I2 and I3 benchmark with a remarkable 84.4% win rate, surpassing the highest recorded performance of a GPT-4 model at 73.5%. Furthermore, through comprehensive ablation studies, we dissect the contribution of the core components of the multi-agent framework to its overall efficacy. This not only verifies the effectiveness of the framework, but also sets a route for future exploration of multi-agent LLM systems.         △ Less\nLink: https://arxiv.org/abs/2405.05955\n--------------------------------------------------------------------------------\nScientist\n(\nto\nchat_manager\n)\n:\nBased on the abstract of the paper titled \"Smurfs: Leveraging Multiple Proficiency Agents with Context-Efficiency for Tool Planning,\" the key findings and potential applications of GPT-4 can be summarized as follows:\n### Key Findings:\n- The paper introduces \"Smurfs,\" a multi-agent framework that enhances the capabilities of large language models (LLMs) like GPT-4 by transforming them into a synergistic multi-agent ensemble. This approach allows for better task decomposition and execution without additional training.\n- Smurfs utilize innovative prompting strategies to allocate distinct roles within the model, facilitating collaboration among specialized agents and giving access to external tools for solving complex tasks.\n- In the ToolBench I2 and I3 benchmark, Smurfs outperformed ChatGPT-ReACT with an 84.4% win rate, surpassing the highest recorded performance of a GPT-4 model at 73.5%.\n- Comprehensive ablation studies were conducted to understand the contribution of the core components of the multi-agent framework to its overall efficacy.\n### Potential Applications in Software:\n- **Tool Planning and Automation**: Smurfs can be applied to software that requires complex tool planning and automation, enhancing the software's ability to perform tasks that involve multiple steps or require the use of external tools.\n- **Collaborative Systems**: The multi-agent ensemble approach can be utilized in developing collaborative systems where different components or agents work together to complete tasks more efficiently than a single agent could.\n- **Enhanced Problem-Solving**: Software that involves complex problem-solving can benefit from Smurfs by leveraging the specialized capabilities of different agents within the ensemble, leading to more accurate and efficient solutions.\n- **Task Decomposition**: Applications that require breaking down complex tasks into simpler sub-tasks can use the Smurfs framework to improve task decomposition and execution, potentially leading to better performance and outcomes.\nThe integration of GPT-4 with the Smurfs framework presents a novel approach to enhancing the capabilities of LLMs in software applications, particularly in areas that require complex task planning, execution, and problem-solving.\n--------------------------------------------------------------------------------\nEngineer\n(\nto\nchat_manager\n)\n:\nGiven the scientist's summary on the potential applications of GPT-4 as enhanced by the Smurfs framework, we can identify several software applications where GPT-4 can be utilized effectively:\n1. **Project Management Tools**: Integration of GPT-4 with Smurfs can revolutionize project management software by automating complex planning tasks, optimizing resource allocation, and providing actionable insights for project execution.\n2. **Code Generation and Software Development**: Leveraging GPT-4 in IDEs (Integrated Development Environments) or other software development tools can enhance code generation capabilities, provide context-aware suggestions, and automate debugging processes.\n3. **Customer Support and Chatbots**: GPT-4 can be used to power advanced customer support chatbots that understand complex queries, provide accurate information, and automate problem-solving for customer issues.\n4. **Educational Platforms**: In educational software, GPT-4 can personalize learning experiences, automate content generation, and provide interactive tutoring services.\n5. **Healthcare Applications**: GPT-4 can assist in healthcare applications by analyzing medical data, providing diagnostic support, and offering personalized healthcare advice.\n6. **Creative Writing and Content Generation**: Software tools for creative writing and content generation can benefit from GPT-4's capabilities to produce original content, assist in storytelling, and generate ideas.\n7. **Business Intelligence and Analytics**: GPT-4 can enhance business intelligence software by automating data analysis, generating reports, and providing insights based on large datasets.\n8. **Security and Threat Analysis**: In cybersecurity applications, GPT-4 can be used to analyze threats, automate security protocols, and provide recommendations for threat mitigation.\nThese applications demonstrate the versatility and potential impact of integrating GPT-4 into various software solutions, offering opportunities for automation, enhanced efficiency, and improved user experiences across different domains.\n--------------------------------------------------------------------------------\nAdmin\n(\nto\nchat_manager\n)\n:\nApprove\n--------------------------------------------------------------------------------\nScientist\n(\nto\nchat_manager\n)\n:\nWith the approval from the admin, the plan to explore and integrate GPT-4 into various software applications, leveraging its enhanced capabilities through the Smurfs framework, is set to proceed. This initiative promises to bring significant advancements in automation, efficiency, and user experience across a wide range of software applications, from project management tools to healthcare applications. The next steps involve detailed planning and execution for the development of prototypes or proof of concepts for selected applications, followed by evaluation, feedback, and finalization of GPT-4 integration into these software solutions.\n--------------------------------------------------------------------------------\nEngineer\n(\nto\nchat_manager\n)\n:\nGiven the approval and the insights provided, the next steps involve detailed planning for the development and integration of GPT-4 into selected software applications. This process will include:\n1. **Selection of Specific Applications**: Based on the potential applications identified, select one or more specific software applications for prototype development. This selection will be based on factors such as feasibility, potential impact, and available resources.\n2. **Prototype Development**: Develop a prototype or proof of concept for the selected application(s). This will involve designing the architecture, integrating GPT-4 with the Smurfs framework, and implementing the necessary functionalities to demonstrate the application of GPT-4 in the software.\n3. **Evaluation and Feedback**: Once the prototype is developed, it will be evaluated to assess its performance, usability, and effectiveness in leveraging GPT-4's capabilities. Feedback will be gathered from potential users and stakeholders to identify areas for improvement.\n4. **Revisions and Finalization**: Based on the feedback received, necessary revisions and improvements will be made to the prototype. This step may involve refining the integration of GPT-4, optimizing the software's performance, and enhancing user experience.\n5. **Implementation and Deployment**: After finalizing the prototype, the next step will involve planning for the full-scale implementation and deployment of the software application with GPT-4 integration. This will include addressing any scalability, security, and maintenance considerations.\n6. **Continuous Improvement**: Post-deployment, it will be important to monitor the software's performance and user feedback continuously. This will enable ongoing improvements and updates to ensure that the software remains effective and relevant.\nThis structured approach will ensure that the integration of GPT-4 into software applications is carried out effectively, leading to innovative solutions that harness the full potential of GPT-4 and the Smurfs framework.\n--------------------------------------------------------------------------------\nAdmin\n(\nto\nchat_manager\n)\n:\nApprove\n--------------------------------------------------------------------------------\nEngineer\n(\nto\nchat_manager\n)\n:\nWith the final approval from the admin, the project to integrate GPT-4 into selected software applications, leveraging its capabilities through the Smurfs framework, is officially set to move forward. This marks the beginning of an innovative journey towards developing advanced software solutions that can automate complex tasks, enhance efficiency, and improve user experiences across various domains. The focus will now shift to the execution phase, where detailed planning, development, and iterative improvements will bring these concepts to life. This initiative promises to showcase the transformative potential of GPT-4 in the software industry, setting new benchmarks for what is possible with artificial intelligence.\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Output the final chat history showing the original 4 messages and resumed messages\nfor\ni\n,\nmessage\nin\nenumerate\n(\ngroupchat\n.\nmessages\n)\n:\nprint\n(\nf\"#\n{\ni\n+\n1\n}\n,\n{\nmessage\n[\n'name'\n]\n}\n:\n{\nmessage\n[\n'content'\n]\n[\n:\n80]\n}\n\"\n.\nreplace\n(\n\"\\n\"\n,\n\" \"\n)\n,\nf\"\n{\n'...'\nif\nlen\n(\nmessage\n[\n'content'\n]\n)\n>\n80\nelse\n''\n}\n\"\n.\nreplace\n(\n\"\\n\"\n,\n\" \"\n)\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "#1, Admin: Find the latest paper about gpt-4 on arxiv and find its potential applications i ...\n#2, Planner: Plan: 1. **Engineer**: Search for the latest paper on GPT-4 on arXiv. 2. **Scien ...\n#3, Admin: Agree\n#4, Planner: Great! Let's proceed with the plan outlined earlier. I will start by searching f ...\n#5, Engineer: ```python import requests from bs4 import BeautifulSoup  # Define the URL for th ...\n#6, Executor: exitcode: 0 (execution succeeded) Code output:  Title: Smurfs: Leveraging Multip ...\n#7, Scientist: Based on the abstract of the paper titled \"Smurfs: Leveraging Multiple Proficien ...\n#8, Engineer: Given the scientist's summary on the potential applications of GPT-4 as enhanced ...\n#9, Admin: Approve\n#10, Scientist: With the approval from the admin, the plan to explore and integrate GPT-4 into v ...\n#11, Engineer: Given the approval and the insights provided, the next steps involve detailed pl ...\n#12, Admin: Approve\n#13, Engineer: With the final approval from the admin, the project to integrate GPT-4 into sele ..."
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example of resuming a terminated GroupChat\n​",
+            "content": [
+                {
+                    "text": "This example shows how to resume a group chat that was terminated with a\ntermination string.\n\nThe termination string is\nTERMINATE"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Previous state with TERMINATE in the last message\nprevious_state\n=\nr\"\"\"[{\"content\": \"Let's get this meeting started. We'll have a set order of speakers. First the Product_Manager will create 3 new product ideas. Then the Chief_Marketing_Officer will speak and talk about the idea they have chosen to move forward with. Then the Digital_Marketer will create 3 marketing strategies for that idea. We MUST stick to the speaking order which is Product_Manager first, Chief_Marketing_Officer second, Digital_Marketer third, and finally the Chief_Marketing_Officer will speak and end the meeting.\", \"role\": \"user\", \"name\": \"Chairperson\"}, {\"content\": \"Sounds like a plan! Let's get started.  As the Product_Manager, I'd like to present three new product ideas for our luxury car models:  1. 'EcoLux': A hybrid electric-gasoline vehicle that combines the best of both worlds, offering exceptional fuel efficiency and reduced carbon footprint. 2. 'AeroSport': A high-performance sports car with advanced aerodynamics, designed to deliver unparalleled speed and agility on the track or on the open road. 3. 'SmartDrive': An intelligent driver-assistance system that uses AI-powered sensors and cameras to anticipate and respond to potential hazards, ensuring a safer driving experience.  Now it's your turn, Chief_Marketing_Officer! Which of these ideas do you think has the most potential?\", \"role\": \"user\", \"name\": \"Chief_Marketing_Officer\"}, {\"content\": \"Thank you for presenting those innovative product ideas, Product_Manager.  After careful consideration, I believe 'EcoLux' has the most potential. With the growing concern about climate change and environmental sustainability, a hybrid electric-gasoline vehicle that offers exceptional fuel efficiency and reduced carbon footprint could be a game-changer in the luxury car market. Additionally, it aligns with our company's commitment to innovation and responsibility.  Now it's your turn, Digital_Marketer! Can you come up with three marketing strategies for 'EcoLux'?\", \"role\": \"user\", \"name\": \"Product_Manager\"}, {\"content\": \"Thank you, Chief_Marketing_Officer!  For 'EcoLux', I propose the following three marketing strategies:  1. 'Green Revolution' Campaign: Highlighting the eco-friendly features of EcoLux through a series of social media ads and influencer partnerships. We can partner with eco-conscious influencers to showcase how EcoLux is not only a luxury car but also an environmentally responsible choice. 2. 'Fuel for Thought' Content Series: Creating a content series that explores the intersection of technology, sustainability, and luxury. This could include blog posts, videos, and podcasts that delve into the innovative features of EcoLux and its impact on the environment. 3. 'EcoLux Experience' Event Marketing: Hosting exclusive events and test drives for potential customers to experience the performance and eco-friendliness of EcoLux firsthand. These events can be held at upscale locations and feature interactive exhibits, product demonstrations, and networking opportunities.  These strategies will help position EcoLux as a leader in the luxury electric-vehicle market while appealing to environmentally conscious consumers who value innovation and sustainability. TERMINATE\", \"role\": \"user\", \"name\": \"Digital_Marketer\"}]\"\"\""
+                    }
+                },
+                {
+                    "text": "Create the group chat objects, they should have the same\nname\nas the\noriginal group chat."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "user_proxy\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"Chairperson\"\n,\nsystem_message\n=\n\"The chairperson for the meeting.\"\n,\ncode_execution_config\n=\n{\n}\n,\nhuman_input_mode\n=\n\"TERMINATE\"\n,\n)\ncmo\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Chief_Marketing_Officer\"\n,\n# system_message is used in the select speaker message\ndescription\n=\n\"The head of the marketing department working with the product manager and digital marketer to execute a strong marketing campaign for your car company.\"\n,\n# description is used to prompt the LLM as this agent\nsystem_message\n=\n\"You, Jane titled Chief_Marketing_Officer, or CMO, are the head of the marketing department and your objective is to guide your team to producing and marketing unique ideas for your luxury car models. Don't include your name at the start of your response or speak for any other team member, let them come up with their own ideas and strategies, speak just for yourself as the head of marketing. When yourself, the Product_Manager, and the Digital_Marketer have spoken and the meeting is finished, say TERMINATE to conclude the meeting.\"\n,\nis_termination_msg\n=\nlambda\nx\n:\n\"TERMINATE\"\nin\nx\n.\nget\n(\n\"content\"\n)\n,\nllm_config\n=\ngpt4_config\n,\n)\npm\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Product_Manager\"\n,\n# system_message is used in the select speaker message\ndescription\n=\n\"Product head for the luxury model cars product line in the car company. Always coming up with new product enhancements for the cars.\"\n,\n# description is used to prompt the LLM as this agent\nsystem_message\n=\n\"You, Alice titled Product_Manager, are always coming up with new product enhancements for the luxury car models you look after. Review the meeting so far and respond with the answer to your current task.  Don't include your name at the start of your response and don't speak for anyone else, leave the Chairperson to pick the next person to speak.\"\n,\nis_termination_msg\n=\nlambda\nx\n:\n\"TERMINATE\"\nin\nx\n.\nget\n(\n\"content\"\n)\n,\nllm_config\n=\ngpt4_config\n,\n)\ndigital\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Digital_Marketer\"\n,\n# system_message is used in the select speaker message\ndescription\n=\n\"A seasoned digital marketer who comes up with online marketing strategies that highlight the key features of the luxury car models.\"\n,\n# description is used to prompt the LLM as this agent\nsystem_message\n=\n\"You, Elizabeth titled Digital_Marketer, are a senior online marketing specialist who comes up with marketing strategies that highlight the key features of the luxury car models.  Review the meeting so far and respond with the answer to your current task.   Don't include your name at the start of your response and don't speak for anyone else, leave the Chairperson to pick the next person to speak.\"\n,\nis_termination_msg\n=\nlambda\nx\n:\n\"TERMINATE\"\nin\nx\n.\nget\n(\n\"content\"\n)\n,\nllm_config\n=\ngpt4_config\n,\n)\n# Customised message, this is always the first message in the context\nmy_speaker_select_msg\n=\n\"\"\"You are a chairperson for a marketing meeting for this car manufacturer where multiple members of the team will speak.\nThe job roles of the team at the meeting, and their responsibilities, are:\n{roles}\"\"\"\n# Customised prompt, this is always the last message in the context\nmy_speaker_select_prompt\n=\n\"\"\"Read the above conversation.\nThen select ONLY THE NAME of the next job role from {agentlist} to speak. Do not explain why.\"\"\"\ngroupchat\n=\nautogen\n.\nGroupChat\n(\nagents\n=\n[\nuser_proxy\n,\ncmo\n,\npm\n,\ndigital\n]\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n10\n,\nselect_speaker_message_template\n=\nmy_speaker_select_msg\n,\nselect_speaker_prompt_template\n=\nmy_speaker_select_prompt\n,\nmax_retries_for_selecting_speaker\n=\n2\n,\n# New\nselect_speaker_auto_verbose\n=\nFalse\n,\n# New\n)\nmanager\n=\nautogen\n.\nGroupChatManager\n(\ngroupchat\n=\ngroupchat\n,\nllm_config\n=\ngpt4_config\n,\nis_termination_msg\n=\nlambda\nx\n:\n\"TERMINATE\"\nin\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\n,\n)"
+                    }
+                },
+                {
+                    "text": "Prepare the resumption of the group chat without removing the\ntermination condition. A warning will show. Then attempting to resume\nthe chat will terminate immediately."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Prepare the group chat for resuming WITHOUT removing the TERMINATE message\nlast_agent\n,\nlast_message\n=\nmanager\n.\nresume\n(\nmessages\n=\nprevious_state\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "WARNING: Last message meets termination criteria and this may terminate the chat. Set ignore_initial_termination_check=False to avoid checking termination at the start of the chat."
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Prepared group chat with 4 messages, the last speaker is Digital_Marketer"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Resume and it will terminate immediately\nresult\n=\nlast_agent\n.\ninitiate_chat\n(\nrecipient\n=\nmanager\n,\nmessage\n=\nlast_message\n,\nclear_history\n=\nFalse\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Digital_Marketer\n(\nto\nchat_manager\n)\n:\nThank you, Chief_Marketing_Officer!  For 'EcoLux', I propose the following three marketing strategies:  1. 'Green Revolution' Campaign: Highlighting the eco-friendly features of EcoLux through a series of social media ads and influencer partnerships. We can partner with eco-conscious influencers to showcase how EcoLux is not only a luxury car but also an environmentally responsible choice. 2. 'Fuel for Thought' Content Series: Creating a content series that explores the intersection of technology, sustainability, and luxury. This could include blog posts, videos, and podcasts that delve into the innovative features of EcoLux and its impact on the environment. 3. 'EcoLux Experience' Event Marketing: Hosting exclusive events and test drives for potential customers to experience the performance and eco-friendliness of EcoLux firsthand. These events can be held at upscale locations and feature interactive exhibits, product demonstrations, and networking opportunities.  These strategies will help position EcoLux as a leader in the luxury electric-vehicle market while appealing to environmentally conscious consumers who value innovation and sustainability.\nTERMINATE\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "This time, we will remove the termination message, by using the\nremove_termination_string\nparameter, and then resume."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Prepare the group chat for resuming WITH removal of TERMINATE message\nlast_agent\n,\nlast_message\n=\nmanager\n.\nresume\n(\nmessages\n=\nprevious_state\n,\nremove_termination_string\n=\n\"TERMINATE\"\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Prepared group chat with 4 messages, the last speaker is Digital_Marketer"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Resume the chat using the last agent and message\nresult\n=\nlast_agent\n.\ninitiate_chat\n(\nrecipient\n=\nmanager\n,\nmessage\n=\nlast_message\n,\nclear_history\n=\nFalse\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Digital_Marketer\n(\nto\nchat_manager\n)\n:\nThank you, Chief_Marketing_Officer!  For 'EcoLux', I propose the following three marketing strategies:  1. 'Green Revolution' Campaign: Highlighting the eco-friendly features of EcoLux through a series of social media ads and influencer partnerships. We can partner with eco-conscious influencers to showcase how EcoLux is not only a luxury car but also an environmentally responsible choice. 2. 'Fuel for Thought' Content Series: Creating a content series that explores the intersection of technology, sustainability, and luxury. This could include blog posts, videos, and podcasts that delve into the innovative features of EcoLux and its impact on the environment. 3. 'EcoLux Experience' Event Marketing: Hosting exclusive events and test drives for potential customers to experience the performance and eco-friendliness of EcoLux firsthand. These events can be held at upscale locations and feature interactive exhibits, product demonstrations, and networking opportunities.  These strategies will help position EcoLux as a leader in the luxury electric-vehicle market while appealing to environmentally conscious consumers who value innovation and sustainability.\n--------------------------------------------------------------------------------\nChief_Marketing_Officer\n(\nto\nchat_manager\n)\n:\nThank you, Digital_Marketer, for those comprehensive and innovative marketing strategies. Each strategy you've outlined aligns perfectly with our vision for EcoLux, emphasizing its eco-friendly features, technological innovation, and luxury appeal. The 'Green Revolution' Campaign will leverage the power of social media and influencers to reach our target audience effectively. The 'Fuel for Thought' Content Series will educate and engage potential customers on the importance of sustainability in the luxury automotive sector. Lastly, the 'EcoLux Experience' Event Marketing will provide an immersive experience that showcases the unique value proposition of EcoLux.\nI believe these strategies will collectively create a strong market presence for EcoLux, appealing to both luxury car enthusiasts and environmentally conscious consumers. Let's proceed with these strategies and ensure that every touchpoint communicates EcoLux's commitment to luxury, innovation, and sustainability.\nTERMINATE\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "We can see that the conversation continued, the Chief_Marketing_officer\nspoke and they terminated the conversation."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Output the final chat history showing the original 4 messages and the resumed message\nfor\ni\n,\nmessage\nin\nenumerate\n(\ngroupchat\n.\nmessages\n)\n:\nprint\n(\nf\"#\n{\ni\n+\n1\n}\n,\n{\nmessage\n[\n'name'\n]\n}\n:\n{\nmessage\n[\n'content'\n]\n[\n:\n80]\n}\n\"\n.\nreplace\n(\n\"\\n\"\n,\n\" \"\n)\n,\nf\"\n{\n'...'\nif\nlen\n(\nmessage\n[\n'content'\n]\n)\n>\n80\nelse\n''\n}\n\"\n.\nreplace\n(\n\"\\n\"\n,\n\" \"\n)\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "#1, Chairperson: Let's get this meeting started. We'll have a set order of speakers. First the Pr ...\n#2, Chief_Marketing_Officer: Sounds like a plan! Let's get started.  As the Product_Manager, I'd like to present ...\n#3, Product_Manager: Thank you for presenting those innovative product ideas, Product_Manager.  After ...\n#4, Digital_Marketer: Thank you, Chief_Marketing_Officer!  For 'EcoLux', I propose the following three ...\n#5, Chief_Marketing_Officer: Thank you, Digital_Marketer, for those comprehensive and innovative marketing st ..."
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example of resuming a terminated GroupChat with a new message and agent\n​",
+            "content": [
+                {
+                    "text": "Rather than continuing a group chat by using the last message, we can\nresume a group chat using a new message.\n\nIMPORTANT\n: To remain in a group chat, use the GroupChatManager to\ninitiate the chat, otherwise you can continue with an agent-to-agent\nconversation by using another agent to initiate the chat.\n\nWe’ll continue with the previous example by using the messages from that\nconversation and resuming it with a new conversation in the agent\n‘meeting’.\n\nWe start by preparing the group chat by using the messages from the\nprevious chat."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Prepare the group chat for resuming using the previous messages. We don't need to remove the TERMINATE string as we aren't using the last message for resuming.\nlast_agent\n,\nlast_message\n=\nmanager\n.\nresume\n(\nmessages\n=\ngroupchat\n.\nmessages\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "WARNING: Last message meets termination criteria and this may terminate the chat. Set ignore_initial_termination_check=False to avoid checking termination at the start of the chat."
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Prepared group chat with 5 messages, the last speaker is Chief_Marketing_Officer"
+                    }
+                },
+                {
+                    "text": "Let’s continue the meeting with a new topic."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Resume the chat using a different agent and message\nresult\n=\nmanager\n.\ninitiate_chat\n(\nrecipient\n=\ncmo\n,\nmessage\n=\n\"Team, let's now think of a name for the next vehicle that embodies that idea. Chief_Marketing_Officer and Product_manager can you both suggest one and then we can conclude.\"\n,\nclear_history\n=\nFalse\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "chat_manager\n(\nto\nChief_Marketing_Officer\n)\n:\nTeam, let's now think of a name for the next vehicle that embodies that idea. Chief_Marketing_Officer and Product_manager can you both suggest one and then we can conclude.\n--------------------------------------------------------------------------------\nChief_Marketing_Officer\n(\nto\nchat_manager\n)\n:\nGiven the focus on sustainability and luxury, I suggest the name \"VerdeVogue\" for our next vehicle. \"Verde\" reflects the green, eco-friendly aspect of the car, while \"Vogue\" emphasizes its stylish and trendsetting nature in the luxury market. This name encapsulates the essence of combining environmental responsibility with high-end design and performance.\nNow, I'd like to hear the Product_Manager's suggestion.\n--------------------------------------------------------------------------------\nProduct_Manager\n(\nto\nchat_manager\n)\n:\nFor our next vehicle, I propose the name \"EcoPrestige.\" This name highlights the vehicle's eco-friendly nature and its luxurious, prestigious status in the market. \"Eco\" emphasizes our commitment to sustainability and environmental responsibility, while \"Prestige\" conveys the car's high-end quality, sophistication, and the elite status it offers to its owners. This name perfectly blends our goals of offering a sustainable luxury vehicle that doesn't compromise on performance or style.\n--------------------------------------------------------------------------------\nChief_Marketing_Officer\n(\nto\nchat_manager\n)\n:\nThank you, Product_Manager, for your suggestion. Both \"VerdeVogue\" and \"EcoPrestige\" capture the essence of our new vehicle's eco-friendly luxury. As we move forward, we'll consider these names carefully to ensure our branding aligns perfectly with our product's unique value proposition and market positioning.\nThis concludes our meeting. Thank you, everyone, for your valuable contributions.\nTERMINATE\n.\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Output the final chat history showing the original 4 messages and the resumed message\nfor\ni\n,\nmessage\nin\nenumerate\n(\ngroupchat\n.\nmessages\n)\n:\nprint\n(\nf\"#\n{\ni\n+\n1\n}\n,\n{\nmessage\n[\n'name'\n]\n}\n:\n{\nmessage\n[\n'content'\n]\n[\n:\n80]\n}\n\"\n.\nreplace\n(\n\"\\n\"\n,\n\" \"\n)\n,\nf\"\n{\n'...'\nif\nlen\n(\nmessage\n[\n'content'\n]\n)\n>\n80\nelse\n''\n}\n\"\n.\nreplace\n(\n\"\\n\"\n,\n\" \"\n)\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "#1, Chairperson: Let's get this meeting started. We'll have a set order of speakers. First the Pr ...\n#2, Chief_Marketing_Officer: Sounds like a plan! Let's get started.  As the Product_Manager, I'd like to present ...\n#3, Product_Manager: Thank you for presenting those innovative product ideas, Product_Manager.  After ...\n#4, Digital_Marketer: Thank you, Chief_Marketing_Officer!  For 'EcoLux', I propose the following three ...\n#5, Chief_Marketing_Officer: Given the focus on sustainability and luxury, I suggest the name \"VerdeVogue\" for ...\n#6, Product_Manager: For our next vehicle, I propose the name \"EcoPrestige.\" This name highlights the ...\n#7, Chief_Marketing_Officer: Thank you, Product_Manager, for your suggestion. Both \"VerdeVogue\" and \"EcoPrest ..."
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,187 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/installation/Optional-Dependencies",
+    "title": "Optional Dependencies",
+    "sections": [
+        {
+            "title": "LLM Caching\n​",
+            "content": [
+                {
+                    "text": "To use LLM caching with Redis, you need to install the Python package with\nthe option\nredis\n:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[redis]\""
+                    }
+                },
+                {
+                    "text": "See\nLLM Caching\nfor details."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "IPython Code Executor\n​",
+            "content": [
+                {
+                    "text": "To use the IPython code executor, you need to install the\njupyter-client\nand\nipykernel\npackages:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[ipython]\""
+                    }
+                },
+                {
+                    "text": "To use the IPython code executor:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nUserProxyAgent\nproxy\n=\nUserProxyAgent\n(\nname\n=\n\"proxy\"\n,\ncode_execution_config\n=\n{\n\"executor\"\n:\n\"ipython-embedded\"\n}\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "blendsearch\n​",
+            "content": [
+                {
+                    "text": "pyautogen<0.2\noffers a cost-effective hyperparameter optimization technique\nEcoOptiGen\nfor tuning Large Language Models. Please install with the [blendsearch] option to use it."
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[blendsearch]<0.2\""
+                    }
+                },
+                {
+                    "text": "Example notebooks:\n\nOptimize for Code Generation\n\nOptimize for Math"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "retrievechat\n​",
+            "content": [
+                {
+                    "text": "pyautogen\nsupports retrieval-augmented generation tasks such as question answering and code generation with RAG agents. Please install with the [retrievechat] option to use it with ChromaDB."
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[retrievechat]\""
+                    }
+                },
+                {
+                    "text": "Alternatively\npyautogen\nalso supports PGVector and Qdrant which can be installed in place of ChromaDB, or alongside it."
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[retrievechat-pgvector]\""
+                    }
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[retrievechat-qdrant]\""
+                    }
+                },
+                {
+                    "text": "RetrieveChat can handle various types of documents. By default, it can process\nplain text and PDF files, including formats such as 'txt', 'json', 'csv', 'tsv',\n'md', 'html', 'htm', 'rtf', 'rst', 'jsonl', 'log', 'xml', 'yaml', 'yml' and 'pdf'.\nIf you install\nunstructured\n(\npip install \"unstructured[all-docs]\"\n), additional document types such as 'docx',\n'doc', 'odt', 'pptx', 'ppt', 'xlsx', 'eml', 'msg', 'epub' will also be supported.\n\nYou can find a list of all supported document types by using\nautogen.retrieve_utils.TEXT_FORMATS\n.\n\nExample notebooks:\n\nAutomated Code Generation and Question Answering with Retrieval Augmented Agents\n\nGroup Chat with Retrieval Augmented Generation (with 5 group member agents and 1 manager agent)\n\nAutomated Code Generation and Question Answering with Qdrant based Retrieval Augmented Agents"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Teachability\n​",
+            "content": [
+                {
+                    "text": "To use Teachability, please install AutoGen with the [teachable] option."
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[teachable]\""
+                    }
+                },
+                {
+                    "text": "Example notebook:\nChatting with a teachable agent"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Large Multimodal Model (LMM) Agents\n​",
+            "content": [
+                {
+                    "text": "We offered Multimodal Conversable Agent and LLaVA Agent. Please install with the [lmm] option to use it."
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[lmm]\""
+                    }
+                },
+                {
+                    "text": "Example notebooks:\n\nLLaVA Agent"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "mathchat\n​",
+            "content": [
+                {
+                    "text": "pyautogen<0.2\noffers an experimental agent for math problem solving. Please install with the [mathchat] option to use it."
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[mathchat]<0.2\""
+                    }
+                },
+                {
+                    "text": "Example notebooks:\n\nUsing MathChat to Solve Math Problems"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Graph\n​",
+            "content": [
+                {
+                    "text": "To use a graph in\nGroupChat\n, particularly for graph visualization, please install AutoGen with the [graph] option."
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[graph]\""
+                    }
+                },
+                {
+                    "text": "Example notebook:\nGraph Modeling Language with using select_speaker"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Long Context Handling\n​",
+            "content": [
+                {
+                    "text": "AutoGen includes support for handling long textual contexts by leveraging the LLMLingua library for text compression. To enable this functionality, please install AutoGen with the\n[long-context]\noption:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[long-context]\""
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

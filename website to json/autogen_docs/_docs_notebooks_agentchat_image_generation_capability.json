@@ -1,0 +1,91 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_image_generation_capability",
+    "title": "Generate Dalle Images With Conversable Agents",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nThis notebook illustrates how to add the image generation capability to\na conversable agent.\n\nSome extra dependencies are needed for this notebook, which can be installed via pip:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen[lmm]"
+                    }
+                },
+                {
+                    "text": "For more information, please refer to the\ninstallation guide\n.\n\nFirst, let’s import all the required modules to run this example."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nos\nimport\nre\nfrom\ntyping\nimport\nDict\n,\nOptional\nfrom\nIPython\n.\ndisplay\nimport\ndisplay\nfrom\nPIL\n.\nImage\nimport\nImage\nimport\nautogen\nfrom\nautogen\n.\nagentchat\n.\ncontrib\nimport\nimg_utils\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\ncapabilities\nimport\ngenerate_images\nfrom\nautogen\n.\ncache\nimport\nCache\nfrom\nautogen\n.\noai\nimport\nopenai_utils"
+                    }
+                },
+                {
+                    "text": "Let’s define our LLM configs."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "gpt_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4-turbo-preview\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n,\n\"timeout\"\n:\n120\n,\n\"temperature\"\n:\n0.7\n,\n}\ngpt_vision_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4-vision-preview\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n,\n\"timeout\"\n:\n120\n,\n\"temperature\"\n:\n0.7\n,\n}\ndalle_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"dall-e-3\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n,\n\"timeout\"\n:\n120\n,\n\"temperature\"\n:\n0.7\n,\n}"
+                    }
+                },
+                {
+                    "text": "Learn more about configuring LLMs for agents\nhere\n.\n\nOur system will consist of 2 main agents: 1. Image generator agent. 2.\nCritic agent.\n\nThe image generator agent will carry a conversation with the critic, and\ngenerate images based on the critic’s requests."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "CRITIC_SYSTEM_MESSAGE\n=\n\"\"\"You need to improve the prompt of the figures you saw.\nHow to create an image that is better in terms of color, shape, text (clarity), and other things.\nReply with the following format:\nCRITICS: the image needs to improve...\nPROMPT: here is the updated prompt!\nIf you have no critique or a prompt, just say TERMINATE\n\"\"\""
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "def\n_is_termination_message\n(\nmsg\n)\n-\n>\nbool\n:\n# Detects if we should terminate the conversation\nif\nisinstance\n(\nmsg\n.\nget\n(\n\"content\"\n)\n,\nstr\n)\n:\nreturn\nmsg\n[\n\"content\"\n]\n.\nrstrip\n(\n)\n.\nendswith\n(\n\"TERMINATE\"\n)\nelif\nisinstance\n(\nmsg\n.\nget\n(\n\"content\"\n)\n,\nlist\n)\n:\nfor\ncontent\nin\nmsg\n[\n\"content\"\n]\n:\nif\nisinstance\n(\ncontent\n,\ndict\n)\nand\n\"text\"\nin\ncontent\n:\nreturn\ncontent\n[\n\"text\"\n]\n.\nrstrip\n(\n)\n.\nendswith\n(\n\"TERMINATE\"\n)\nreturn\nFalse\ndef\ncritic_agent\n(\n)\n-\n>\nautogen\n.\nConversableAgent\n:\nreturn\nautogen\n.\nConversableAgent\n(\nname\n=\n\"critic\"\n,\nllm_config\n=\ngpt_vision_config\n,\nsystem_message\n=\nCRITIC_SYSTEM_MESSAGE\n,\nmax_consecutive_auto_reply\n=\n3\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nis_termination_msg\n=\nlambda\nmsg\n:\n_is_termination_message\n(\nmsg\n)\n,\n)\ndef\nimage_generator_agent\n(\n)\n-\n>\nautogen\n.\nConversableAgent\n:\n# Create the agent\nagent\n=\nautogen\n.\nConversableAgent\n(\nname\n=\n\"dalle\"\n,\nllm_config\n=\ngpt_vision_config\n,\nmax_consecutive_auto_reply\n=\n3\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nis_termination_msg\n=\nlambda\nmsg\n:\n_is_termination_message\n(\nmsg\n)\n,\n)\n# Add image generation ability to the agent\ndalle_gen\n=\ngenerate_images\n.\nDalleImageGenerator\n(\nllm_config\n=\ndalle_config\n)\nimage_gen_capability\n=\ngenerate_images\n.\nImageGeneration\n(\nimage_generator\n=\ndalle_gen\n,\ntext_analyzer_llm_config\n=\ngpt_config\n)\nimage_gen_capability\n.\nadd_to_agent\n(\nagent\n)\nreturn\nagent"
+                    }
+                },
+                {
+                    "text": "We’ll define\nextract_img\nto help us extract the image generated by the\nimage generator agent."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "def\nextract_images\n(\nsender\n:\nautogen\n.\nConversableAgent\n,\nrecipient\n:\nautogen\n.\nConversableAgent\n)\n-\n>\nImage\n:\nimages\n=\n[\n]\nall_messages\n=\nsender\n.\nchat_messages\n[\nrecipient\n]\nfor\nmessage\nin\nreversed\n(\nall_messages\n)\n:\n# The GPT-4V format, where the content is an array of data\ncontents\n=\nmessage\n.\nget\n(\n\"content\"\n,\n[\n]\n)\nfor\ncontent\nin\ncontents\n:\nif\nisinstance\n(\ncontent\n,\nstr\n)\n:\ncontinue\nif\ncontent\n.\nget\n(\n\"type\"\n,\n\"\"\n)\n==\n\"image_url\"\n:\nimg_data\n=\ncontent\n[\n\"image_url\"\n]\n[\n\"url\"\n]\nimages\n.\nappend\n(\nimg_utils\n.\nget_pil_image\n(\nimg_data\n)\n)\nif\nnot\nimages\n:\nraise\nValueError\n(\n\"No image data found in messages.\"\n)\nreturn\nimages"
+                    }
+                },
+                {
+                    "text": "Start the converstion"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "dalle\n=\nimage_generator_agent\n(\n)\ncritic\n=\ncritic_agent\n(\n)\nimg_prompt\n=\n\"A happy dog wearing a shirt saying 'I Love AutoGen'. Make sure the text is clear.\"\n# img_prompt = \"Ask me how I'm doing\"\nresult\n=\ndalle\n.\ninitiate_chat\n(\ncritic\n,\nmessage\n=\nimg_prompt\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "dalle\n(\nto\ncritic\n)\n:\nA happy dog wearing a shirt saying 'I Love AutoGen'. Make sure the text is clear.\n--------------------------------------------------------------------------------\ncritic\n(\nto\ndalle\n)\n:\nCRITICS: the image needs to improve the contrast and size of the text to enhance its clarity, and the shirt's color should not clash with the dog's fur color to maintain a harmonious color scheme.\nPROMPT: here is the updated prompt!\nCreate an image of a joyful dog with a coat of a contrasting color to its fur, wearing a shirt with bold, large text saying 'I Love AutoGen' for clear readability.\n--------------------------------------------------------------------------------\ndalle\n(\nto\ncritic\n)\n:\nI generated an image with the prompt: Joyful dog, contrasting coat color to its fur, shirt with bold, large text \"I Love AutoGen\" for clear readability.<image>\n--------------------------------------------------------------------------------\ncritic\n(\nto\ndalle\n)\n:\nCRITICS: the image effectively showcases a joyful dog with a contrasting shirt color, and the text 'I Love AutoGen' is large and bold, ensuring clear readability.\nPROMPT:\nTERMINATE\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "Let’s display all the images that was generated by Dalle"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "images\n=\nextract_images\n(\ndalle\n,\ncritic\n)\nfor\nimage\nin\nreversed\n(\nimages\n)\n:\ndisplay\n(\nimage\n.\nresize\n(\n(\n300\n,\n300\n)\n)\n)"
+                    }
+                },
+                {
+                    "text": ""
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

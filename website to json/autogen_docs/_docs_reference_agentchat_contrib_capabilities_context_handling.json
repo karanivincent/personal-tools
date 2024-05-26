@@ -1,0 +1,68 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/capabilities/context_handling",
+    "title": "agentchat.contrib.capabilities.context_handling",
+    "sections": [
+        {
+            "title": "TransformChatHistory\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nTransformChatHistory\n(\n)"
+                    }
+                },
+                {
+                    "text": "An agent's chat history with other agents is a common context that it uses to generate a reply.\nThis capability allows the agent to transform its chat history prior to using it to generate a reply.\nIt does not permanently modify the chat history, but rather processes it on every invocation.\n\nThis capability class enables various strategies to transform chat history, such as:\n\nThe three strategies can be combined. For example, when each of these parameters are specified\nthey are used in the following order:\n\nWhen adding this capability to an agent, the following are modified:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\n*\n,\nmax_tokens_per_message\n:\nOptional\n[\nint\n]\n=\nNone\n,\nmax_messages\n:\nOptional\n[\nint\n]\n=\nNone\n,\nmax_tokens\n:\nOptional\n[\nint\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "add_to_agent\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nadd_to_agent\n(\nagent\n:\nConversableAgent\n)"
+                            }
+                        },
+                        {
+                            "text": "Adds TransformChatHistory capability to the given agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "truncate_str_to_tokens\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ntruncate_str_to_tokens\n(\ntext\n:\nstr\n,\nmax_tokens\n:\nint\n,\nmodel\n:\nstr\n=\n\"gpt-3.5-turbo-0613\"\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Truncate a string so that the number of tokens is less than or equal to max_tokens using tiktoken.\n\nArguments\n:\n\nReturns\n:\n\nThe truncated string."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

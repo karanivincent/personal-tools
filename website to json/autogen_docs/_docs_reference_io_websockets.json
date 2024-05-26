@@ -1,0 +1,199 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/io/websockets",
+    "title": "io.websockets",
+    "sections": [
+        {
+            "title": "ServerConnection\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nServerConnection\n(\nProtocol\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "send\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nsend\n(\nmessage\n:\nUnion\n[\nData\n,\nIterable\n[\nData\n]\n]\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Send a message to the client.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "recv\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nrecv\n(\ntimeout\n:\nOptional\n[\nfloat\n]\n=\nNone\n)\n-\n>\nData"
+                            }
+                        },
+                        {
+                            "text": "Receive a message from the client.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "WebSocketServer\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nWebSocketServer\n(\nProtocol\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "serve_forever\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nserve_forever\n(\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Run the server forever."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "shutdown\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nshutdown\n(\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Shutdown the server."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "__enter__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__enter__\n(\n)\n-\n>\n\"WebSocketServer\""
+                            }
+                        },
+                        {
+                            "text": "Enter the server context."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "IOWebsockets\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nIOWebsockets\n(\nIOStream\n)"
+                    }
+                },
+                {
+                    "text": "A websocket input/output stream."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nwebsocket\n:\nServerConnection\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Initialize the websocket input/output stream.\n\nArguments\n:\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "run_server_in_thread\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\n@contextmanager\ndef\nrun_server_in_thread\n(\n*\n,\nhost\n:\nstr\n=\n\"127.0.0.1\"\n,\nport\n:\nint\n=\n8765\n,\non_connect\n:\nCallable\n[\n[\n\"IOWebsockets\"\n]\n,\nNone\n]\n,\nssl_context\n:\nOptional\n[\nssl\n.\nSSLContext\n]\n=\nNone\n,\n**\nkwargs\n:\nAny\n)\n-\n>\nIterator\n[\nstr\n]"
+                            }
+                        },
+                        {
+                            "text": "Factory function to create a websocket input/output stream.\n\nArguments\n:\n\nYields\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "websocket\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nwebsocket\n(\n)\n-\n>\n\"ServerConnection\""
+                            }
+                        },
+                        {
+                            "text": "The URI of the websocket server."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "print\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nprint\n(\n*\nobjects\n:\nAny\n,\nsep\n:\nstr\n=\n\" \"\n,\nend\n:\nstr\n=\n\"\\n\"\n,\nflush\n:\nbool\n=\nFalse\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Print data to the output stream.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "input\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ninput\n(\nprompt\n:\nstr\n=\n\"\"\n,\n*\n,\npassword\n:\nbool\n=\nFalse\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Read a line from the input stream.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

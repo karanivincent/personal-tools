@@ -1,0 +1,38 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/capabilities/agent_capability",
+    "title": "agentchat.contrib.capabilities.agent_capability",
+    "sections": [
+        {
+            "title": "AgentCapability\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nAgentCapability\n(\n)"
+                    }
+                },
+                {
+                    "text": "Base class for composable capabilities that can be added to an agent."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "add_to_agent\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nadd_to_agent\n(\nagent\n:\nConversableAgent\n)"
+                            }
+                        },
+                        {
+                            "text": "Adds a particular capability to the given agent. Must be implemented by the capability subclass.\nAn implementation will typically call agent.register_hook() one or more times. See teachability.py as an example."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

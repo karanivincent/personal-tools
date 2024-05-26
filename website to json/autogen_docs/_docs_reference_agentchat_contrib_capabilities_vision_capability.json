@@ -1,0 +1,53 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/capabilities/vision_capability",
+    "title": "agentchat.contrib.capabilities.vision_capability",
+    "sections": [
+        {
+            "title": "VisionCapability\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nVisionCapability\n(\nAgentCapability\n)"
+                    }
+                },
+                {
+                    "text": "We can add vision capability to regular ConversableAgent, even if the agent does not have the multimodal capability,\nsuch as GPT-3.5-turbo agent, Llama, Orca, or Mistral agents. This vision capability will invoke a LMM client to describe\nthe image (captioning) before sending the information to the agent's actual client.\n\nThe vision capability will hook to the ConversableAgent's\nprocess_last_received_message\n.\n\nSome technical details:\nWhen the agent (who has the vision capability) received an message, it will:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nlmm_config\n:\nDict\n,\ndescription_prompt\n:\nOptional\n[\nstr\n]\n=\nDEFAULT_DESCRIPTION_PROMPT\n,\ncustom_caption_func\n:\nCallable\n=\nNone\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Initializes a new instance, setting up the configuration for interacting with\na Language Multimodal (LMM) client and specifying optional parameters for image\ndescription and captioning.\n\nArguments\n:\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "process_last_received_message\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nprocess_last_received_message\n(\ncontent\n:\nUnion\n[\nstr\n,\nList\n[\ndict\n]\n]\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Processes the last received message content by normalizing and augmenting it\nwith descriptions of any included images. The function supports input content\nas either a string or a list of dictionaries, where each dictionary represents\na content item (e.g., text, image). If the content contains image URLs, it\nfetches the image data, generates a caption for each image, and inserts the\ncaption into the augmented content.\n\nThe function aims to transform the content into a format compatible with GPT-4V\nmultimodal inputs, specifically by formatting strings into PIL-compatible\nimages if needed and appending text descriptions for images. This allows for\na more accessible presentation of the content, especially in contexts where\nimages cannot be displayed directly.\n\nArguments\n:\n\nReturns\n:\n\nRaises\n:\n\nExamples\n:\n\nAssuming\nself._get_image_caption(img_data)\nreturns\n\"A beautiful sunset over the mountains\" for the image.\n\nInput as String:\ncontent = \"Check out this cool photo!\"\n\nOutput\n- \"Check out this cool photo!\"\n(Content is a string without an image, remains unchanged.)\n\nOutput\n- \"What's weather in this cool photo: <img\nhttp://example.com/photo.jpg>\nin case you can not see, the caption of this image is:\nA beautiful sunset over the mountains\n\"\n(Caption added after the image)\n\nOutput\n- \"Here's an interesting fact.\"\n(No images in the content, it remains unchanged.)\n\n{\"type\"\n- \"text\", \"text\": \"What's weather in this cool photo:\"},\n\n{\"type\"\n- \"image_url\", \"image_url\": {\"url\": \"\nhttp://example.com/photo.jpg\"}}\n]\n\nOutput\n- \"What's weather in this cool photo: <img\nhttp://example.com/photo.jpg>\nin case you can not see, the caption of this image is:\nA beautiful sunset over the mountains\n\"\n(Caption added after the image)"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

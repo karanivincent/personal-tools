@@ -1,0 +1,38 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/coding/factory",
+    "title": "coding.factory",
+    "sections": [
+        {
+            "title": "CodeExecutorFactory\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCodeExecutorFactory\n(\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) A factory class for creating code executors."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "create\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\ncreate\n(\ncode_execution_config\n:\nCodeExecutionConfig\n)\n-\n>\nCodeExecutor"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Get a code executor based on the code execution config.\n\nArguments\n:\n\nReturns\n:\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

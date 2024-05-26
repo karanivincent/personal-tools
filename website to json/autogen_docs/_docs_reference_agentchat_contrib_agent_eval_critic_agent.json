@@ -1,0 +1,38 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/agent_eval/critic_agent",
+    "title": "agentchat.contrib.agent_eval.critic_agent",
+    "sections": [
+        {
+            "title": "CriticAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCriticAgent\n(\nConversableAgent\n)"
+                    }
+                },
+                {
+                    "text": "An agent for creating list of criteria for evaluating the utility of a given task."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nname\n=\n\"critic\"\n,\nsystem_message\n:\nOptional\n[\nstr\n]\n=\nDEFAULT_SYSTEM_MESSAGE\n,\ndescription\n:\nOptional\n[\nstr\n]\n=\nDEFAULT_DESCRIPTION\n,\n**\nkwargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,67 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/exception_utils",
+    "title": "exception_utils",
+    "sections": [
+        {
+            "title": "NoEligibleSpeaker\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nNoEligibleSpeaker\n(\nException\n)"
+                    }
+                },
+                {
+                    "text": "Exception raised for early termination of a GroupChat."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "SenderRequired\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nSenderRequired\n(\nException\n)"
+                    }
+                },
+                {
+                    "text": "Exception raised when the sender is required but not provided."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "InvalidCarryOverType\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nInvalidCarryOverType\n(\nException\n)"
+                    }
+                },
+                {
+                    "text": "Exception raised when the carryover type is invalid."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "UndefinedNextAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nUndefinedNextAgent\n(\nException\n)"
+                    }
+                },
+                {
+                    "text": "Exception raised when the provided next agents list does not overlap with agents in the group."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,88 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_agentoptimizer",
+    "title": "AgentOptimizer: An Agentic Way to Train Your LLM Agent",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nAutoGen offers conversable agents powered by LLM, tool, or human, which\ncan be used to perform tasks collectively via automated chat. This\nframework allows tool use and human participation through multi-agent\nconversation. Please find documentation about this feature\nhere\n.\n\nIn traditional ML pipeline, we train a model by updating its parameter\naccording to the loss on the training set, while in the era of LLM\nagents, how should we train an agent? Here, we take an initial step\ntowards the agent training. Inspired by the\nfunction\ncalling\ncapabilities provided by OpenAI, we draw an analogy between model\nparameters and agent functions/skills, and update agent’s\nfunctions/skills based on its historical performance on the training\nset. As an agentic way of training an agent, our approach help enhance\nthe agents’ abilities without requiring access to the LLMs parameters.\n\nIn this notebook, we introduce a new class, ‘AgentOptimizer’, which is\nable to improve the function list of one Assistant-UserProxy pair\naccording to the historical conversation histories. This feature would\nsupport agents in improving their ability to solve problems of the same\ntype as previous tasks. Specifically, given a set of training data,\nAgentOptimizer would iteratively prompt the LLM to optimize the existing\nfunction list of the AssistantAgent and UserProxyAgent with code\nimplementation if necessary. It also includes two strategies, roll-back,\nand early-stop, to streamline the training process. In the example\nscenario, we test the proposed AgentOptimizer in solving problems from\nthe\nMATH dataset\n.\n\nMore information could be found in the\npaper\n.\n\nAuthors: -\nShaokun Zhang\n, Ph.D. student\nat the The Pennsylvania State University -\nJieyu\nZhang\n, Ph.D. student at the University of\nWashington"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\ncopy\nimport\njson\nimport\nos\nfrom\ntyping\nimport\nAny\n,\nCallable\n,\nDict\n,\nList\n,\nOptional\n,\nTuple\n,\nUnion\nfrom\nopenai\nimport\nBadRequestError\nimport\nautogen\nfrom\nautogen\nimport\nconfig_list_from_json\nfrom\nautogen\n.\nagentchat\nimport\nAgent\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\nagent_optimizer\nimport\nAgentOptimizer\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\nmath_user_proxy_agent\nimport\nMathUserProxyAgent\nfrom\nautogen\n.\ncode_utils\nimport\nextract_code\nfrom\nautogen\n.\nmath_utils\nimport\nget_answer"
+                    }
+                },
+                {
+                    "text": "This agent is a customized MathUserProxy inherits from its\nparent\nclass\n.\n\nIt supports using both function_call and python to solve math problems."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "def\nis_termination_msg_mathchat\n(\nmessage\n)\n:\n\"\"\"Check if a message is a termination message.\"\"\"\nif\nisinstance\n(\nmessage\n,\ndict\n)\n:\nmessage\n=\nmessage\n.\nget\n(\n\"content\"\n)\nif\nmessage\nis\nNone\n:\nreturn\nFalse\ncb\n=\nextract_code\n(\nmessage\n)\ncontain_code\n=\nFalse\nfor\nc\nin\ncb\n:\nif\nc\n[\n0\n]\n==\n\"python\"\n:\ncontain_code\n=\nTrue\nbreak\nif\nmessage\n.\nrstrip\n(\n)\n.\nfind\n(\n\"TERMINATE\"\n)\n>=\n0\n:\nreturn\nTrue\nreturn\nnot\ncontain_code\nand\nget_answer\n(\nmessage\n)\nis\nnot\nNone\nand\nget_answer\n(\nmessage\n)\n!=\n\"\"\nclass\nMathUserProxyAgent\n(\nMathUserProxyAgent\n)\n:\nMAX_CONSECUTIVE_AUTO_REPLY\n=\n15\nDEFAULT_REPLY\n=\n\"Continue. Please keep solving the problem until you need to query. (If you get to the answer, put it in \\\\boxed{}.)\"\nPROMPTS\n=\n\"\"\"Let's solve a math problem.\nQuery requirements:\nYou should always use the 'print' function for the output and use fractions/radical forms instead of decimals.\nYou can use packages like sympy to help you.\nYou must follow the formats below to write your code:\n```python\n# your code\n```\nIf some packages are missing, you could also suggest a code to install the corresponding package.\nPlease follow this process:\n1. Solve the problem step by step (do not over-divide the steps).\n2. Take out any queries that can be asked through Python code (for example, any calculations or equations that can be calculated) and functions you know in the context of this conversation.\nPlease\n(1) do not mix suggested Python codes and function calls in one step.\n(2) You MUST remember that you don’t have a function named \"python\" available.\nYou must follow the formats below to write your Python code:\n```python\n# your code\n```\n3. Wait for me to give the results or wait for the executed results of the function call.\n4. Continue if you think the result is correct. If the result is invalid or unexpected, please correct your query or reasoning.\nAfter all the queries are run and you get the answer, put the answer in \\\\boxed{}.\nProblem:\n\"\"\"\ndef\n__init__\n(\nself\n,\nname\n:\nOptional\n[\nstr\n]\n=\n\"MathChatAgent\"\n,\nis_termination_msg\n:\nOptional\n[\nCallable\n[\n[\nDict\n]\n,\nbool\n]\n]\n=\nis_termination_msg_mathchat\n,\nhuman_input_mode\n:\nOptional\n[\nstr\n]\n=\n\"NEVER\"\n,\ndefault_auto_reply\n:\nOptional\n[\nUnion\n[\nstr\n,\nDict\n,\nNone\n]\n]\n=\nDEFAULT_REPLY\n,\nmax_invalid_q_per_step\n=\n3\n,\n**\nkwargs\n,\n)\n:\nsuper\n(\n)\n.\n__init__\n(\nname\n=\nname\n,\nis_termination_msg\n=\nis_termination_msg\n,\nhuman_input_mode\n=\nhuman_input_mode\n,\ndefault_auto_reply\n=\ndefault_auto_reply\n,\nmax_invalid_q_per_step\n=\nmax_invalid_q_per_step\n,\n**\nkwargs\n,\n)\ndel\nself\n.\n_reply_func_list\n[\n2\n]\nself\n.\nregister_reply\n(\n[\nAgent\n,\nNone\n]\n,\nMathUserProxyAgent\n.\n_generate_math_reply\n,\nposition\n=\n4\n)\ndel\nself\n.\n_reply_func_list\n[\n3\n]\nself\n.\nregister_reply\n(\ntrigger\n=\nautogen\n.\nConversableAgent\n,\nreply_func\n=\nMathUserProxyAgent\n.\ngenerate_function_call_reply\n,\nposition\n=\n3\n)\nself\n.\nregister_reply\n(\ntrigger\n=\nautogen\n.\nConversableAgent\n,\nreply_func\n=\nMathUserProxyAgent\n.\n_check_final_result\n,\nposition\n=\n0\n)\nself\n.\nmax_function_call_trial\n=\n3\nself\n.\nquery\n=\nNone\nself\n.\nanswer\n=\nNone\nself\n.\nis_correct\n=\nNone\ndef\ngenerate_function_call_reply\n(\nself\n,\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nautogen\n.\nConversableAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nAny\n]\n=\nNone\n,\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nDict\n,\nNone\n]\n]\n:\n\"\"\"Generate a reply using function call.\"\"\"\nif\nmessages\nis\nNone\n:\nmessages\n=\nself\n.\n_oai_messages\n[\nsender\n]\nmessage\n=\nmessages\n[\n-\n1\n]\nif\n\"function_call\"\nin\nmessage\n:\nis_exec_success\n,\nfunc_return\n=\nself\n.\nexecute_function\n(\nmessage\n[\n\"function_call\"\n]\n)\nif\nis_exec_success\n:\nself\n.\nmax_function_call_trial\n=\n3\nreturn\nTrue\n,\nfunc_return\nelse\n:\nif\nself\n.\nmax_function_call_trial\n==\n0\n:\nerror_message\n=\nfunc_return\n[\n\"content\"\n]\nself\n.\nmax_function_call_trial\n=\n3\nreturn\n(\nTrue\n,\n\"The func is executed failed many times. \"\n+\nerror_message\n+\n\". Please directly reply me with TERMINATE. We need to terminate the conversation.\"\n,\n)\nelse\n:\nrevise_prompt\n=\n\"You may make a wrong function call\n(\nIt may due the arguments you provided doesn't fit the function arguments like missing required positional argument\n)\n.\n\\\nIf you think this error occurs due to you make a wrong function arguments\ninput\nand\nyou could make it success\n,\nplease\ntry\nto call this function again using the correct arguments\n.\n\\\nOtherwise\n,\nthe error may be caused by the function itself\n.\nPlease directly reply me\nwith\nTERMINATE\n.\nWe need to terminate the conversation\n.\n\"\nerror_message\n=\nfunc_return\n[\n\"content\"\n]\nreturn\nTrue\n,\n\"The func is executed failed.\"\n+\nerror_message\n+\nrevise_prompt\nreturn\nFalse\n,\nNone\ndef\ninitiate_chat\n(\nself\n,\nrecipient\n,\nanswer\n:\nNone\n,\nsilent\n:\nOptional\n[\nbool\n]\n=\nFalse\n,\n**\ncontext\n,\n)\n:\nself\n.\nquery\n=\ncontext\n[\n\"problem\"\n]\nif\nnot\nisinstance\n(\nanswer\n,\nstr\n)\n:\nanswer\n=\nstr\n(\nanswer\n)\nif\nanswer\n.\nendswith\n(\n\".0\"\n)\n:\nanswer\n=\nanswer\n[\n:\n-\n2\n]\nself\n.\n_answer\n=\nanswer\nelse\n:\nself\n.\n_answer\n=\nanswer\nself\n.\nis_correct\n=\nNone\nself\n.\n_prepare_chat\n(\nrecipient\n,\nTrue\n)\nerror_message\n=\nNone\ntry\n:\nprompt\n=\nself\n.\nPROMPTS\n+\ncontext\n[\n\"problem\"\n]\nself\n.\nsend\n(\nprompt\n,\nrecipient\n,\nsilent\n=\nsilent\n)\nexcept\nBadRequestError\nas\ne\n:\nerror_message\n=\nstr\n(\ne\n)\nself\n.\nis_correct\n=\n0\nprint\n(\n\"error information: {}\"\n.\nformat\n(\nerror_message\n)\n)\nrecipient\n.\nreset\n(\n)\nis_correct\n=\ncopy\n.\ndeepcopy\n(\nself\n.\nis_correct\n)\nself\n.\n_reset\n(\n)\nreturn\nis_correct\ndef\n_check_final_result\n(\nself\n,\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nautogen\n.\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nAny\n]\n=\nNone\n,\n)\n:\nmessages\n=\nmessages\n[\n-\n1\n]\nif\nisinstance\n(\nmessages\n,\ndict\n)\n:\nmessages\n=\nmessages\n.\nget\n(\n\"content\"\n)\nif\nmessages\nis\nNone\n:\nreturn\nFalse\n,\nNone\ncb\n=\nextract_code\n(\nmessages\n)\ncontain_code\n=\nFalse\nfor\nc\nin\ncb\n:\nif\nc\n[\n0\n]\n==\n\"python\"\n:\ncontain_code\n=\nTrue\nbreak\nif\nnot\ncontain_code\nand\nget_answer\n(\nmessages\n)\nis\nnot\nNone\nand\nget_answer\n(\nmessages\n)\n!=\n\"\"\n:\nif\nget_answer\n(\nmessages\n)\n==\nself\n.\n_answer\n:\nself\n.\nis_correct\n=\n1\nreturn\nTrue\n,\n\"The result is Correct. Please reply me with TERMINATE.\"\nelse\n:\nself\n.\nis_correct\n=\n0\nreturn\nFalse\n,\nNone\nelse\n:\nreturn\nFalse\n,\nNone\ndef\n_reset\n(\nself\n)\n:\nsuper\n(\n)\n.\n_reset\n(\n)\nself\n.\nmax_function_call_trial\n=\n3\nself\n.\nis_correct\n=\nNone\nself\n.\nquery\n=\nNone\nself\n.\nanswer\n=\nNone"
+                    }
+                },
+                {
+                    "text": "MATAH dataset contains 12,500 challenging competition mathematics\nproblems. Each problem in MATH has a full step-by-step solution which\ncan be used to teach models to generate answer derivations and\nexplanations.\n\nWe strictly follow the\ntrain\n/\ntest\nsplits of\nCraft\n. Please specific\nyour own path to the dataset. Here we sample the first 10 algebra\nproblems as examples."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "test_data\n,\ntrain_data\n=\n[\n]\n,\n[\n]\nwith\nopen\n(\n\"MATH/dataset/algebra.jsonl\"\n,\n\"r\"\n,\nencoding\n=\n\"utf-8\"\n)\nas\nf\n:\nfor\nline\nin\nf\n:\ntest_data\n.\nappend\n(\njson\n.\nloads\n(\nline\n)\n)\nwith\nopen\n(\n\"MATH/dataset/train/algebra.jsonl\"\n,\n\"r\"\n,\nencoding\n=\n\"utf-8\"\n)\nas\nf\n:\nfor\nline\nin\nf\n:\ntrain_data\n.\nappend\n(\njson\n.\nloads\n(\nline\n)\n)\ntest_data\n,\ntrain_data\n=\ntest_data\n[\n0\n:\n10\n]\n,\ntrain_data\n[\n0\n:\n10\n]"
+                    }
+                },
+                {
+                    "text": "Constructing MathUserProxyAgent and AssistantAgent used in solving these\nproblems. Here, we use gpt-4-1106-preview to construct the\nAssistantAgent."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "llm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4-1106-preview\"\n,\n\"api_type\"\n:\n\"azure\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"AZURE_OPENAI_API_KEY\"\n]\n,\n\"base_url\"\n:\n\"https://ENDPOINT.openai.azure.com/\"\n,\n\"api_version\"\n:\n\"2023-07-01-preview\"\n,\n}\n]\n}\nassistant\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nsystem_message\n=\n\"You are a helpful assistant.\"\n,\nllm_config\n=\nllm_config\n,\n)\nuser_proxy\n=\nMathUserProxyAgent\n(\nname\n=\n\"mathproxyagent\"\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\ncode_execution_config\n=\n{\n\"work_dir\"\n:\n\"_output\"\n,\n\"use_docker\"\n:\nFalse\n}\n,\n)"
+                    }
+                },
+                {
+                    "text": "Below is the code to get the performance without the agents optimization\nprocess.\n\nIn this case, the AssistantAgent and MathUserProxyAgent don’t have any\nfunction calls but solely solve problems with Python."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "sum\n=\n0\nfor\nindex\n,\nquery\nin\nenumerate\n(\ntest_data\n)\n:\nis_correct\n=\nuser_proxy\n.\ninitiate_chat\n(\nrecipient\n=\nassistant\n,\nanswer\n=\nquery\n[\n\"answer\"\n]\n,\nproblem\n=\nquery\n[\n\"question\"\n]\n)\nprint\n(\nis_correct\n)\nsum\n+=\nis_correct\nsuccess_rate_without_agent_training\n=\nsum\n/\n10"
+                    }
+                },
+                {
+                    "text": "Then, we use the AgentOptimizer to iteratively optimize the agents by\noptimizing the function calls according to the historical conversations\nand performance. The AgentOptimizer yields register_for_llm and\nregister_for_executor at each iteration, which are subsequently utilized\nto update the assistant and user_proxy agents, respectively. Here we\noptimize these two agents for ten epochs."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "EPOCH\n=\n10\noptimizer_model\n=\n\"gpt-4-1106-preview\"\noptimizer\n=\nAgentOptimizer\n(\nmax_actions_per_step\n=\n3\n,\nllm_config\n=\nllm_config\n,\noptimizer_model\n=\noptimizer_model\n)\nfor\ni\nin\nrange\n(\nEPOCH\n)\n:\nfor\nindex\n,\nquery\nin\nenumerate\n(\ntrain_data\n)\n:\nis_correct\n=\nuser_proxy\n.\ninitiate_chat\n(\nassistant\n,\nanswer\n=\nquery\n[\n\"answer\"\n]\n,\nproblem\n=\nquery\n[\n\"question\"\n]\n)\nhistory\n=\nassistant\n.\nchat_messages_for_summary\n(\nuser_proxy\n)\noptimizer\n.\nrecord_one_conversation\n(\nhistory\n,\nis_satisfied\n=\nis_correct\n)\nregister_for_llm\n,\nregister_for_exector\n=\noptimizer\n.\nstep\n(\n)\nfor\nitem\nin\nregister_for_llm\n:\nassistant\n.\nupdate_function_signature\n(\n**\nitem\n)\nif\nlen\n(\nregister_for_exector\n.\nkeys\n(\n)\n)\n>\n0\n:\nuser_proxy\n.\nregister_function\n(\nfunction_map\n=\nregister_for_exector\n)"
+                    }
+                },
+                {
+                    "text": "After agent optimization, the agents obtained a list of functions from\nthe AgentOptimizers after 10 optimization iterations as shown below.\n\nWe then show the final performances with/without the agent optimization\nprocess. We observe the agents after optimization are obviously better."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "sum\n=\n0\nfor\nindex\n,\nquery\nin\nenumerate\n(\ntest_data\n)\n:\nis_correct\n=\nuser_proxy\n.\ninitiate_chat\n(\nrecipient\n=\nassistant\n,\nanswer\n=\nquery\n[\n\"answer\"\n]\n,\nproblem\n=\nquery\n[\n\"question\"\n]\n)\nsum\n+=\nis_correct\nsuccess_rate_with_agent_training\n=\nsum\n/\n10"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "print\n(\n\"------------------------------------------------Functions learned------------------------------------------------\"\n)\nfor\nfunc\nin\nassistant\n.\nllm_config\n[\n\"functions\"\n]\n:\nprint\n(\nfunc\n[\n\"name\"\n]\n+\n\": \"\n+\nfunc\n[\n\"description\"\n]\n+\n\"\\n\"\n)\nprint\n(\n\"------------------------------------------------Summary------------------------------------------------\\n\"\n)\nprint\n(\n\"success_rate_without_agent_training: {average}%\\n\"\n.\nformat\n(\naverage\n=\nsuccess_rate_without_agent_training\n*\n100\n)\n)\nprint\n(\n\"success_rate_with_agent_training: {average}%\\n\"\n.\nformat\n(\naverage\n=\nsuccess_rate_with_agent_training\n*\n100\n)\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "------------------------------------------------\nFunctions learned\n------------------------------------------------\nevaluate_expression: Evaluate arithmetic or mathematical expressions provided as strings.\ncalculate_compound_interest_principal: Calculate the principal amount needed to achieve a certain future value with quarterly compound interest.\nsolve_linear_system: Solve a system of linear equations represented as coefficients and variables.\n------------------------------------------------\nSummary\n------------------------------------------------\nsuccess_rate_without_agent_training: 60.0%\nsuccess_rate_with_agent_training: 90.0%"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

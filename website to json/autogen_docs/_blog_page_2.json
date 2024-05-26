@@ -1,0 +1,1167 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/page/2",
+    "title": "No Title",
+    "sections": [
+        {
+            "title": "AutoGen Studio: Interactively Explore Multi-Agent Workflows",
+            "content": [
+                {
+                    "text": "\n\nAutoGen Studio: Solving a task with multiple agents that generate a pdf\r\ndocument with images.\n\nAutoGen Studio: Solving a task with multiple agents that generate a pdf\r\ndocument with images."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "TL;DR\n​",
+            "content": [
+                {
+                    "text": "To help you rapidly prototype multi-agent solutions for your tasks, we are introducing AutoGen Studio, an interface powered by\nAutoGen\n. It allows you to:\n\nAutoGen Studio is open source\ncode here\n, and can be installed via pip. Give it a try!"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install autogenstudio"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "The accelerating pace of technology has ushered us into an era where digital assistants (or agents) are becoming integral to our lives.\nAutoGen\nhas emerged as a leading framework for orchestrating the power of agents. In the spirit of expanding this frontier and democratizing this capability, we are thrilled to introduce a new user-friendly interface:\nAutoGen Studio\n.\n\nWith AutoGen Studio, users can rapidly create, manage, and interact with agents that can learn, adapt, and collaborate. As we release this interface into the open-source community, our ambition is not only to enhance productivity but to inspire a level of personalized interaction between humans and agents.\n\nNote\n: AutoGen Studio is meant to help you rapidly prototype multi-agent workflows and demonstrate an example of end user interfaces built with AutoGen. It is not meant to be a production-ready app."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Getting Started with AutoGen Studio\n​",
+            "content": [
+                {
+                    "text": "The following guide will help you get AutoGen Studio up and running on your system."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Configuring an LLM Provider\n​",
+                    "content": [
+                        {
+                            "text": "To get started, you need access to a language model. You can get this set up by following the steps in the AutoGen documentation\nhere\n. Configure your environment with either\nOPENAI_API_KEY\nor\nAZURE_OPENAI_API_KEY\n.\n\nFor example, in your terminal, you would set the API key like this:"
+                        },
+                        {
+                            "code": {
+                                "language": "bash",
+                                "script": "export OPENAI_API_KEY=<your_api_key>"
+                            }
+                        },
+                        {
+                            "text": "You can also specify the model directly in the agent's configuration as shown below."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "llm_config\n=\nLLMConfig\n(\nconfig_list\n=\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\n\"<azure_api_key>\"\n,\n\"base_url\"\n:\n\"<azure api base url>\"\n,\n\"api_type\"\n:\n\"azure\"\n,\n\"api_version\"\n:\n\"2024-02-15-preview\"\n}\n]\n,\ntemperature\n=\n0\n,\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Installation\n​",
+                    "content": [
+                        {
+                            "text": "There are two ways to install AutoGen Studio - from PyPi or from source. We\nrecommend installing from PyPi\nunless you plan to modify the source code.\n\nInstall from PyPi\n\nWe recommend using a virtual environment (e.g., conda) to avoid conflicts with existing Python packages. With Python 3.10 or newer active in your virtual environment, use pip to install AutoGen Studio:"
+                        },
+                        {
+                            "code": {
+                                "language": "bash",
+                                "script": "pip install autogenstudio"
+                            }
+                        },
+                        {
+                            "text": "Install from Source\n\nNote: This approach requires some familiarity with building interfaces in React.\n\nIf you prefer to install from source, ensure you have Python 3.10+ and Node.js (version above 14.15.0) installed. Here's how you get started:\n\nClone the AutoGen Studio repository and install its Python dependencies:"
+                        },
+                        {
+                            "code": {
+                                "language": "bash",
+                                "script": "pip install -e ."
+                            }
+                        },
+                        {
+                            "text": "Navigate to the\nsamples/apps/autogen-studio/frontend\ndirectory, install dependencies, and build the UI:"
+                        },
+                        {
+                            "code": {
+                                "language": "bash",
+                                "script": "npm install -g gatsby-cli\nnpm install --global yarn\nyarn install\nyarn build"
+                            }
+                        },
+                        {
+                            "text": "For Windows users, to build the frontend, you may need alternative commands provided in the\nautogen studio readme\n."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "What Can You Do with AutoGen Studio?\n​",
+            "content": [
+                {
+                    "text": "The AutoGen Studio UI is organized into 3 high level sections -\nBuild\n,\nPlayground\n, and\nGallery\n."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Build\n​",
+                    "content": [
+                        {
+                            "text": "\n\nThis section focuses on defining the properties of agents and agent workflows. It includes the following concepts:\n\nSkills\n: Skills are functions (e.g., Python functions) that describe how to solve a task. In general, a good skill has a descriptive name (e.g.\ngenerate_images\n), extensive docstrings and good defaults (e.g., writing out files to disk for persistence and reuse). You can add new skills to AutoGen Studio via the provided UI. At inference time, these skills are made available to the assistant agent as they address your tasks.\n\n\n\nAutoGen Studio Build View: View, add or edit skills that an agent can\r\nleverage in addressing tasks.\n\nAutoGen Studio Build View: View, add or edit skills that an agent can\r\nleverage in addressing tasks.\n\nAgents\n: This provides an interface to declaratively specify properties for an AutoGen agent (mirrors most of the members of a base\nAutoGen conversable agent\nclass).\n\nAgent Workflows\n: An agent workflow is a specification of a set of agents that can work together to accomplish a task. The simplest version of this is a setup with two agents – a user proxy agent (that represents a user i.e. it compiles code and prints result) and an assistant that can address task requests (e.g., generating plans, writing code, evaluating responses, proposing error recovery steps, etc.). A more complex flow could be a group chat where even more agents work towards a solution."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Playground\n​",
+                    "content": [
+                        {
+                            "text": "\n\nAutoGen Studio Playground View: Agents collaborate, use available skills\r\n(ability to generate images) to address a user task (generate pdf's).\n\nAutoGen Studio Playground View: Agents collaborate, use available skills\r\n(ability to generate images) to address a user task (generate pdf's).\n\nThe playground section is focused on interacting with agent workflows defined in the previous build section. It includes the following concepts:\n\nSession\n: A session refers to a period of continuous interaction or engagement with an agent workflow, typically characterized by a sequence of activities or operations aimed at achieving specific objectives. It includes the agent workflow configuration, the interactions between the user and the agents. A session can be “published” to a “gallery”.\n\nChat View\n: A chat is a sequence of interactions between a user and an agent. It is a part of a session."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "The AutoGen Studio API\n​",
+            "content": [
+                {
+                    "text": "While AutoGen Studio is a web interface, it is powered by an underlying python API that is reusable and modular. Importantly, we have implemented an API where agent workflows can be declaratively specified (in JSON), loaded and run. An example of the current API is shown below. Please consult the\nAutoGen Studio repo\nfor more details."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\njson\nfrom\nautogenstudio\nimport\nAutoGenWorkFlowManager\n,\nAgentWorkFlowConfig\n# load an agent specification in JSON\nagent_spec\n=\njson\n.\nload\n(\nopen\n(\n'agent_spec.json'\n)\n)\n# Create an AutoGen Workflow Configuration from the agent specification\nagent_work_flow_config\n=\nFlowConfig\n(\n**\nagent_spec\n)\n# Create a Workflow from the configuration\nagent_work_flow\n=\nAutoGenWorkFlowManager\n(\nagent_work_flow_config\n)\n# Run the workflow on a task\ntask_query\n=\n\"What is the height of the Eiffel Tower?\"\nagent_work_flow\n.\nrun\n(\nmessage\n=\ntask_query\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Road Map and Next Steps\n​",
+            "content": [
+                {
+                    "text": "As we continue to develop and refine AutoGen Studio, the road map below outlines an array of enhancements and new features planned for future releases. Here's what users can look forward to:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Contribution Guide\n​",
+            "content": [
+                {
+                    "text": "We welcome contributions to AutoGen Studio. We recommend the following general steps to contribute to the project:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Agent AutoBuild - Automatically Building Multi-agent Systems",
+            "content": [
+                {
+                    "text": "\n\nTL;DR:\nIntroducing\nAutoBuild\n, building multi-agent system automatically, fast, and easily for complex tasks with minimal\nuser prompt required, powered by a new designed class\nAgentBuilder\n. AgentBuilder also supports open-source LLMs by\nleveraging\nvLLM\nand\nFastChat\n.\nCheckout example notebooks and source code for reference:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "In this blog, we introduce\nAutoBuild\n, a pipeline that can automatically build multi-agent systems for complex tasks.\nSpecifically, we design a new class called\nAgentBuilder\n, which will complete the generation of participant expert agents\nand the construction of group chat automatically after the user provides descriptions of a building task and an execution task.\n\nAgentBuilder supports open-source models on Hugging Face powered by\nvLLM\nand\nFastChat\n. Once the user chooses to use open-source LLM, AgentBuilder will set\nup an endpoint server automatically without any user participation."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Installation\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen[autobuild]"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install vllm fastchat"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Basic Example\n​",
+            "content": [
+                {
+                    "text": "In this section, we provide a step-by-step example of how to use AgentBuilder to build a multi-agent system for a specific task."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Step 1: prepare configurations\n​",
+                    "content": [
+                        {
+                            "text": "First, we need to prepare the Agent configurations.\nSpecifically, a config path containing the model name and API key, and a default config for each agent, are required."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "config_file_or_env\n=\n'/home/elpis_ubuntu/LLM/autogen/OAI_CONFIG_LIST'\n# modify path\ndefault_llm_config\n=\n{\n'temperature'\n:\n0\n}"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Step 2: create an AgentBuilder instance\n​",
+                    "content": [
+                        {
+                            "text": "Then, we create an AgentBuilder instance with the config path and default config.\nYou can also specific the builder model and agent model, which are the LLMs used for building and agent respectively."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "from\nautogen\n.\nagentchat\n.\ncontrib\n.\nagent_builder\nimport\nAgentBuilder\nbuilder\n=\nAgentBuilder\n(\nconfig_file_or_env\n=\nconfig_file_or_env\n,\nbuilder_model\n=\n'gpt-4-1106-preview'\n,\nagent_model\n=\n'gpt-4-1106-preview'\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Step 3: specify the building task\n​",
+                    "content": [
+                        {
+                            "text": "Specify a building task with a general description. Building task will help the build manager (a LLM) decide what agents should be built.\nNote that your building task should have a general description of the task. Adding some specific examples is better."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "building_task\n=\n\"Find a paper on arxiv by programming, and analyze its application in some domain. For example, find a latest paper about gpt-4 on arxiv and find its potential applications in software.\""
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Step 4: build group chat agents\n​",
+                    "content": [
+                        {
+                            "text": "Use\nbuild()\nto let the build manager (with a\nbuilder_model\nas backbone) complete the group chat agents generation.\nIf you think coding is necessary for your task, you can use\ncoding=True\nto add a user proxy (a local code interpreter) into the agent list as:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "agent_list\n,\nagent_configs\n=\nbuilder\n.\nbuild\n(\nbuilding_task\n,\ndefault_llm_config\n,\ncoding\n=\nTrue\n)"
+                            }
+                        },
+                        {
+                            "text": "If\ncoding\nis not specified, AgentBuilder will determine on its own whether the user proxy should be added or not according to the task.\nThe generated\nagent_list\nis a list of\nAssistantAgent\ninstances.\nIf\ncoding\nis true, a user proxy (a\nUserProxyAssistant\ninstance) will be added as the first element to the\nagent_list\n.\nagent_configs\nis a list of agent configurations including agent name, backbone LLM model, and system message.\nFor example"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Step 5: execute the task\n​",
+                    "content": [
+                        {
+                            "text": "Let agents generated in\nbuild()\ncomplete the task collaboratively in a group chat."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "import\nautogen\ndef\nstart_task\n(\nexecution_task\n:\nstr\n,\nagent_list\n:\nlist\n,\nllm_config\n:\ndict\n)\n:\nconfig_list\n=\nautogen\n.\nconfig_list_from_json\n(\nconfig_file_or_env\n,\nfilter_dict\n=\n{\n\"model\"\n:\n[\n\"gpt-4-1106-preview\"\n]\n}\n)\ngroup_chat\n=\nautogen\n.\nGroupChat\n(\nagents\n=\nagent_list\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n12\n)\nmanager\n=\nautogen\n.\nGroupChatManager\n(\ngroupchat\n=\ngroup_chat\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n**\nllm_config\n}\n)\nagent_list\n[\n0\n]\n.\ninitiate_chat\n(\nmanager\n,\nmessage\n=\nexecution_task\n)\nstart_task\n(\nexecution_task\n=\n\"Find a recent paper about gpt-4 on arxiv and find its potential applications in software.\"\n,\nagent_list\n=\nagent_list\n,\nllm_config\n=\ndefault_llm_config\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Save and Load\n​",
+            "content": [
+                {
+                    "text": "You can save all necessary information of the built group chat agents by"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "saved_path\n=\nbuilder\n.\nsave\n(\n)"
+                    }
+                },
+                {
+                    "text": "Configurations will be saved in JSON format with the following content:"
+                },
+                {
+                    "code": {
+                        "language": "json",
+                        "script": "// FILENAME: save_config_TASK_MD5.json\n{\n\"building_task\": \"Find a paper on arxiv by programming, and analysis its application in some domain. For example, find a latest paper about gpt-4 on arxiv and find its potential applications in software.\",\n\"agent_configs\": [\n{\n\"name\": \"...\",\n\"model\": \"...\",\n\"system_message\": \"...\",\n\"description\": \"...\"\n},\n...\n],\n\"manager_system_message\": \"...\",\n\"code_execution_config\": {...},\n\"default_llm_config\": {...}\n}"
+                    }
+                },
+                {
+                    "text": "You can provide a specific filename, otherwise, AgentBuilder will save config to the current path with the generated filename\nsave_config_TASK_MD5.json\n.\n\nYou can load the saved config and skip the building process. AgentBuilder will create agents with those information without prompting the build manager."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "new_builder\n=\nAgentBuilder\n(\nconfig_file_or_env\n=\nconfig_file_or_env\n)\nagent_list\n,\nagent_config\n=\nnew_builder\n.\nload\n(\nsaved_path\n)\nstart_task\n(\n.\n.\n.\n)\n# skip build()"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Use OpenAI Assistant\n​",
+            "content": [
+                {
+                    "text": "Assistants API\nallows you to build AI assistants within your own applications.\nAn Assistant has instructions and can leverage models, tools, and knowledge to respond to user queries.\nAutoBuild also supports the assistant API by adding\nuse_oai_assistant=True\nto\nbuild()\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Transfer to the OpenAI Assistant API.\nagent_list\n,\nagent_config\n=\nnew_builder\n.\nbuild\n(\nbuilding_task\n,\ndefault_llm_config\n,\nuse_oai_assistant\n=\nTrue\n)\n.\n.\n."
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "(Experimental) Use Open-source LLM\n​",
+            "content": [
+                {
+                    "text": "AutoBuild supports open-source LLM by\nvLLM\nand\nFastChat\n.\nCheck the supported model list\nhere\n.\nAfter satisfying the requirements, you can add an open-source LLM's huggingface repository to the config file,"
+                },
+                {
+                    "code": {
+                        "language": "json,",
+                        "script": "// Add the LLM's huggingface repo to your config file and use EMPTY as the api_key.\n[\n...\n{\n\"model\": \"meta-llama/Llama-2-13b-chat-hf\",\n\"api_key\": \"EMPTY\"\n}\n]"
+                    }
+                },
+                {
+                    "text": "and specify it when initializing AgentBuilder.\nAgentBuilder will automatically set up an endpoint server for open-source LLM. Make sure you have sufficient GPUs resources."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Future work/Roadmap\n​",
+            "content": [],
+            "subsections": []
+        },
+        {
+            "title": "Summary\n​",
+            "content": [
+                {
+                    "text": "We propose AutoBuild with a new class\nAgentBuilder\n.\nAutoBuild can help user solve their complex task with an automatically built multi-agent system.\nAutoBuild supports open-source LLMs and GPTs API, giving users more flexibility to choose their favorite models.\nMore advanced features are coming soon."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "How to Assess Utility of LLM-powered Applications?",
+            "content": [
+                {
+                    "text": "\n\nFig.1 illustrates the general flow of AgentEval\n\nTL;DR:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "AutoGen aims to simplify the development of LLM-powered multi-agent systems for various applications, ultimately making end users' lives easier by assisting with their tasks. Next, we all yearn to understand how our developed systems perform, their utility for users, and, perhaps most crucially, how we can enhance them. Directly evaluating multi-agent systems poses challenges as current approaches predominantly rely on success metrics – essentially, whether the agent accomplishes tasks. However, comprehending user interaction with a system involves far more than success alone. Take math problems, for instance; it's not merely about the agent solving the problem. Equally significant is its ability to convey solutions based on various criteria, including completeness, conciseness, and the clarity of the provided explanation. Furthermore, success isn't always clearly defined for every task.\n\nRapid advances in LLMs and multi-agent systems have brought forth many emerging capabilities that we're keen on translating into tangible utilities for end users. We introduce the first version of\nAgentEval\nframework - a tool crafted to empower developers in swiftly gauging the utility of LLM-powered applications designed to help end users accomplish the desired task.\n\n\n\nFig. 2 provides  an overview of the tasks taxonomy\n\n\n\nLet's first look into an overview of the suggested task taxonomy that a multi-agent system can be designed for. In general, the tasks can be split into two types, where:\n\nIn our\nAgentEval\nframework, we are currently focusing on tasks where\nSuccess is clearly defined\n. Next, we will introduce the suggested framework."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "AgentEval\nFramework\n​",
+            "content": [
+                {
+                    "text": "Our previous research on\nassistive agents in Minecraft\nsuggested that the most optimal way to obtain human judgments is to present humans with two agents side by side and ask for preferences. In this setup of pairwise comparison, humans can develop criteria to explain why they prefer the behavior of one agent over another. For instance,\n'the first agent was faster in execution,'\nor\n'the second agent moves more naturally.'\nSo, the comparative nature led humans to come up with a list of criteria that helps to infer the utility of the task. With this idea in mind, we designed\nAgentEval\n(shown in Fig. 1), where we employ LLMs to help us understand, verify, and assess task\nutility\nfor the multi-agent system. Namely:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "critic\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"critic\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n}\n,\nsystem_message\n=\n\"\"\"You are a helpful assistant. You suggest criteria for evaluating different tasks. They should be distinguishable, quantifiable, and not redundant.\nConvert the evaluation criteria into a dictionary where the keys are the criteria.\nThe value of each key is a dictionary as follows {\"description\": criteria description, \"accepted_values\": possible accepted inputs for this key}\nMake sure the keys are criteria for assessing the given task. \"accepted_values\" include the acceptable inputs for each key that are fine-grained and preferably multi-graded levels. \"description\" includes the criterion description.\nReturn only the dictionary.\"\"\"\n)"
+                    }
+                },
+                {
+                    "text": "Next, the critic is given successful and failed examples of the task execution; then, it is able to return a list of criteria (Fig. 1). For reference, use the\nfollowing notebook\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "quantifier\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"quantifier\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n}\n,\nsystem_message\n=\n\"\"\"You are a helpful assistant. You quantify the output of different tasks based on the given criteria.\nThe criterion is given in a dictionary format where each key is a distinct criteria.\nThe value of each key is a dictionary as follows {\"description\": criteria description , \"accepted_values\": possible accepted inputs for this key}\nYou are going to quantify each of the criteria for a given task based on the task description.\nReturn a dictionary where the keys are the criteria and the values are the assessed performance based on accepted values for each criteria.\nReturn only the dictionary.\"\"\"\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "AgentEval\nResults based on Math Problems Dataset\n​",
+            "content": [
+                {
+                    "text": "As an example, after running CriticAgent, we obtained the following criteria to verify the results for math problem dataset:\n\nThen, after running QuantifierAgent, we obtained the results presented in Fig. 3, where you can see three models:\n\nLighter colors represent estimates for failed cases, and brighter colors show how discovered criteria were quantified.\n\n\n\nFig.3 presents results based on overall math problems dataset\n_s\nstands for successful cases,\n_f\n- stands for failed cases\n\n\n\nWe note that while applying agentEval to math problems, the agent was not exposed to any ground truth information about the problem. As such, this figure illustrates an estimated performance of the three different agents, namely, Autogen (blue), Gpt-4 (red), and ReAct (green). We observe that by comparing the performance of any of the three agents in successful cases (dark bars of any color) versus unsuccessful cases (lighter version of the same bar), we note that AgentEval was able to assign higher quantification to successful cases than that of failed ones. This observation verifies AgentEval's ability for task utility prediction. Additionally, AgentEval allows us to go beyond just a binary definition of success, enabling a more in-depth comparison between successful and failed cases.\n\nIt's important not only to identify what is not working but also to recognize what and why actually went well."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Limitations and Future Work\n​",
+            "content": [
+                {
+                    "text": "The current implementation of\nAgentEval\nhas a number of limitations which are planning to overcome in the future:\n\nTo mitigate the limitations mentioned above, we are working on VerifierAgent, whose goal is to stabilize the results and provide additional explanations."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Summary\n​",
+            "content": [
+                {
+                    "text": "CriticAgent\nand\nQuantifierAgent\ncan be applied to the logs of any type of application, providing you with an in-depth understanding of the utility your solution brings to the user for a given task.\n\nWe would love to hear about how AgentEval works for your application. Any feedback would be useful for future development. Please contact us on our\nDiscord\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Previous Research\n​",
+            "content": [],
+            "subsections": []
+        },
+        {
+            "title": "AutoGen Meets GPTs",
+            "content": [
+                {
+                    "text": "\n\nAutoGen enables collaboration among multiple ChatGPTs for complex tasks.\n\n"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "TL;DR\n​",
+            "content": [
+                {
+                    "text": "OpenAI assistants are now integrated into AutoGen via\nGPTAssistantAgent\n.\nThis enables multiple OpenAI assistants, which form the backend of the now popular GPTs, to collaborate and tackle complex tasks.\nCheckout example notebooks for reference:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "Earlier last week, OpenAI introduced\nGPTs\n, giving users ability to create custom ChatGPTs tailored for them.\nBut what if these individual GPTs could collaborate to do even more?\nFortunately, because of AutoGen, this is now a reality!\nAutoGen has been pioneering agents and supporting\nmulti-agent workflows\nsince earlier this year, and now (starting with version 0.2.0b5) we are introducing compatibility with the\nAssistant API\n, which is currently in beta preview.\n\nTo accomplish this, we've added a new (experimental) agent called the\nGPTAssistantAgent\nthat\nlets you seamlessly add these new OpenAI assistants into AutoGen-based multi-agent workflows.\nThis integration shows great potential and synergy, and we plan to continue enhancing it."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Installation\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen==0.2.0b5"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Basic Example\n​",
+            "content": [
+                {
+                    "text": "Here's a basic example that uses a\nUserProxyAgent\nto allow an interface\nwith the\nGPTAssistantAgent\n.\n\nFirst, import the new agent and setup\nconfig_list\n:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nconfig_list_from_json\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\ngpt_assistant_agent\nimport\nGPTAssistantAgent\nfrom\nautogen\nimport\nUserProxyAgent\nconfig_list\n=\nconfig_list_from_json\n(\n\"OAI_CONFIG_LIST\"\n)"
+                    }
+                },
+                {
+                    "text": "Then simply define the OpenAI assistant agent and give it the task!"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# creates new assistant using Assistant API\ngpt_assistant\n=\nGPTAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"assistant_id\"\n:\nNone\n}\n)\nuser_proxy\n=\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\ncode_execution_config\n=\n{\n\"work_dir\"\n:\n\"coding\"\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n)\nuser_proxy\n.\ninitiate_chat\n(\ngpt_assistant\n,\nmessage\n=\n\"Print hello world\"\n)"
+                    }
+                },
+                {
+                    "text": "GPTAssistantAgent\nsupports both creating new OpenAI assistants or reusing existing assistants\n(e.g, by providing an\nassistant_id\n)."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Code Interpreter Example\n​",
+            "content": [
+                {
+                    "text": "GPTAssistantAgent\nallows you to specify an OpenAI tools\n(e.g., function calls, code interpreter, etc). The example below enables an assistant\nthat can use OpenAI code interpreter to solve tasks."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# creates new assistant using Assistant API\ngpt_assistant\n=\nGPTAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"assistant_id\"\n:\nNone\n,\n\"tools\"\n:\n[\n{\n\"type\"\n:\n\"code_interpreter\"\n}\n]\n,\n}\n)\nuser_proxy\n=\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\ncode_execution_config\n=\n{\n\"work_dir\"\n:\n\"coding\"\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n)\nuser_proxy\n.\ninitiate_chat\n(\ngpt_assistant\n,\nmessage\n=\n\"Print hello world\"\n)"
+                    }
+                },
+                {
+                    "text": "Checkout more examples\nhere\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Limitations and Future Work\n​",
+            "content": [],
+            "subsections": []
+        },
+        {
+            "title": "Acknowledgements\n​",
+            "content": [
+                {
+                    "text": "GPTAssistantAgent\nwas made possible through collaboration with\n@IANTHEREAL\n,\nJiale Liu\n,\nYiran Wu\n,\nQingyun Wu\n,\nChi Wang\n, and many other AutoGen maintainers."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "EcoAssistant - Using LLM Assistants More Accurately and Affordably",
+            "content": [
+                {
+                    "text": "\n\nTL;DR:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "EcoAssistant\n​",
+            "content": [
+                {
+                    "text": "In this blog, we introduce the\nEcoAssistant\n, a system built upon AutoGen with the goal of solving user queries more accurately and affordably."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Problem setup\n​",
+                    "content": [
+                        {
+                            "text": "Recently, users have been using conversational LLMs such as ChatGPT for various queries.\nReports indicate that 23% of ChatGPT user queries are for knowledge extraction purposes.\nMany of these queries require knowledge that is external to the information stored within any pre-trained large language models (LLMs).\nThese tasks can only be completed by generating code to fetch necessary information via external APIs that contain the requested information.\nIn the table below, we show three types of user queries that we aim to address in this work."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Leveraging external APIs\n​",
+                    "content": [
+                        {
+                            "text": "To address these queries, we first build a\ntwo-agent system\nbased on AutoGen,\nwhere the first agent is a\nLLM assistant agent\n(\nAssistantAgent\nin AutoGen) that is responsible for proposing and refining the code and\nthe second agent is a\ncode executor agent\n(\nUserProxyAgent\nin AutoGen) that would extract the generated code and execute it, forwarding the output back to the LLM assistant agent.\nA visualization of the two-agent system is shown below.\n\n\n\nTo instruct the assistant agent to leverage external APIs, we only need to add the API name/key dictionary at the beginning of the initial message.\nThe template is shown below, where the red part is the information of APIs and black part is user query.\n\n\n\nImportantly, we don't want to reveal our real API key to the assistant agent for safety concerns.\nTherefore, we use a\nfake API key\nto replace the real API key in the initial message.\nIn particular, we generate a random token (e.g.,\n181dbb37\n) for each API key and replace the real API key with the token in the initial message.\nThen, when the code executor execute the code, the fake API key would be automatically replaced by the real API key."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Solution Demonstration\n​",
+                    "content": [
+                        {
+                            "text": "In most practical scenarios, queries from users would appear sequentially over time.\nOur\nEcoAssistant\nleverages past success to help the LLM assistants address future queries via\nSolution Demonstration\n.\nSpecifically, whenever a query is deemed successfully resolved by user feedback, we capture and store the query and the final generated code snippet.\nThese query-code pairs are saved in a specialized vector database. When new queries appear,\nEcoAssistant\nretrieves the most similar query from the database, which is then appended with the associated code to the initial prompt for the new query, serving as a demonstration.\nThe new template of initial message is shown below, where the blue part corresponds to the solution demonstration.\n\n\n\nWe found that this utilization of past successful query-code pairs improves the query resolution process with fewer iterations and enhances the system's performance."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Assistant Hierarchy\n​",
+                    "content": [
+                        {
+                            "text": "LLMs usually have different prices and performance, for example, GPT-3.5-turbo is much cheaper than GPT-4 but also less accurate.\nThus, we propose the\nAssistant Hierarchy\nto reduce the cost of using LLMs.\nThe core idea is that we use the cheaper LLMs first and only use the more expensive LLMs when necessary.\nBy this way, we are able to reduce the reliance on expensive LLMs and thus reduce the cost.\nIn particular, given multiple LLMs, we initiate one assistant agent for each and start the conversation with the most cost-effective LLM assistant.\nIf the conversation between the current LLM assistant and the code executor concludes without successfully resolving the query,\nEcoAssistant\nwould then restart the conversation with the next more expensive LLM assistant in the hierarchy.\nWe found that this strategy significantly reduces costs while still effectively addressing queries."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "A Synergistic Effect\n​",
+                    "content": [
+                        {
+                            "text": "We found that the\nAssistant Hierarchy\nand\nSolution Demonstration\nof\nEcoAssistant\nhave a synergistic effect.\nBecause the query-code database is shared by all LLM assistants, even without specialized design,\nthe solution from more powerful LLM assistant (e.g., GPT-4) could be later retrieved to guide weaker LLM assistant (e.g., GPT-3.5-turbo).\nSuch a synergistic effect further improves the performance and reduces the cost of\nEcoAssistant\n."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Further reading\n​",
+            "content": [
+                {
+                    "text": "Please refer to our\npaper\nand\ncodebase\nfor more details about\nEcoAssistant\n.\n\nIf you find this blog useful, please consider citing:"
+                },
+                {
+                    "code": {
+                        "language": "bibtex",
+                        "script": "@article{zhang2023ecoassistant,\ntitle={EcoAssistant: Using LLM Assistant More Affordably and Accurately},\nauthor={Zhang, Jieyu and Krishna, Ranjay and Awadallah, Ahmed H and Wang, Chi},\njournal={arXiv preprint arXiv:2310.03046},\nyear={2023}\n}"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Multimodal with GPT-4V and LLaVA",
+            "content": [
+                {
+                    "text": "\n\nIn Brief:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "Large multimodal models (LMMs) augment large language models (LLMs) with the ability to process multi-sensory data.\n\nThis blog post and the latest AutoGen update concentrate on visual comprehension. Users can input images, pose questions about them, and receive text-based responses from these LMMs.\nWe support the\ngpt-4-vision-preview\nmodel from OpenAI and\nLLaVA\nmodel from Microsoft now.\n\nHere, we emphasize the\nMultimodal Conversable Agent\nand the\nLLaVA Agent\ndue to their growing popularity.\nGPT-4V represents the forefront in image comprehension, while LLaVA is an efficient model, fine-tuned from LLama-2."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Installation\n​",
+            "content": [
+                {
+                    "text": "Incorporate the\nlmm\nfeature during AutoGen installation:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[lmm]\""
+                    }
+                },
+                {
+                    "text": "Subsequently, import the\nMultimodal Conversable Agent\nor\nLLaVA Agent\nfrom AutoGen:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\n.\nagentchat\n.\ncontrib\n.\nmultimodal_conversable_agent\nimport\nMultimodalConversableAgent\n# for GPT-4V\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\nllava_agent\nimport\nLLaVAAgent\n# for LLaVA"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Usage\n​",
+            "content": [
+                {
+                    "text": "A simple syntax has been defined to incorporate both messages and images within a single string.\n\nExample of an in-context learning prompt:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "prompt\n=\n\"\"\"You are now an image classifier for facial expressions. Here are\nsome examples.\n<img happy.jpg> depicts a happy expression.\n<img http://some_location.com/sad.jpg> represents a sad expression.\n<img obama.jpg> portrays a neutral expression.\nNow, identify the facial expression of this individual: <img unknown.png>\n\"\"\"\nagent\n=\nMultimodalConversableAgent\n(\n)\nuser\n=\nUserProxyAgent\n(\n)\nuser\n.\ninitiate_chat\n(\nagent\n,\nmessage\n=\nprompt\n)"
+                    }
+                },
+                {
+                    "text": "The\nMultimodalConversableAgent\ninterprets the input prompt, extracting images from local or internet sources."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Advanced Usage\n​",
+            "content": [
+                {
+                    "text": "Similar to other AutoGen agents, multimodal agents support multi-round dialogues with other agents, code generation, factual queries, and management via a GroupChat interface.\n\nFor example, the\nFigureCreator\nin our\nGPT-4V notebook\nand\nLLaVA notebook\nintegrates two agents: a coder (an AssistantAgent) and critics (a multimodal agent).\nThe coder drafts Python code for visualizations, while the critics provide insights for enhancement. Collaboratively, these agents aim to refine visual outputs.\nWith\nhuman_input_mode=ALWAYS\n, you can also contribute suggestions for better visualizations."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Reference\n​",
+            "content": [],
+            "subsections": []
+        },
+        {
+            "title": "Future Enhancements\n​",
+            "content": [
+                {
+                    "text": "For further inquiries or suggestions, please open an issue in the\nAutoGen repository\nor contact me directly at\nbeibin.li@microsoft.com\n.\n\nAutoGen will continue to evolve, incorporating more multimodal functionalities such as DALLE model integration, audio interaction, and video comprehension. Stay tuned for these exciting developments."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "AutoGen's Teachable Agents",
+            "content": [
+                {
+                    "text": "\n\nTL;DR:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "Conversational assistants based on LLMs can remember the current chat with the user, and can also demonstrate in-context learning of user teachings during the conversation. But the assistant's memories and learnings are lost once the chat is over, or when a single chat grows too long for the LLM to handle effectively. Then in subsequent chats the user is forced to repeat any necessary instructions over and over.\n\nTeachability\naddresses these limitations by persisting user teachings across chat boundaries in long-term memory implemented as a vector database. Instead of copying all of memory into the context window, which would eat up valuable space, individual memories (called memos) are retrieved into context as needed. This allows the user to teach frequently used facts and skills to the teachable agent just once, and have it recall them in later chats.\n\nAny instantiated\nagent\nthat inherits from\nConversableAgent\ncan be made teachable by instantiating a\nTeachability\nobject and calling its\nadd_to_agent(agent)\nmethod.\nIn order to make effective decisions about memo storage and retrieval, the\nTeachability\nobject calls an instance of\nTextAnalyzerAgent\n(another AutoGen agent) to identify and reformulate text as needed for remembering facts, preferences, and skills. Note that this adds extra LLM calls involving a relatively small number of tokens, which can add a few seconds to the time a user waits for each response."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Run It Yourself\n​",
+            "content": [
+                {
+                    "text": "AutoGen contains four code examples that use\nTeachability\n.\n\nRun\nchat_with_teachable_agent.py\nto converse with a teachable agent.\n\nRun\ntest_teachable_agent.py\nfor quick unit testing of a teachable agent.\n\nUse the Jupyter notebook\nagentchat_teachability.ipynb\nto step through examples discussed below.\n\nUse the Jupyter notebook\nagentchat_teachable_oai_assistants.ipynb\nto make arbitrary OpenAI Assistants teachable through\nGPTAssistantAgent\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Basic Usage of Teachability\n​",
+            "content": [
+                {
+                    "text": "Please install pyautogen with the [teachable] option before using\nTeachability\n."
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[teachable]\""
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nUserProxyAgent\n,\nconfig_list_from_json\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\ncapabilities\n.\nteachability\nimport\nTeachability\nfrom\nautogen\nimport\nConversableAgent\n# As an example"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Load LLM inference endpoints from an env variable or a file\n# See https://microsoft.github.io/autogen/docs/FAQ#set-your-api-endpoints\n# and OAI_CONFIG_LIST_sample\nfilter_dict\n=\n{\n\"model\"\n:\n[\n\"gpt-4\"\n]\n}\n# GPT-3.5 is less reliable than GPT-4 at learning from user feedback.\nconfig_list\n=\nconfig_list_from_json\n(\nenv_or_file\n=\n\"OAI_CONFIG_LIST\"\n,\nfilter_dict\n=\nfilter_dict\n)\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n120\n}"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Start by instantiating any agent that inherits from ConversableAgent, which we use directly here for simplicity.\nteachable_agent\n=\nConversableAgent\n(\nname\n=\n\"teachable_agent\"\n,\n# The name can be anything.\nllm_config\n=\nllm_config\n)\n# Instantiate a Teachability object. Its parameters are all optional.\nteachability\n=\nTeachability\n(\nreset_db\n=\nFalse\n,\n# Use True to force-reset the memo DB, and False to use an existing DB.\npath_to_db_dir\n=\n\"./tmp/interactive/teachability_db\"\n# Can be any path, but teachable agents in a group chat require unique paths.\n)\n# Now add teachability to the agent.\nteachability\n.\nadd_to_agent\n(\nteachable_agent\n)\n# For this test, create a user proxy agent as usual.\nuser\n=\nUserProxyAgent\n(\n\"user\"\n,\nhuman_input_mode\n=\n\"ALWAYS\"\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# This function will return once the user types 'exit'.\nteachable_agent\n.\ninitiate_chat\n(\nuser\n,\nmessage\n=\n\"Hi, I'm a teachable user assistant! What's on your mind?\"\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example 1 - Learning user info\n​",
+            "content": [
+                {
+                    "text": "A user can teach the agent facts about themselves.\n(Note that due to their finetuning, LLMs can be reluctant to admit that they know personal information.)"
+                },
+                {
+                    "text": "In a later conversation, the user can check whether the teachable agent remembers their name. (For readability, the user prompts and some logged notices are not repeated below.)"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example 2 - Learning new facts\n​",
+            "content": [
+                {
+                    "text": "A user can teach the agent more complex, related facts."
+                },
+                {
+                    "text": "Then in a later chat the teachable agent can answer questions about the facts it has been taught.\n(Remember to first close the previous chat by typing 'exit'.)"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example 3 - Learning user preferences\n​",
+            "content": [
+                {
+                    "text": "A user can teach the agent how they prefer to have things done.\n\nBe aware that a message like the next one cannot be entered as a single message through a command line because it contains a newline character.\nSuch messages can be entered in a Jupyter notebook, or through some UI layer like that of ChatGPT."
+                },
+                {
+                    "text": "Then in later chats the teacher doesn't need to reiterate their detailed preferences."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example 4 - Learning new skills\n​",
+            "content": [
+                {
+                    "text": "Users can extend the teachable agent's capabilities by teaching it new skills for accomplishing challenging tasks. It usually works best to first describe the task, then (in the same turn) provide a hint or advice for approaching the task.\n\nThe\nSparks of AGI\npaper evaluated GPT-4 on math problems like the following, which it could only solve 32% of the time. We first show a failure case, then teach the agent a strategy which lifts GPT-4's success rate above 95%."
+                },
+                {
+                    "text": "In a later chat the user doesn't need to repeat the detailed advice."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Planned improvements\n​",
+            "content": [],
+            "subsections": []
+        },
+        {
+            "title": "Conclusion\n​",
+            "content": [
+                {
+                    "text": "Teachability\nis still under active research and development. For any problems you find or improvements you have in mind, please join our discussions in this repo and on our\nDiscord channel\n. We look forward to seeing how you and the rest of the community can use and improve teachable agents in AutoGen!"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Retrieval-Augmented Generation (RAG) Applications with AutoGen",
+            "content": [
+                {
+                    "text": "Last update: April 4, 2024; AutoGen version: v0.2.21\n\n\n\nTL;DR:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "Retrieval augmentation has emerged as a practical and effective approach for mitigating the intrinsic\nlimitations of LLMs by incorporating external documents. In this blog post, we introduce RAG agents of\nAutoGen that allows retrieval-augmented generation. The system consists of two agents: a\nRetrieval-augmented User Proxy agent, called\nRetrieveUserProxyAgent\n, and a Retrieval-augmented Assistant\nagent, called\nRetrieveAssistantAgent\n, both of which are extended from built-in agents from AutoGen.\nThe overall architecture of the RAG agents is shown in the figure above.\n\nTo use Retrieval-augmented Chat, one needs to initialize two agents including Retrieval-augmented\nUser Proxy and Retrieval-augmented Assistant. Initializing the Retrieval-Augmented User Proxy\nnecessitates specifying a path to the document collection. Subsequently, the Retrieval-Augmented\nUser Proxy can download the documents, segment them into chunks of a specific size, compute\nembeddings, and store them in a vector database. Once a chat is initiated, the agents collaboratively\nengage in code generation or question-answering adhering to the procedures outlined below:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Basic Usage of RAG Agents\n​",
+            "content": [
+                {
+                    "text": "Please install pyautogen with the [retrievechat] option before using RAG agents."
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[retrievechat]\""
+                    }
+                },
+                {
+                    "text": "RetrieveChat can handle various types of documents. By default, it can process\nplain text and PDF files, including formats such as 'txt', 'json', 'csv', 'tsv',\n'md', 'html', 'htm', 'rtf', 'rst', 'jsonl', 'log', 'xml', 'yaml', 'yml' and 'pdf'.\nIf you install\nunstructured\n,\nadditional document types such as 'docx',\n'doc', 'odt', 'pptx', 'ppt', 'xlsx', 'eml', 'msg', 'epub' will also be supported."
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "sudo apt-get update\nsudo apt-get install -y tesseract-ocr poppler-utils\npip install unstructured[all-docs]"
+                    }
+                },
+                {
+                    "text": "You can find a list of all supported document types by using\nautogen.retrieve_utils.TEXT_FORMATS\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nautogen\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\nretrieve_assistant_agent\nimport\nRetrieveAssistantAgent\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\nretrieve_user_proxy_agent\nimport\nRetrieveUserProxyAgent"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant\n=\nRetrieveAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nsystem_message\n=\n\"You are a helpful assistant.\"\n,\nllm_config\n=\nllm_config\n,\n)\nragproxyagent\n=\nRetrieveUserProxyAgent\n(\nname\n=\n\"ragproxyagent\"\n,\nretrieve_config\n=\n{\n\"task\"\n:\n\"qa\"\n,\n\"docs_path\"\n:\n\"https://raw.githubusercontent.com/microsoft/autogen/main/README.md\"\n,\n}\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant\n.\nreset\n(\n)\nragproxyagent\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\nragproxyagent\n.\nmessage_generator\n,\nproblem\n=\n\"What is autogen?\"\n)"
+                    }
+                },
+                {
+                    "text": "Output is like:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant\n.\nreset\n(\n)\nuserproxyagent\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"userproxyagent\"\n)\nuserproxyagent\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\n\"What is autogen?\"\n)"
+                    }
+                },
+                {
+                    "text": "Output is like:"
+                },
+                {
+                    "text": "You can see that the output of\nUserProxyAgent\nis not related to our\nautogen\nsince the latest info of\nautogen\nis not in ChatGPT's training data. The output of\nRetrieveUserProxyAgent\nis correct as it can\nperform retrieval-augmented generation based on the given documentation file."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Customizing RAG Agents\n​",
+            "content": [
+                {
+                    "text": "RetrieveUserProxyAgent\nis customizable with\nretrieve_config\n. There are several parameters to configure\nbased on different use cases. In this section, we'll show how to customize embedding function, text split\nfunction and vector database."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Customizing Embedding Function\n​",
+                    "content": [
+                        {
+                            "text": "By default,\nSentence Transformers\nand its pretrained models will be used to\ncompute embeddings. It's possible that you want to use OpenAI, Cohere, HuggingFace or other embedding functions."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "from\nchromadb\n.\nutils\nimport\nembedding_functions\nopenai_ef\n=\nembedding_functions\n.\nOpenAIEmbeddingFunction\n(\napi_key\n=\n\"YOUR_API_KEY\"\n,\nmodel_name\n=\n\"text-embedding-ada-002\"\n)\nragproxyagent\n=\nRetrieveUserProxyAgent\n(\nname\n=\n\"ragproxyagent\"\n,\nretrieve_config\n=\n{\n\"task\"\n:\n\"qa\"\n,\n\"docs_path\"\n:\n\"https://raw.githubusercontent.com/microsoft/autogen/main/README.md\"\n,\n\"embedding_function\"\n:\nopenai_ef\n,\n}\n,\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "huggingface_ef\n=\nembedding_functions\n.\nHuggingFaceEmbeddingFunction\n(\napi_key\n=\n\"YOUR_API_KEY\"\n,\nmodel_name\n=\n\"sentence-transformers/all-MiniLM-L6-v2\"\n)"
+                            }
+                        },
+                        {
+                            "text": "More examples can be found\nhere\n."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Customizing Text Split Function\n​",
+                    "content": [
+                        {
+                            "text": "Before we can store the documents into a vector database, we need to split the texts into chunks. Although\nwe have implemented a flexible text splitter in autogen, you may still want to use different text splitters.\nThere are also some existing text split tools which are good to reuse.\n\nFor example, you can use all the text splitters in langchain."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "from\nlangchain\n.\ntext_splitter\nimport\nRecursiveCharacterTextSplitter\nrecur_spliter\n=\nRecursiveCharacterTextSplitter\n(\nseparators\n=\n[\n\"\\n\"\n,\n\"\\r\"\n,\n\"\\t\"\n]\n)\nragproxyagent\n=\nRetrieveUserProxyAgent\n(\nname\n=\n\"ragproxyagent\"\n,\nretrieve_config\n=\n{\n\"task\"\n:\n\"qa\"\n,\n\"docs_path\"\n:\n\"https://raw.githubusercontent.com/microsoft/autogen/main/README.md\"\n,\n\"custom_text_split_function\"\n:\nrecur_spliter\n.\nsplit_text\n,\n}\n,\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Advanced Usage of RAG Agents\n​",
+            "content": [],
+            "subsections": [
+                {
+                    "title": "Integrate with other agents in a group chat\n​",
+                    "content": [
+                        {
+                            "text": "To use\nRetrieveUserProxyAgent\nin a group chat is almost the same as you use it in a two agents chat. The only thing is that\nyou need to\ninitialize the chat with\nRetrieveUserProxyAgent\n. The\nRetrieveAssistantAgent\nis not necessary in a group chat.\n\nHowever, you may want to initialize the chat with another agent in some cases. To leverage the best of\nRetrieveUserProxyAgent\n,\nyou'll need to call it from a function."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "boss\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"Boss\"\n,\nis_termination_msg\n=\ntermination_msg\n,\nhuman_input_mode\n=\n\"TERMINATE\"\n,\nsystem_message\n=\n\"The boss who ask questions and give tasks.\"\n,\n)\nboss_aid\n=\nRetrieveUserProxyAgent\n(\nname\n=\n\"Boss_Assistant\"\n,\nis_termination_msg\n=\ntermination_msg\n,\nsystem_message\n=\n\"Assistant who has extra content retrieval power for solving difficult problems.\"\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nmax_consecutive_auto_reply\n=\n3\n,\nretrieve_config\n=\n{\n\"task\"\n:\n\"qa\"\n,\n}\n,\ncode_execution_config\n=\nFalse\n,\n# we don't want to execute code in this case.\n)\ncoder\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Senior_Python_Engineer\"\n,\nis_termination_msg\n=\ntermination_msg\n,\nsystem_message\n=\n\"You are a senior python engineer. Reply `TERMINATE` in the end when everything is done.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n60\n,\n\"temperature\"\n:\n0\n}\n,\n)\npm\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Product_Manager\"\n,\nis_termination_msg\n=\ntermination_msg\n,\nsystem_message\n=\n\"You are a product manager. Reply `TERMINATE` in the end when everything is done.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n60\n,\n\"temperature\"\n:\n0\n}\n,\n)\nreviewer\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Code_Reviewer\"\n,\nis_termination_msg\n=\ntermination_msg\n,\nsystem_message\n=\n\"You are a code reviewer. Reply `TERMINATE` in the end when everything is done.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n60\n,\n\"temperature\"\n:\n0\n}\n,\n)\ndef\nretrieve_content\n(\nmessage\n:\nAnnotated\n[\nstr\n,\n\"Refined message which keeps the original meaning and can be used to retrieve content for code generation and question answering.\"\n,\n]\n,\nn_results\n:\nAnnotated\n[\nint\n,\n\"number of results\"\n]\n=\n3\n,\n)\n-\n>\nstr\n:\nboss_aid\n.\nn_results\n=\nn_results\n# Set the number of results to be retrieved.\n# Check if we need to update the context.\nupdate_context_case1\n,\nupdate_context_case2\n=\nboss_aid\n.\n_check_update_context\n(\nmessage\n)\nif\n(\nupdate_context_case1\nor\nupdate_context_case2\n)\nand\nboss_aid\n.\nupdate_context\n:\nboss_aid\n.\nproblem\n=\nmessage\nif\nnot\nhasattr\n(\nboss_aid\n,\n\"problem\"\n)\nelse\nboss_aid\n.\nproblem\n_\n,\nret_msg\n=\nboss_aid\n.\n_generate_retrieve_user_reply\n(\nmessage\n)\nelse\n:\n_context\n=\n{\n\"problem\"\n:\nmessage\n,\n\"n_results\"\n:\nn_results\n}\nret_msg\n=\nboss_aid\n.\nmessage_generator\n(\nboss_aid\n,\nNone\n,\n_context\n)\nreturn\nret_msg\nif\nret_msg\nelse\nmessage\nfor\ncaller\nin\n[\npm\n,\ncoder\n,\nreviewer\n]\n:\nd_retrieve_content\n=\ncaller\n.\nregister_for_llm\n(\ndescription\n=\n\"retrieve content for code generation and question answering.\"\n,\napi_style\n=\n\"function\"\n)\n(\nretrieve_content\n)\nfor\nexecutor\nin\n[\nboss\n,\npm\n]\n:\nexecutor\n.\nregister_for_execution\n(\n)\n(\nd_retrieve_content\n)\ngroupchat\n=\nautogen\n.\nGroupChat\n(\nagents\n=\n[\nboss\n,\npm\n,\ncoder\n,\nreviewer\n]\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n12\n,\nspeaker_selection_method\n=\n\"round_robin\"\n,\nallow_repeat_speaker\n=\nFalse\n,\n)\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n60\n,\n\"temperature\"\n:\n0\n}\nmanager\n=\nautogen\n.\nGroupChatManager\n(\ngroupchat\n=\ngroupchat\n,\nllm_config\n=\nllm_config\n)\n# Start chatting with the boss as this is the user proxy agent.\nboss\n.\ninitiate_chat\n(\nmanager\n,\nmessage\n=\n\"How to use spark for parallel training in FLAML? Give me sample code.\"\n,\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Read More\n​",
+            "content": [
+                {
+                    "text": "You can check out more example notebooks for RAG use cases:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Use AutoGen for Local LLMs",
+            "content": [
+                {
+                    "text": "TL;DR:\nWe demonstrate how to use autogen for local LLM application. As an example, we will initiate an endpoint using\nFastChat\nand perform inference on\nChatGLMv2-6b\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Preparations\n​",
+            "content": [],
+            "subsections": [
+                {
+                    "title": "Clone FastChat\n​",
+                    "content": [
+                        {
+                            "text": "FastChat provides OpenAI-compatible APIs for its supported models, so you can use FastChat as a local drop-in replacement for OpenAI APIs. However, its code needs minor modification in order to function properly."
+                        },
+                        {
+                            "code": {
+                                "language": "bash",
+                                "script": "git clone https://github.com/lm-sys/FastChat.git\ncd FastChat"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Initiate server\n​",
+            "content": [
+                {
+                    "text": "First, launch the controller"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "python -m fastchat.serve.controller"
+                    }
+                },
+                {
+                    "text": "Then, launch the model worker(s)"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "python -m fastchat.serve.model_worker --model-path chatglm2-6b"
+                    }
+                },
+                {
+                    "text": "Finally, launch the RESTful API server"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "python -m fastchat.serve.openai_api_server --host localhost --port 8000"
+                    }
+                },
+                {
+                    "text": "Normally this will work. However, if you encounter error like\nthis\n, commenting out all the lines containing\nfinish_reason\nin\nfastchat/protocol/api_protocol.py\nand\nfastchat/protocol/openai_api_protocol.py\nwill fix the problem. The modified code looks like:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCompletionResponseChoice\n(\nBaseModel\n)\n:\nindex\n:\nint\ntext\n:\nstr\nlogprobs\n:\nOptional\n[\nint\n]\n=\nNone\n# finish_reason: Optional[Literal[\"stop\", \"length\"]]\nclass\nCompletionResponseStreamChoice\n(\nBaseModel\n)\n:\nindex\n:\nint\ntext\n:\nstr\nlogprobs\n:\nOptional\n[\nfloat\n]\n=\nNone\n# finish_reason: Optional[Literal[\"stop\", \"length\"]] = None"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Interact with model using\noai.Completion\n(requires openai<1)\n​",
+            "content": [
+                {
+                    "text": "Now the models can be directly accessed through openai-python library as well as\nautogen.oai.Completion\nand\nautogen.oai.ChatCompletion\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\noai\n# create a text completion request\nresponse\n=\noai\n.\nCompletion\n.\ncreate\n(\nconfig_list\n=\n[\n{\n\"model\"\n:\n\"chatglm2-6b\"\n,\n\"base_url\"\n:\n\"http://localhost:8000/v1\"\n,\n\"api_type\"\n:\n\"openai\"\n,\n\"api_key\"\n:\n\"NULL\"\n,\n# just a placeholder\n}\n]\n,\nprompt\n=\n\"Hi\"\n,\n)\nprint\n(\nresponse\n)\n# create a chat completion request\nresponse\n=\noai\n.\nChatCompletion\n.\ncreate\n(\nconfig_list\n=\n[\n{\n\"model\"\n:\n\"chatglm2-6b\"\n,\n\"base_url\"\n:\n\"http://localhost:8000/v1\"\n,\n\"api_type\"\n:\n\"openai\"\n,\n\"api_key\"\n:\n\"NULL\"\n,\n}\n]\n,\nmessages\n=\n[\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"Hi\"\n}\n]\n)\nprint\n(\nresponse\n)"
+                    }
+                },
+                {
+                    "text": "If you would like to switch to different models, download their checkpoints and specify model path when launching model worker(s)."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "interacting with multiple local LLMs\n​",
+            "content": [
+                {
+                    "text": "If you would like to interact with multiple LLMs on your local machine, replace the\nmodel_worker\nstep above with a multi model variant:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "python -m fastchat.serve.multi_model_worker \\\n--model-path lmsys/vicuna-7b-v1.3 \\\n--model-names vicuna-7b-v1.3 \\\n--model-path chatglm2-6b \\\n--model-names chatglm2-6b"
+                    }
+                },
+                {
+                    "text": "The inference code would be:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\noai\n# create a chat completion request\nresponse\n=\noai\n.\nChatCompletion\n.\ncreate\n(\nconfig_list\n=\n[\n{\n\"model\"\n:\n\"chatglm2-6b\"\n,\n\"base_url\"\n:\n\"http://localhost:8000/v1\"\n,\n\"api_type\"\n:\n\"openai\"\n,\n\"api_key\"\n:\n\"NULL\"\n,\n}\n,\n{\n\"model\"\n:\n\"vicuna-7b-v1.3\"\n,\n\"base_url\"\n:\n\"http://localhost:8000/v1\"\n,\n\"api_type\"\n:\n\"openai\"\n,\n\"api_key\"\n:\n\"NULL\"\n,\n}\n]\n,\nmessages\n=\n[\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"Hi\"\n}\n]\n)\nprint\n(\nresponse\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "For Further Reading\n​",
+            "content": [],
+            "subsections": []
+        },
+        {
+            "title": "MathChat - An Conversational Framework to Solve Math Problems",
+            "content": [
+                {
+                    "text": "TL;DR:\n\nRecent Large Language Models (LLMs) like GTP-3.5 and GPT-4 have demonstrated astonishing abilities over previous models on various tasks, such as text generation, question answering, and code generation. Moreover, these models can communicate with humans through conversations and remember previous contexts, making it easier for humans to interact with them. These models play an increasingly important role in our daily lives assisting people with different tasks, such as writing emails, summarizing documents, and writing code.\n\nIn this blog post, we probe into the problem-solving capabilities of LLMs. Specifically, we are interested in their capabilities to solve advanced math problems, which could be representative of a broader class of problems that require precise reasoning and also have deterministic solutions.\n\nWe introduce MathChat, a conversational framework designed for solving challenging math problems with LLMs. This framework takes advantage of the chat-optimized feature of state-of-the-art LLMs, where a user proxy agent and an LLM assistant work together to tackle math problems. We also test previous prompting techniques for comparison."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "The MathChat Framework\n​",
+            "content": [
+                {
+                    "text": "MathChat simulates a conversation between the LLM assistant and a user proxy agent. As the name indicates, the user proxy agent acts as a proxy for the user, which is responsible for communicating with the LLM assistant and continuing the conversation in a desired manner.\n\nThe proxy agent first presents a math problem to the LLM assistant, framed by an initial prompt that guides the assistant in how it should work collaboratively to solve the problem. We incorporate existing prompting methods such as CoT (chain-of-thought) and tool-using are incorporated in the initial prompt. Key components of the prompt include:\n\nTool-using Prompt:\nThis guides the LLM assistant to use Python code in the correct format to address the problem, allowing the user proxy agent to parse the code and provide the appropriate results.\n\nProblem-Solving Strategy Selection Prompt:\nThe assistant is instructed to choose one of three potential problem-solving strategies, including:\n\nFinal Answer Encapsulation Prompt:\nThis part instructs the assistant to put the final answer in\n\\boxed\n.\n\nThe prompt design in MathChat is flexible and can easily be refined to include other tools, such as Wolfram Alpha.\n\nLet's take a look at an example between the\nUser Proxy Agent\nand the\nLLM Assistant\n(GPT-4). The conversation focuses on how to solve inequality using Python.\n(The conversation is modified for readability.)"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Experiment Setup\n​",
+            "content": [
+                {
+                    "text": "We evaluate the improvement brought by MathChat.\n\nFor the experiment, we focus on the level-5 problems from the MATH dataset, which are composed of high school competition problems. These problems include the application of theorems and complex equation derivation and are challenging even for undergraduate students. We evaluate 6 of 7 categories from the dataset (excluding Geometry): Prealgebra, Algebra, Number Theory, Counting and Probability, Intermediate Algebra, and Precalculus.\n\nWe evaluate GPT-4 and use the default configuration of the OpenAI API. To access the final performance, we manually compare the final answer with the correct answer. For the vanilla prompt, Program Synthesis, and MathChat, we have GPT-4 enclose the final answer in\n\\boxed\n, and we take the return of the function in PoT as the final answer.\n\nWe also evaluate the following methods for comparison:\n\nVanilla prompting:\nEvaluates GPT-4's direct problem-solving capability. The prompt used is:\n\" Solve the problem carefully. Put the final answer in \\boxed\n\"\n.\n\nProgram of Thoughts (PoT):\nUses a zero-shot PoT prompt that requests the model to create a\nSolver\nfunction to solve the problem and return the final answer.\n\nProgram Synthesis (PS) prompting:\nLike PoT, it prompts the model to write a program to solve the problem. The prompt used is:\n\"Write a program that answers the following question: {Problem}\"\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Experiment Results\n​",
+            "content": [
+                {
+                    "text": "The accuracy on all the problems with difficulty level-5 from different categories of the MATH dataset with different methods is shown below:\n\n\n\nWe found that compared to basic prompting, which demonstrates the innate capabilities of GPT-4, utilizing Python within the context of PoT or PS strategy improved the overall accuracy by about 10%. This increase was mostly seen in categories involving more numerical manipulations, such as Counting & Probability and Number Theory, and in more complex categories like Intermediate Algebra and Precalculus.\n\nFor categories like Algebra and Prealgebra, PoT and PS showed little improvement, and in some instances, even led to a decrease in accuracy. However, MathChat was able to enhance total accuracy by around 6% compared to PoT and PS, showing competitive performance across all categories. Remarkably, MathChat improved accuracy in the Algebra category by about 15% over other methods. Note that categories like Intermediate Algebra and Precalculus remained challenging for all methods, with only about 20% of problems solved accurately.\n\nThe code for experiments can be found at this\nrepository\n.\nWe now provide an implementation of MathChat using the interactive agents in AutoGen. See this\nnotebook\nfor example usage."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Future Directions\n​",
+            "content": [
+                {
+                    "text": "Despite MathChat's improvements over previous methods, the results show that complex math problem is still challenging for recent powerful LLMs, like GPT-4, even with help from external tools.\n\nFurther work can be done to enhance this framework or math problem-solving in general:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "For Further Reading\n​",
+            "content": [
+                {
+                    "text": "Are you working on applications that involve math problem-solving? Would you appreciate additional research or support on the application of LLM-based agents for math problem-solving? Please join our\nDiscord\nserver for discussion."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

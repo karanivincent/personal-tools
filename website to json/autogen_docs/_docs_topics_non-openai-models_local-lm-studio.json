@@ -1,0 +1,55 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics/non-openai-models/local-lm-studio",
+    "title": "LM Studio",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nThis notebook shows how to use AutoGen with multiple local models using\nLM Studio\n’s multi-model serving feature, which\nis available since version 0.2.17 of LM Studio.\n\nTo use the multi-model serving feature in LM Studio, you can start a\n“Multi Model Session” in the “Playground” tab. Then you select relevant\nmodels to load. Once the models are loaded, you can click “Start Server”\nto start the multi-model serving. The models will be available at a\nlocally hosted OpenAI-compatible endpoint."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Two Agent Chats\n​",
+            "content": [
+                {
+                    "text": "In this example, we create a comedy chat between two agents using two\ndifferent local models, Phi-2 and Gemma it.\n\nWe first create configurations for the models."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "gemma\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"lmstudio-ai/gemma-2b-it-GGUF/gemma-2b-it-q8_0.gguf:0\"\n,\n\"base_url\"\n:\n\"http://localhost:1234/v1\"\n,\n\"api_key\"\n:\n\"lm-studio\"\n,\n}\n,\n]\n,\n\"cache_seed\"\n:\nNone\n,\n# Disable caching.\n}\nphi2\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"TheBloke/phi-2-GGUF/phi-2.Q4_K_S.gguf:0\"\n,\n\"base_url\"\n:\n\"http://localhost:1234/v1\"\n,\n\"api_key\"\n:\n\"lm-studio\"\n,\n}\n,\n]\n,\n\"cache_seed\"\n:\nNone\n,\n# Disable caching.\n}"
+                    }
+                },
+                {
+                    "text": "Now we create two agents, one for each model."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nConversableAgent\njack\n=\nConversableAgent\n(\n\"Jack (Phi-2)\"\n,\nllm_config\n=\nphi2\n,\nsystem_message\n=\n\"Your name is Jack and you are a comedian in a two-person comedy show.\"\n,\n)\nemma\n=\nConversableAgent\n(\n\"Emma (Gemma)\"\n,\nllm_config\n=\ngemma\n,\nsystem_message\n=\n\"Your name is Emma and you are a comedian in two-person comedy show.\"\n,\n)"
+                    }
+                },
+                {
+                    "text": "Now we start the conversation."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "chat_result\n=\njack\n.\ninitiate_chat\n(\nemma\n,\nmessage\n=\n\"Emma, tell me a joke.\"\n,\nmax_turns\n=\n2\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Jack (Phi-2) (to Emma (Gemma)):\nEmma, tell me a joke.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nEmma (Gemma) (to Jack (Phi-2)):\nSure! Here's a joke for you:\nWhat do you call a comedian who's too emotional?\nAn emotional wreck!\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nJack (Phi-2) (to Emma (Gemma)):\nLOL, that's a good one, Jack! You're hilarious. 😂👏👏\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nEmma (Gemma) (to Jack (Phi-2)):\nThank you! I'm just trying to make people laugh, you know? And to help them forget about the troubles of the world for a while.\n--------------------------------------------------------------------------------"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

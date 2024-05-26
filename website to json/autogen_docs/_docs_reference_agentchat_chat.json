@@ -1,0 +1,68 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/chat",
+    "title": "agentchat.chat",
+    "sections": [
+        {
+            "title": "ChatResult\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "@dataclass\nclass\nChatResult\n(\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) The result of a chat. Almost certain to be changed."
+                },
+                {
+                    "text": "chat id"
+                },
+                {
+                    "text": "The chat history."
+                },
+                {
+                    "text": "A summary obtained from the chat."
+                },
+                {
+                    "text": "The cost of the chat.\nThe value for each usage type is a dictionary containing cost information for that specific type."
+                },
+                {
+                    "text": "A list of human input solicited during the chat."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "initiate_chats\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ninitiate_chats\n(\nchat_queue\n:\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]\n)\n-\n>\nList\n[\nChatResult\n]"
+                            }
+                        },
+                        {
+                            "text": "Initiate a list of chats.\n\nArguments\n:\n\nchat_queue\nList[Dict]\n- A list of dictionaries containing the information about the chats.\n\nEach dictionary should contain the input arguments for\nConversableAgent.initiate_chat\n.\nFor example:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_initiate_chats\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_initiate_chats\n(\nchat_queue\n:\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]\n)\n-\n>\nDict\n[\nint\n,\nChatResult\n]"
+                            }
+                        },
+                        {
+                            "text": "(async) Initiate a list of chats.\n\nargs:\n\nreturns:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

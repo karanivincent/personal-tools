@@ -1,0 +1,38 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/agent_eval/task",
+    "title": "agentchat.contrib.agent_eval.task",
+    "sections": [
+        {
+            "title": "Task\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nTask\n(\nBaseModel\n)"
+                    }
+                },
+                {
+                    "text": "Class representing a task for agent completion, includes example agent execution for criteria generation."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "parse_json_str\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\nparse_json_str\n(\ntask\n:\nstr\n)"
+                            }
+                        },
+                        {
+                            "text": "Create a Task object from a json object.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

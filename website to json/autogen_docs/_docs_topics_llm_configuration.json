@@ -1,0 +1,197 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics/llm_configuration",
+    "title": "LLM Configuration",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nIn AutoGen, agents use LLMs as key components to understand and react.\nTo configure an agent’s access to LLMs, you can specify an\nllm_config\nargument in its constructor. For example, the following snippet shows a\nconfiguration that uses\ngpt-4\n:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nos\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n\"OPENAI_API_KEY\"\n]\n}\n]\n,\n}"
+                    }
+                },
+                {
+                    "text": "It is important to never commit secrets into your code, therefore we read the OpenAI API key from an environment variable.\n\nThis\nllm_config\ncan then be passed to an agent’s constructor to enable\nit to use the LLM."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nautogen\nassistant\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nllm_config\n=\nllm_config\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction to\nconfig_list\n​",
+            "content": [
+                {
+                    "text": "Different tasks may require different models, and the\nconfig_list\nallows specifying the different endpoints and configurations that are to\nbe used. It is a list of dictionaries, each of which contains the\nfollowing keys depending on the kind of endpoint being used:\n\nExample:"
+                },
+                {
+                    "code": {
+                        "language": "json",
+                        "script": "[\n{\n\"model\": \"gpt-4\",\n\"api_key\": os.environ['OPENAI_API_KEY']\n}\n]"
+                    }
+                },
+                {
+                    "text": "Example:"
+                },
+                {
+                    "code": {
+                        "language": "json",
+                        "script": "[\n{\n\"model\": \"my-gpt-4-deployment\",\n\"api_type\": \"azure\",\n\"api_key\": os.environ['AZURE_OPENAI_API_KEY'],\n\"base_url\": \"https://ENDPOINT.openai.azure.com/\",\n\"api_version\": \"2024-02-15-preview\"\n}\n]"
+                    }
+                },
+                {
+                    "text": "Example:"
+                },
+                {
+                    "code": {
+                        "language": "json",
+                        "script": "[\n{\n\"model\": \"llama-7B\",\n\"base_url\": \"http://localhost:1234\"\n}\n]"
+                    }
+                },
+                {
+                    "text": "By default this will create a model client which assumes an OpenAI API (or compatible) endpoint. To use custom model clients, see\nhere\n."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "OAI_CONFIG_LIST\npattern\n​",
+                    "content": [
+                        {
+                            "text": "A common, useful pattern used is to define this\nconfig_list\nis via\nJSON (specified as a file or an environment variable set to a\nJSON-formatted string) and then use the\nconfig_list_from_json\nhelper function to load it:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "config_list\n=\nautogen\n.\nconfig_list_from_json\n(\nenv_or_file\n=\n\"OAI_CONFIG_LIST\"\n,\n)\n# Then, create the assistant agent with the config list\nassistant\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n}\n)"
+                            }
+                        },
+                        {
+                            "text": "This can be helpful as it keeps all the configuration in one place\nacross different projects or notebooks.\n\nThis function interprets the\nenv_or_file\nargument as follows:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Why is it a list?\n​",
+                    "content": [
+                        {
+                            "text": "Being a list allows you to define multiple models that can be used by\nthe agent. This is useful for a few reasons:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "How does an agent decide which model to pick out of the list?\n​",
+                    "content": [
+                        {
+                            "text": "An agent uses the very first model available in the “config_list” and\nmakes LLM calls against this model. If the model fails (e.g. API\nthrottling) the agent will retry the request against the 2nd model and\nso on until prompt completion is received (or throws an error if none of\nthe models successfully completes the request). In general there’s no\nimplicit/hidden logic inside agents that is used to pick “the best model\nfor the task”. However, some specialized agents may attempt to choose\n“the best model for the task”. It is developers responsibility to pick\nthe right models and use them with agents."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Config list filtering\n​",
+                    "content": [
+                        {
+                            "text": "As described above the list can be filtered based on certain criteria.\nThis is defined as a dictionary of key to filter on and values to filter\nby. For example, if you have a list of configs and you want to select\nthe one with the model “gpt-3.5-turbo” you can use the following filter:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "filter_dict\n=\n{\n\"model\"\n:\n[\n\"gpt-3.5-turbo\"\n]\n}"
+                            }
+                        },
+                        {
+                            "text": "This can then be applied to a config list loaded in Python with\nfilter_config\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "config_list\n=\nautogen\n.\nfilter_config\n(\nconfig_list\n,\nfilter_dict\n)"
+                            }
+                        },
+                        {
+                            "text": "Or, directly when loading the config list using\nconfig_list_from_json\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "config_list\n=\nautogen\n.\nconfig_list_from_json\n(\nenv_or_file\n=\n\"OAI_CONFIG_LIST\"\n,\nfilter_dict\n=\nfilter_dict\n)"
+                            }
+                        },
+                        {
+                            "text": "Model names can differ between OpenAI and Azure OpenAI, so tags offer an\neasy way to smooth over this inconsistency. Tags are a list of strings\nin the\nconfig_list\n, for example for the following\nconfig_list\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "config_list\n=\n[\n{\n\"model\"\n:\n\"my-gpt-4-deployment\"\n,\n\"api_key\"\n:\n\"\"\n,\n\"tags\"\n:\n[\n\"gpt4\"\n,\n\"openai\"\n]\n}\n,\n{\n\"model\"\n:\n\"llama-7B\"\n,\n\"base_url\"\n:\n\"http://127.0.0.1:8080\"\n,\n\"tags\"\n:\n[\n\"llama\"\n,\n\"local\"\n]\n}\n,\n]"
+                            }
+                        },
+                        {
+                            "text": "Then when filtering the\nconfig_list\nyou can can specify the desired\ntags. A config is selected if it has at least one of the tags specified\nin the filter. For example, to just get the\nllama\nmodel, you can use\nthe following filter:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "filter_dict\n=\n{\n\"tags\"\n:\n[\n\"llama\"\n,\n\"another_tag\"\n]\n}\nconfig_list\n=\nautogen\n.\nfilter_config\n(\nconfig_list\n,\nfilter_dict\n)\nassert\nlen\n(\nconfig_list\n)\n==\n1"
+                            }
+                        }
+                    ],
+                    "subsections": [
+                        {
+                            "title": "Tags\n​",
+                            "content": [],
+                            "subsections": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "Other configuration parameters\n​",
+            "content": [
+                {
+                    "text": "Besides the\nconfig_list\n, there are other parameters that can be used\nto configure the LLM. These are split between parameters specifically\nused by Autogen and those passed into the model client."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "AutoGen specific parameters\n​",
+                    "content": [],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Example\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "llm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"my-gpt-4-deployment\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n.\nget\n(\n\"AZURE_OPENAI_API_KEY\"\n)\n,\n\"api_type\"\n:\n\"azure\"\n,\n\"base_url\"\n:\nos\n.\nenviron\n.\nget\n(\n\"AZURE_OPENAI_API_BASE\"\n)\n,\n\"api_version\"\n:\n\"2024-02-15-preview\"\n,\n}\n,\n{\n\"model\"\n:\n\"llama-7B\"\n,\n\"base_url\"\n:\n\"http://127.0.0.1:8080\"\n,\n\"api_type\"\n:\n\"openai\"\n,\n}\n,\n]\n,\n\"temperature\"\n:\n0.9\n,\n\"timeout\"\n:\n300\n,\n}"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Other helpers for loading a config list\n​",
+            "content": [
+                {
+                    "text": "See\nthis\nnotebook\nfor examples of using the above functions."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

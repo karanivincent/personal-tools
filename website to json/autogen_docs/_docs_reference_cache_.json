@@ -1,0 +1,158 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/cache/",
+    "title": "cache.cache",
+    "sections": [
+        {
+            "title": "Cache\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCache\n(\nAbstractCache\n)"
+                    }
+                },
+                {
+                    "text": "A wrapper class for managing cache configuration and instances.\n\nThis class provides a unified interface for creating and interacting with\ndifferent types of cache (e.g., Redis, Disk). It abstracts the underlying\ncache implementation details, providing methods for cache operations.\n\nAttributes\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "redis\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\nredis\n(\ncache_seed\n:\nUnion\n[\nstr\n,\nint\n]\n=\n42\n,\nredis_url\n:\nstr\n=\n\"redis://localhost:6379/0\"\n)\n-\n>\n\"Cache\""
+                            }
+                        },
+                        {
+                            "text": "Create a Redis cache instance.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "disk\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\ndisk\n(\ncache_seed\n:\nUnion\n[\nstr\n,\nint\n]\n=\n42\n,\ncache_path_root\n:\nstr\n=\n\".cache\"\n)\n-\n>\n\"Cache\""
+                            }
+                        },
+                        {
+                            "text": "Create a Disk cache instance.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "cosmos_db\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\ncosmos_db\n(\nconnection_string\n:\nOptional\n[\nstr\n]\n=\nNone\n,\ncontainer_id\n:\nOptional\n[\nstr\n]\n=\nNone\n,\ncache_seed\n:\nUnion\n[\nstr\n,\nint\n]\n=\n42\n,\nclient\n:\nOptional\n[\nany\n]\n=\nNone\n)\n-\n>\n\"Cache\""
+                            }
+                        },
+                        {
+                            "text": "Create a Cosmos DB cache instance with 'autogen_cache' as database ID.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nconfig\n:\nDict\n[\nstr\n,\nAny\n]\n)"
+                            }
+                        },
+                        {
+                            "text": "Initialize the Cache with the given configuration.\n\nValidates the configuration keys and creates the cache instance.\n\nArguments\n:\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "__enter__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__enter__\n(\n)\n-\n>\n\"Cache\""
+                            }
+                        },
+                        {
+                            "text": "Enter the runtime context related to the cache object.\n\nReturns\n:\n\nThe cache instance for use within a context block."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "__exit__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__exit__\n(\nexc_type\n:\nOptional\n[\nType\n[\nBaseException\n]\n]\n,\nexc_value\n:\nOptional\n[\nBaseException\n]\n,\ntraceback\n:\nOptional\n[\nTracebackType\n]\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Exit the runtime context related to the cache object.\n\nCleans up the cache instance and handles any exceptions that occurred\nwithin the context.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget\n(\nkey\n:\nstr\n,\ndefault\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nOptional\n[\nAny\n]"
+                            }
+                        },
+                        {
+                            "text": "Retrieve an item from the cache.\n\nArguments\n:\n\nReturns\n:\n\nThe value associated with the key if found, else the default value."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "set\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nset\n(\nkey\n:\nstr\n,\nvalue\n:\nAny\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Set an item in the cache.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "close\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nclose\n(\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Close the cache.\n\nPerform any necessary cleanup, such as closing connections or releasing resources."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

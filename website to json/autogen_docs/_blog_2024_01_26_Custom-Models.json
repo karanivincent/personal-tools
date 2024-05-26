@@ -1,0 +1,89 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2024/01/26/Custom-Models",
+    "title": "AutoGen with Custom Models: Empowering Users to Use Their Own Inference Mechanism",
+    "sections": [
+        {
+            "title": "TL;DR\n​",
+            "content": [
+                {
+                    "text": "AutoGen now supports custom models! This feature empowers users to define and load their own models, allowing for a more flexible and personalized inference mechanism. By adhering to a specific protocol, you can integrate your custom model for use with AutoGen and respond to prompts any way needed by using any model/API call/hardcoded response you want.\n\nNOTE: Depending on what model you use, you may need to play with the default prompts of the Agent's"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Quickstart\n​",
+            "content": [
+                {
+                    "text": "An interactive and easy way to get started is by following the notebook\nhere\nwhich loads a local model from HuggingFace into AutoGen and uses it for inference, and making changes to the class provided."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Step 1: Create the custom model client class\n​",
+                    "content": [
+                        {
+                            "text": "To get started with using custom models in AutoGen, you need to create a model client class that adheres to the\nModelClient\nprotocol defined in\nclient.py\n. The new model client class should implement these methods:\n\nE.g. of a bare bones dummy custom class:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "class\nCustomModelClient\n:\ndef\n__init__\n(\nself\n,\nconfig\n,\n**\nkwargs\n)\n:\nprint\n(\nf\"CustomModelClient config:\n{\nconfig\n}\n\"\n)\ndef\ncreate\n(\nself\n,\nparams\n)\n:\nnum_of_responses\n=\nparams\n.\nget\n(\n\"n\"\n,\n1\n)\n# can create my own data response class\n# here using SimpleNamespace for simplicity\n# as long as it adheres to the ModelClientResponseProtocol\nresponse\n=\nSimpleNamespace\n(\n)\nresponse\n.\nchoices\n=\n[\n]\nresponse\n.\nmodel\n=\n\"model_name\"\n# should match the OAI_CONFIG_LIST registration\nfor\n_\nin\nrange\n(\nnum_of_responses\n)\n:\ntext\n=\n\"this is a dummy text response\"\nchoice\n=\nSimpleNamespace\n(\n)\nchoice\n.\nmessage\n=\nSimpleNamespace\n(\n)\nchoice\n.\nmessage\n.\ncontent\n=\ntext\nchoice\n.\nmessage\n.\nfunction_call\n=\nNone\nresponse\n.\nchoices\n.\nappend\n(\nchoice\n)\nreturn\nresponse\ndef\nmessage_retrieval\n(\nself\n,\nresponse\n)\n:\nchoices\n=\nresponse\n.\nchoices\nreturn\n[\nchoice\n.\nmessage\n.\ncontent\nfor\nchoice\nin\nchoices\n]\ndef\ncost\n(\nself\n,\nresponse\n)\n-\n>\nfloat\n:\nresponse\n.\ncost\n=\n0\nreturn\n0\n@staticmethod\ndef\nget_usage\n(\nresponse\n)\n:\nreturn\n{\n}"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Step 2: Add the configuration to the OAI_CONFIG_LIST\n​",
+                    "content": [
+                        {
+                            "text": "The field that is necessary is setting\nmodel_client_cls\nto the name of the new class (as a string)\n\"model_client_cls\":\"CustomModelClient\"\n. Any other fields will be forwarded to the class constructor, so you have full control over what parameters to specify and how to use them. E.g.:"
+                        },
+                        {
+                            "code": {
+                                "language": "json",
+                                "script": "{\n\"model\": \"Open-Orca/Mistral-7B-OpenOrca\",\n\"model_client_cls\": \"CustomModelClient\",\n\"device\": \"cuda\",\n\"n\": 1,\n\"params\": {\n\"max_length\": 1000,\n}\n}"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Protocol details\n​",
+            "content": [
+                {
+                    "text": "A custom model class can be created in many ways, but needs to adhere to the\nModelClient\nprotocol and response structure which is defined in\nclient.py\nand shown below.\n\nThe response protocol is currently using the minimum required fields from the autogen codebase that match the OpenAI response structure. Any response protocol that matches the OpenAI response structure will probably be more resilient to future changes, but we are starting off with minimum requirements to make adpotion of this feature easier."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nModelClient\n(\nProtocol\n)\n:\n\"\"\"\nA client class must implement the following methods:\n- create must return a response object that implements the ModelClientResponseProtocol\n- cost must return the cost of the response\n- get_usage must return a dict with the following keys:\n- prompt_tokens\n- completion_tokens\n- total_tokens\n- cost\n- model\nThis class is used to create a client that can be used by OpenAIWrapper.\nThe response returned from create must adhere to the ModelClientResponseProtocol but can be extended however needed.\nThe message_retrieval method must be implemented to return a list of str or a list of messages from the response.\n\"\"\"\nRESPONSE_USAGE_KEYS\n=\n[\n\"prompt_tokens\"\n,\n\"completion_tokens\"\n,\n\"total_tokens\"\n,\n\"cost\"\n,\n\"model\"\n]\nclass\nModelClientResponseProtocol\n(\nProtocol\n)\n:\nclass\nChoice\n(\nProtocol\n)\n:\nclass\nMessage\n(\nProtocol\n)\n:\ncontent\n:\nOptional\n[\nstr\n]\nmessage\n:\nMessage\nchoices\n:\nList\n[\nChoice\n]\nmodel\n:\nstr\ndef\ncreate\n(\nself\n,\nparams\n)\n-\n>\nModelClientResponseProtocol\n:\n.\n.\n.\ndef\nmessage_retrieval\n(\nself\n,\nresponse\n:\nModelClientResponseProtocol\n)\n-\n>\nUnion\n[\nList\n[\nstr\n]\n,\nList\n[\nModelClient\n.\nModelClientResponseProtocol\n.\nChoice\n.\nMessage\n]\n]\n:\n\"\"\"\nRetrieve and return a list of strings or a list of Choice.Message from the response.\nNOTE: if a list of Choice.Message is returned, it currently needs to contain the fields of OpenAI's ChatCompletion Message object,\nsince that is expected for function or tool calling in the rest of the codebase at the moment, unless a custom agent is being used.\n\"\"\"\n.\n.\n.\ndef\ncost\n(\nself\n,\nresponse\n:\nModelClientResponseProtocol\n)\n-\n>\nfloat\n:\n.\n.\n.\n@staticmethod\ndef\nget_usage\n(\nresponse\n:\nModelClientResponseProtocol\n)\n-\n>\nDict\n:\n\"\"\"Return usage summary of the response using RESPONSE_USAGE_KEYS.\"\"\"\n.\n.\n."
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Troubleshooting steps\n​",
+            "content": [
+                {
+                    "text": "If something doesn't work then run through the checklist:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Conclusion\n​",
+            "content": [
+                {
+                    "text": "With the ability to use custom models, AutoGen now offers even more flexibility and power for your AI applications. Whether you've trained your own model or want to use a specific pre-trained model, AutoGen can accommodate your needs. Happy coding!"
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

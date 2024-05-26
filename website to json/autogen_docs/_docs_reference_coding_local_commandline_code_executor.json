@@ -1,0 +1,188 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/coding/local_commandline_code_executor",
+    "title": "coding.local_commandline_code_executor",
+    "sections": [
+        {
+            "title": "LocalCommandLineCodeExecutor\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nLocalCommandLineCodeExecutor\n(\nCodeExecutor\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Execution with a Python virtual environment\n​",
+            "content": [
+                {
+                    "text": "A python virtual env can be used to execute code and install dependencies. This has the added benefit of not polluting the\nbase environment with unwanted modules."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\n.\ncode_utils\nimport\ncreate_virtual_env\nfrom\nautogen\n.\ncoding\nimport\nLocalCommandLineCodeExecutor\nvenv_dir\n=\n\".venv\"\nvenv_context\n=\ncreate_virtual_env\n(\nvenv_dir\n)\nexecutor\n=\nLocalCommandLineCodeExecutor\n(\nvirtual_env_context\n=\nvenv_context\n)"
+                    }
+                },
+                {
+                    "text": "Arguments\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "format_functions_for_prompt\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nformat_functions_for_prompt\n(\nprompt_template\n:\nstr\n=\nFUNCTION_PROMPT_TEMPLATE\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Format the functions for a prompt.\n\nThe template includes two variables:\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "functions_module\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nfunctions_module\n(\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) The module name for the functions."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "functions\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nfunctions\n(\n)\n-\n>\nList\n[\nUnion\n[\nFunctionWithRequirements\n[\nAny\n,\nA\n]\n,\nCallable\n[\n.\n.\n.\n,\nAny\n]\n,\nFunctionWithRequirementsStr\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) The functions that are available to the code executor."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "timeout\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\ntimeout\n(\n)\n-\n>\nint"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) The timeout for code execution."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "work_dir\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nwork_dir\n(\n)\n-\n>\nPath"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) The working directory for the code execution."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "code_extractor\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\ncode_extractor\n(\n)\n-\n>\nCodeExtractor"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Export a code extractor that can be used by an agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "sanitize_command\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\nsanitize_command\n(\nlang\n:\nstr\n,\ncode\n:\nstr\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Sanitize the code block to prevent dangerous commands.\nThis approach acknowledges that while Docker or similar\ncontainerization/sandboxing technologies provide a robust layer of security,\nnot all users may have Docker installed or may choose not to use it.\nTherefore, having a baseline level of protection helps mitigate risks for users who,\neither out of choice or necessity, run code outside of a sandboxed environment."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "execute_code_blocks\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nexecute_code_blocks\n(\ncode_blocks\n:\nList\n[\nCodeBlock\n]\n)\n-\n>\nCommandLineCodeResult"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Execute the code blocks and return the result.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "LocalCommandlineCodeExecutor\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nLocalCommandlineCodeExecutor\n(\nmetaclass\n=\n_DeprecatedClassMeta\n)"
+                    }
+                },
+                {
+                    "text": "LocalCommandlineCodeExecutor renamed to LocalCommandLineCodeExecutor"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "CommandlineCodeResult\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCommandlineCodeResult\n(\nmetaclass\n=\n_DeprecatedClassMeta\n)"
+                    }
+                },
+                {
+                    "text": "CommandlineCodeResult renamed to CommandLineCodeResult"
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

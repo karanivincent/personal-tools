@@ -1,0 +1,79 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_webscraping_with_apify",
+    "title": "Web Scraping using Apify Tools",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nThis notebook shows how to use Apify tools with AutoGen agents to scrape\ndata from a website and formate the output.\n\nFirst we need to install the Apify SDK and the AutoGen library."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "! pip install\n-\nqqq pyautogen apify\n-\nclient"
+                    }
+                },
+                {
+                    "text": "Setting up the LLM configuration and the Apify API key is also required."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nos\nconfig_list\n=\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\ngetenv\n(\n\"OPENAI_API_KEY\"\n)\n}\n,\n]\napify_api_key\n=\nos\n.\ngetenv\n(\n\"APIFY_API_KEY\"\n)"
+                    }
+                },
+                {
+                    "text": "Let’s define the tool for scraping data from the website using Apify\nactor. Read more about tool use in this\ntutorial\nchapter\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\napify_client\nimport\nApifyClient\nfrom\ntyping_extensions\nimport\nAnnotated\ndef\nscrape_page\n(\nurl\n:\nAnnotated\n[\nstr\n,\n\"The URL of the web page to scrape\"\n]\n)\n-\n>\nAnnotated\n[\nstr\n,\n\"Scraped content\"\n]\n:\n# Initialize the ApifyClient with your API token\nclient\n=\nApifyClient\n(\ntoken\n=\napify_api_key\n)\n# Prepare the Actor input\nrun_input\n=\n{\n\"startUrls\"\n:\n[\n{\n\"url\"\n:\nurl\n}\n]\n,\n\"useSitemaps\"\n:\nFalse\n,\n\"crawlerType\"\n:\n\"playwright:firefox\"\n,\n\"includeUrlGlobs\"\n:\n[\n]\n,\n\"excludeUrlGlobs\"\n:\n[\n]\n,\n\"ignoreCanonicalUrl\"\n:\nFalse\n,\n\"maxCrawlDepth\"\n:\n0\n,\n\"maxCrawlPages\"\n:\n1\n,\n\"initialConcurrency\"\n:\n0\n,\n\"maxConcurrency\"\n:\n200\n,\n\"initialCookies\"\n:\n[\n]\n,\n\"proxyConfiguration\"\n:\n{\n\"useApifyProxy\"\n:\nTrue\n}\n,\n\"maxSessionRotations\"\n:\n10\n,\n\"maxRequestRetries\"\n:\n5\n,\n\"requestTimeoutSecs\"\n:\n60\n,\n\"dynamicContentWaitSecs\"\n:\n10\n,\n\"maxScrollHeightPixels\"\n:\n5000\n,\n\"removeElementsCssSelector\"\n:\n\"\"\"nav, footer, script, style, noscript, svg,\n[role=\\\"alert\\\"],\n[role=\\\"banner\\\"],\n[role=\\\"dialog\\\"],\n[role=\\\"alertdialog\\\"],\n[role=\\\"region\\\"][aria-label*=\\\"skip\\\" i],\n[aria-modal=\\\"true\\\"]\"\"\"\n,\n\"removeCookieWarnings\"\n:\nTrue\n,\n\"clickElementsCssSelector\"\n:\n'[aria-expanded=\"false\"]'\n,\n\"htmlTransformer\"\n:\n\"readableText\"\n,\n\"readableTextCharThreshold\"\n:\n100\n,\n\"aggressivePrune\"\n:\nFalse\n,\n\"debugMode\"\n:\nTrue\n,\n\"debugLog\"\n:\nTrue\n,\n\"saveHtml\"\n:\nTrue\n,\n\"saveMarkdown\"\n:\nTrue\n,\n\"saveFiles\"\n:\nFalse\n,\n\"saveScreenshots\"\n:\nFalse\n,\n\"maxResults\"\n:\n9999999\n,\n\"clientSideMinChangePercentage\"\n:\n15\n,\n\"renderingTypeDetectionPercentage\"\n:\n10\n,\n}\n# Run the Actor and wait for it to finish\nrun\n=\nclient\n.\nactor\n(\n\"aYG0l9s7dbB7j3gbS\"\n)\n.\ncall\n(\nrun_input\n=\nrun_input\n)\n# Fetch and print Actor results from the run's dataset (if there are any)\ntext_data\n=\n\"\"\nfor\nitem\nin\nclient\n.\ndataset\n(\nrun\n[\n\"defaultDatasetId\"\n]\n)\n.\niterate_items\n(\n)\n:\ntext_data\n+=\nitem\n.\nget\n(\n\"text\"\n,\n\"\"\n)\n+\n\"\\n\"\naverage_token\n=\n0.75\nmax_tokens\n=\n20000\n# slightly less than max to be safe 32k\ntext_data\n=\ntext_data\n[\n:\nint\n(\naverage_token\n*\nmax_tokens\n)\n]\nreturn\ntext_data"
+                    }
+                },
+                {
+                    "text": "Create the agents and register the tool."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nConversableAgent\n,\nregister_function\n# Create web scrapper agent.\nscraper_agent\n=\nConversableAgent\n(\n\"WebScraper\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n}\n,\nsystem_message\n=\n\"You are a web scrapper and you can scrape any web page using the tools provided. \"\n\"Returns 'TERMINATE' when the scraping is done.\"\n,\n)\n# Create user proxy agent.\nuser_proxy_agent\n=\nConversableAgent\n(\n\"UserProxy\"\n,\nllm_config\n=\nFalse\n,\n# No LLM for this agent.\nhuman_input_mode\n=\n\"NEVER\"\n,\ncode_execution_config\n=\nFalse\n,\n# No code execution for this agent.\nis_termination_msg\n=\nlambda\nx\n:\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\nis\nnot\nNone\nand\n\"terminate\"\nin\nx\n[\n\"content\"\n]\n.\nlower\n(\n)\n,\ndefault_auto_reply\n=\n\"Please continue if not finished, otherwise return 'TERMINATE'.\"\n,\n)\n# Register the function with the agents.\nregister_function\n(\nscrape_page\n,\ncaller\n=\nscraper_agent\n,\nexecutor\n=\nuser_proxy_agent\n,\nname\n=\n\"scrape_page\"\n,\ndescription\n=\n\"Scrape a web page and return the content.\"\n,\n)"
+                    }
+                },
+                {
+                    "text": "Start the conversation for scraping web data. We used the\nreflection_with_llm\noption for summary method to perform the\nformatting of the output into a desired format. The summary method is\ncalled after the conversation is completed given the complete history of\nthe conversation."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "chat_result\n=\nuser_proxy_agent\n.\ninitiate_chat\n(\nscraper_agent\n,\nmessage\n=\n\"Can you scrape agentops.ai for me?\"\n,\nsummary_method\n=\n\"reflection_with_llm\"\n,\nsummary_args\n=\n{\n\"summary_prompt\"\n:\n\"\"\"Summarize the scraped content and format summary EXACTLY as follows:\n---\n*Company name*:\n`Acme Corp`\n---\n*Website*:\n`acmecorp.com`\n---\n*Description*:\n`Company that does things.`\n---\n*Tags*:\n`Manufacturing. Retail. E-commerce.`\n---\n*Takeaways*:\n`Provides shareholders with value by selling products.`\n---\n*Questions*:\n`What products do they sell? How do they make money? What is their market share?`\n---\n\"\"\"\n}\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "UserProxy\n(\nto\nWebScraper\n)\n:\nCan you scrape agentops.ai for me?\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nWebScraper\n(\nto\nUserProxy\n)\n:\n***** Suggested tool call (call_0qok2jvCxOfv7HOA0oxPWneM): scrape_page *****\nArguments:\n{\n\"url\": \"https://www.agentops.ai\"\n}\n****************************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING FUNCTION scrape_page...\nUserProxy\n(\nto\nWebScraper\n)\n:\nUserProxy\n(\nto\nWebScraper\n)\n:\n***** Response from calling tool (call_0qok2jvCxOfv7HOA0oxPWneM) *****\nSTART NOW\nTake your business to the next level with our features\nAI Agents Suck.\nWe're Fixing That.\nBuild compliant AI agents with observability, evals, and replay analytics. No more black boxes and prompt guessing.\nNew! Introducing AgentOps\nThree Lines of Code. Unlimited Testing.\nInstant Testing + Debugging = Compliant AI Agents That Work\n5\n# Beginning of program's code (i.e. main.py, __init__.py)\n6\nao_client = agentops.Client(<INSERT YOUR API KEY HERE>)\n9\n# (optional: record specific functions)\n10\n@ao_client.record_action('sample function being record')\n11\ndef sample_function(...):\n15\nao_client.end_session('Success')\nPrototype to Production\nGenerous free limits, upgrade only when you need it.\n**********************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nWebScraper\n(\nto\nUserProxy\n)\n:\nSure, here's the information from the website agentops.ai:\n- Their main value proposition is to fix bad AI Agents and replace black boxes and prompt guessing with compliant, observable AI agents that come with evals and replay analytics.\n- Their latest product is AgentOps. The simple and instant testing & debugging offered promises better-performing compliant AI agents.\n- Integration is easy with just three lines of code.\n- They let you record specific functions.\n- They provide generous free limits and you only need to upgrade when necessary.\nHere's a sample of their code:\n```python\nao_client = agentops.Client(<INSERT YOUR API KEY HERE>)\n# optional: record specific functions\n@ao_client.record_action('sample function being record')\ndef sample_function(...):\n...\nao_client.end_session('Success')\n```\nThis code is for sample usage of their libraries/functions.\nLet me know if you need more specific details.\n--------------------------------------------------------------------------------\nUserProxy\n(\nto\nWebScraper\n)\n:\nPlease continue if not finished, otherwise return '\nTERMINATE\n'.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nWebScraper\n(\nto\nUserProxy\n)\n:\nTERMINATE\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "The output is stored in the summary."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "print\n(\nchat_result\n.\nsummary\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "---\n*Company name*:\n`AgentOps`\n---\n*Website*:\n`agentops.ai`\n---\n*Description*:\n`Company that aims to improve AI agents. They offer observed and evaluable AI agents with replay analytics as an alternative to black box models and blind prompting.`\n---\n*Tags*:\n`Artificial Intelligence, AI agents, Observability, Analytics.`\n---\n*Takeaways*:\n`Their product, AgentOps, allows for easy and instant testing and debugging of AI agents. Integration is as simple as writing three lines of code. They also provide generous free limits and mandate upgrades only when necessary.`\n---\n*Questions*:\n`What differentiates AgentOps from other, similar products? How does their pricing scale with usage? What are the details of their \"generous free limits\"?`\n---"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

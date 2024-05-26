@@ -1,0 +1,140 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/logger/base_logger",
+    "title": "logger.base_logger",
+    "sections": [
+        {
+            "title": "BaseLogger\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nBaseLogger\n(\nABC\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "start\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@abstractmethod\ndef\nstart\n(\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Open a connection to the logging database, and start recording.\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "log_chat_completion\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@abstractmethod\ndef\nlog_chat_completion\n(\ninvocation_id\n:\nuuid\n.\nUUID\n,\nclient_id\n:\nint\n,\nwrapper_id\n:\nint\n,\nrequest\n:\nDict\n[\nstr\n,\nUnion\n[\nfloat\n,\nstr\n,\nList\n[\nDict\n[\nstr\n,\nstr\n]\n]\n]\n]\n,\nresponse\n:\nUnion\n[\nstr\n,\nChatCompletion\n]\n,\nis_cached\n:\nint\n,\ncost\n:\nfloat\n,\nstart_time\n:\nstr\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Log a chat completion to database.\n\nIn AutoGen, chat completions are somewhat complicated because they are handled by the\nautogen.oai.OpenAIWrapper\nclass.\nOne invocation to\ncreate\ncan lead to multiple underlying OpenAI calls, depending on the llm_config list used, and\nany errors or retries.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "log_new_agent\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@abstractmethod\ndef\nlog_new_agent\n(\nagent\n:\nConversableAgent\n,\ninit_args\n:\nDict\n[\nstr\n,\nAny\n]\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Log the birth of a new agent.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "log_event\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@abstractmethod\ndef\nlog_event\n(\nsource\n:\nUnion\n[\nstr\n,\nAgent\n]\n,\nname\n:\nstr\n,\n**\nkwargs\n:\nDict\n[\nstr\n,\nAny\n]\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Log an event for an agent.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "log_new_wrapper\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@abstractmethod\ndef\nlog_new_wrapper\n(\nwrapper\n:\nOpenAIWrapper\n,\ninit_args\n:\nDict\n[\nstr\n,\nUnion\n[\nLLMConfig\n,\nList\n[\nLLMConfig\n]\n]\n]\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Log the birth of a new OpenAIWrapper.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "log_new_client\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@abstractmethod\ndef\nlog_new_client\n(\nclient\n:\nUnion\n[\nAzureOpenAI\n,\nOpenAI\n]\n,\nwrapper\n:\nOpenAIWrapper\n,\ninit_args\n:\nDict\n[\nstr\n,\nAny\n]\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Log the birth of a new OpenAIWrapper.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "stop\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@abstractmethod\ndef\nstop\n(\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Close the connection to the logging database, and stop logging."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_connection\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@abstractmethod\ndef\nget_connection\n(\n)\n-\n>\nUnion\n[\nNone\n,\nsqlite3\n.\nConnection\n]"
+                            }
+                        },
+                        {
+                            "text": "Return a connection to the logging database."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,154 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics/non-openai-models/cloud-anthropic",
+    "title": "Anthropic Claude",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nIn this notebook, we demonstrate how a to use Anthropic Claude model for\nAgentChat."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Requirements\n​",
+            "content": [
+                {
+                    "text": "To use Anthropic Claude with AutoGen, first you need to install the\npyautogen\nand\nanthropic\npackage.\n\nTo try out the function call feature of Claude model, you need to\ninstall\nanthropic>=0.23.1\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# !pip install pyautogen\n!pip install\n\"anthropic>=0.23.1\""
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\ninspect\nimport\njson\nfrom\ntyping\nimport\nAny\n,\nDict\n,\nList\n,\nUnion\nfrom\nanthropic\nimport\nAnthropic\nfrom\nanthropic\nimport\n__version__\nas\nanthropic_version\nfrom\nanthropic\n.\ntypes\nimport\nCompletion\n,\nMessage\nfrom\nopenai\n.\ntypes\n.\nchat\n.\nchat_completion\nimport\nChatCompletionMessage\nfrom\ntyping_extensions\nimport\nAnnotated\nimport\nautogen\nfrom\nautogen\nimport\nAssistantAgent\n,\nUserProxyAgent\nTOOL_ENABLED\n=\nanthropic_version\n>=\n\"0.23.1\"\nif\nTOOL_ENABLED\n:\nfrom\nanthropic\n.\ntypes\n.\nbeta\n.\ntools\nimport\nToolsBetaMessage\nelse\n:\nToolsBetaMessage\n=\nobject"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Create Anthropic Model Client following ModelClient Protocol\n​",
+            "content": [
+                {
+                    "text": "We will implement our Anthropic client adhere to the\nModelClient\nprotocol and response structure which is defined in client.py and shown\nbelow."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nModelClient\n(\nProtocol\n)\n:\n\"\"\"\nA client class must implement the following methods:\n- create must return a response object that implements the ModelClientResponseProtocol\n- cost must return the cost of the response\n- get_usage must return a dict with the following keys:\n- prompt_tokens\n- completion_tokens\n- total_tokens\n- cost\n- model\nThis class is used to create a client that can be used by OpenAIWrapper.\nThe response returned from create must adhere to the ModelClientResponseProtocol but can be extended however needed.\nThe message_retrieval method must be implemented to return a list of str or a list of messages from the response.\n\"\"\"\nRESPONSE_USAGE_KEYS\n=\n[\n\"prompt_tokens\"\n,\n\"completion_tokens\"\n,\n\"total_tokens\"\n,\n\"cost\"\n,\n\"model\"\n]\nclass\nModelClientResponseProtocol\n(\nProtocol\n)\n:\nclass\nChoice\n(\nProtocol\n)\n:\nclass\nMessage\n(\nProtocol\n)\n:\ncontent\n:\nOptional\n[\nstr\n]\nmessage\n:\nMessage\nchoices\n:\nList\n[\nChoice\n]\nmodel\n:\nstr\ndef\ncreate\n(\nself\n,\nparams\n)\n-\n>\nModelClientResponseProtocol\n:\n.\n.\n.\ndef\nmessage_retrieval\n(\nself\n,\nresponse\n:\nModelClientResponseProtocol\n)\n-\n>\nUnion\n[\nList\n[\nstr\n]\n,\nList\n[\nModelClient\n.\nModelClientResponseProtocol\n.\nChoice\n.\nMessage\n]\n]\n:\n\"\"\"\nRetrieve and return a list of strings or a list of Choice.Message from the response.\nNOTE: if a list of Choice.Message is returned, it currently needs to contain the fields of OpenAI's ChatCompletion Message object,\nsince that is expected for function or tool calling in the rest of the codebase at the moment, unless a custom agent is being used.\n\"\"\"\n.\n.\n.\ndef\ncost\n(\nself\n,\nresponse\n:\nModelClientResponseProtocol\n)\n-\n>\nfloat\n:\n.\n.\n.\n@staticmethod\ndef\nget_usage\n(\nresponse\n:\nModelClientResponseProtocol\n)\n-\n>\nDict\n:\n\"\"\"Return usage summary of the response using RESPONSE_USAGE_KEYS.\"\"\"\n.\n.\n."
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Implementation of AnthropicClient\n​",
+            "content": [
+                {
+                    "text": "You can find the introduction to Claude-3-Opus model\nhere\n.\n\nSince anthropic provides their Python SDK with similar structure as\nOpenAI’s, we will following the implementation from\nautogen.oai.client.OpenAIClient\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nAnthropicClient\n:\ndef\n__init__\n(\nself\n,\nconfig\n:\nDict\n[\nstr\n,\nAny\n]\n)\n:\nself\n.\n_config\n=\nconfig\nself\n.\nmodel\n=\nconfig\n[\n\"model\"\n]\nanthropic_kwargs\n=\nset\n(\ninspect\n.\ngetfullargspec\n(\nAnthropic\n.\n__init__\n)\n.\nkwonlyargs\n)\nfilter_dict\n=\n{\nk\n:\nv\nfor\nk\n,\nv\nin\nconfig\n.\nitems\n(\n)\nif\nk\nin\nanthropic_kwargs\n}\nself\n.\n_client\n=\nAnthropic\n(\n**\nfilter_dict\n)\nself\n.\n_last_tooluse_status\n=\n{\n}\ndef\nmessage_retrieval\n(\nself\n,\nresponse\n:\nUnion\n[\nMessage\n,\nToolsBetaMessage\n]\n)\n-\n>\nUnion\n[\nList\n[\nstr\n]\n,\nList\n[\nChatCompletionMessage\n]\n]\n:\n\"\"\"Retrieve the messages from the response.\"\"\"\nmessages\n=\nresponse\n.\ncontent\nif\nlen\n(\nmessages\n)\n==\n0\n:\nreturn\n[\nNone\n]\nres\n=\n[\n]\nif\nTOOL_ENABLED\n:\nfor\nchoice\nin\nmessages\n:\nif\nchoice\n.\ntype\n==\n\"tool_use\"\n:\nres\n.\ninsert\n(\n0\n,\nself\n.\nresponse_to_openai_message\n(\nchoice\n)\n)\nself\n.\n_last_tooluse_status\n[\n\"tool_use\"\n]\n=\nchoice\n.\nmodel_dump\n(\n)\nelse\n:\nres\n.\nappend\n(\nchoice\n.\ntext\n)\nself\n.\n_last_tooluse_status\n[\n\"think\"\n]\n=\nchoice\n.\ntext\nreturn\nres\nelse\n:\nreturn\n[\n# type: ignore [return-value]\nchoice\n.\ntext\nif\nchoice\n.\nmessage\n.\nfunction_call\nis\nnot\nNone\nelse\nchoice\n.\nmessage\n.\ncontent\n# type: ignore [union-attr]\nfor\nchoice\nin\nmessages\n]\ndef\ncreate\n(\nself\n,\nparams\n:\nDict\n[\nstr\n,\nAny\n]\n)\n-\n>\nCompletion\n:\n\"\"\"Create a completion for a given config.\nArgs:\nparams: The params for the completion.\nReturns:\nThe completion.\n\"\"\"\nif\n\"tools\"\nin\nparams\n:\nconverted_functions\n=\nself\n.\nconvert_tools_to_functions\n(\nparams\n[\n\"tools\"\n]\n)\nparams\n[\n\"functions\"\n]\n=\nparams\n.\nget\n(\n\"functions\"\n,\n[\n]\n)\n+\nconverted_functions\nraw_contents\n=\nparams\n[\n\"messages\"\n]\nprocessed_messages\n=\n[\n]\nfor\nmessage\nin\nraw_contents\n:\nif\nmessage\n[\n\"role\"\n]\n==\n\"system\"\n:\nparams\n[\n\"system\"\n]\n=\nmessage\n[\n\"content\"\n]\nelif\nmessage\n[\n\"role\"\n]\n==\n\"function\"\n:\nprocessed_messages\n.\nappend\n(\nself\n.\nreturn_function_call_result\n(\nmessage\n[\n\"content\"\n]\n)\n)\nelif\n\"function_call\"\nin\nmessage\n:\nprocessed_messages\n.\nappend\n(\nself\n.\nrestore_last_tooluse_status\n(\n)\n)\nelif\nmessage\n[\n\"content\"\n]\n==\n\"\"\n:\n# I'm not sure how to elegantly terminate the conversation, please give me some advice about this.\nmessage\n[\n\"content\"\n]\n=\n\"I'm done. Please send TERMINATE\"\nprocessed_messages\n.\nappend\n(\nmessage\n)\nelse\n:\nprocessed_messages\n.\nappend\n(\nmessage\n)\nparams\n[\n\"messages\"\n]\n=\nprocessed_messages\nif\nTOOL_ENABLED\nand\n\"functions\"\nin\nparams\n:\ncompletions\n:\nCompletion\n=\nself\n.\n_client\n.\nbeta\n.\ntools\n.\nmessages\nelse\n:\ncompletions\n:\nCompletion\n=\nself\n.\n_client\n.\nmessages\n# type: ignore [attr-defined]\n# Not yet support stream\nparams\n=\nparams\n.\ncopy\n(\n)\nparams\n[\n\"stream\"\n]\n=\nFalse\nparams\n.\npop\n(\n\"model_client_cls\"\n)\nparams\n[\n\"max_tokens\"\n]\n=\nparams\n.\nget\n(\n\"max_tokens\"\n,\n4096\n)\nif\n\"functions\"\nin\nparams\n:\ntools_configs\n=\nparams\n.\npop\n(\n\"functions\"\n)\ntools_configs\n=\n[\nself\n.\nopenai_func_to_anthropic\n(\ntool\n)\nfor\ntool\nin\ntools_configs\n]\nparams\n[\n\"tools\"\n]\n=\ntools_configs\nresponse\n=\ncompletions\n.\ncreate\n(\n**\nparams\n)\nreturn\nresponse\ndef\ncost\n(\nself\n,\nresponse\n:\nCompletion\n)\n-\n>\nfloat\n:\n\"\"\"Calculate the cost of the response.\"\"\"\ntotal\n=\n0.0\ntokens\n=\n{\n\"input\"\n:\nresponse\n.\nusage\n.\ninput_tokens\nif\nresponse\n.\nusage\nis\nnot\nNone\nelse\n0\n,\n\"output\"\n:\nresponse\n.\nusage\n.\noutput_tokens\nif\nresponse\n.\nusage\nis\nnot\nNone\nelse\n0\n,\n}\nprice_per_million\n=\n{\n\"input\"\n:\n15\n,\n\"output\"\n:\n75\n,\n}\nfor\nkey\n,\nvalue\nin\ntokens\n.\nitems\n(\n)\n:\ntotal\n+=\nvalue\n*\nprice_per_million\n[\nkey\n]\n/\n1_000_000\nreturn\ntotal\ndef\nresponse_to_openai_message\n(\nself\n,\nresponse\n)\n-\n>\nChatCompletionMessage\n:\ndict_response\n=\nresponse\n.\nmodel_dump\n(\n)\nreturn\nChatCompletionMessage\n(\ncontent\n=\nNone\n,\nrole\n=\n\"assistant\"\n,\nfunction_call\n=\n{\n\"name\"\n:\ndict_response\n[\n\"name\"\n]\n,\n\"arguments\"\n:\njson\n.\ndumps\n(\ndict_response\n[\n\"input\"\n]\n)\n}\n,\n)\ndef\nrestore_last_tooluse_status\n(\nself\n)\n-\n>\nDict\n:\ncached_content\n=\n[\n]\nif\n\"think\"\nin\nself\n.\n_last_tooluse_status\n:\ncached_content\n.\nappend\n(\n{\n\"type\"\n:\n\"text\"\n,\n\"text\"\n:\nself\n.\n_last_tooluse_status\n[\n\"think\"\n]\n}\n)\ncached_content\n.\nappend\n(\nself\n.\n_last_tooluse_status\n[\n\"tool_use\"\n]\n)\nres\n=\n{\n\"role\"\n:\n\"assistant\"\n,\n\"content\"\n:\ncached_content\n}\nreturn\nres\ndef\nreturn_function_call_result\n(\nself\n,\nresult\n:\nstr\n)\n-\n>\nDict\n:\nreturn\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n[\n{\n\"type\"\n:\n\"tool_result\"\n,\n\"tool_use_id\"\n:\nself\n.\n_last_tooluse_status\n[\n\"tool_use\"\n]\n[\n\"id\"\n]\n,\n\"content\"\n:\nresult\n,\n}\n]\n,\n}\n@staticmethod\ndef\nopenai_func_to_anthropic\n(\nopenai_func\n:\ndict\n)\n-\n>\ndict\n:\nres\n=\nopenai_func\n.\ncopy\n(\n)\nres\n[\n\"input_schema\"\n]\n=\nres\n.\npop\n(\n\"parameters\"\n)\nreturn\nres\n@staticmethod\ndef\nget_usage\n(\nresponse\n:\nCompletion\n)\n-\n>\nDict\n:\nreturn\n{\n\"prompt_tokens\"\n:\nresponse\n.\nusage\n.\ninput_tokens\nif\nresponse\n.\nusage\nis\nnot\nNone\nelse\n0\n,\n\"completion_tokens\"\n:\nresponse\n.\nusage\n.\noutput_tokens\nif\nresponse\n.\nusage\nis\nnot\nNone\nelse\n0\n,\n\"total_tokens\"\n:\n(\nresponse\n.\nusage\n.\ninput_tokens\n+\nresponse\n.\nusage\n.\noutput_tokens\nif\nresponse\n.\nusage\nis\nnot\nNone\nelse\n0\n)\n,\n\"cost\"\n:\nresponse\n.\ncost\nif\nhasattr\n(\nresponse\n,\n\"cost\"\n)\nelse\n0\n,\n\"model\"\n:\nresponse\n.\nmodel\n,\n}\n@staticmethod\ndef\nconvert_tools_to_functions\n(\ntools\n:\nList\n)\n-\n>\nList\n:\nfunctions\n=\n[\n]\nfor\ntool\nin\ntools\n:\nif\ntool\n.\nget\n(\n\"type\"\n)\n==\n\"function\"\nand\n\"function\"\nin\ntool\n:\nfunctions\n.\nappend\n(\ntool\n[\n\"function\"\n]\n)\nreturn\nfunctions"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Set the config for the Anthropic API\n​",
+            "content": [
+                {
+                    "text": "You can add any parameters that are needed for the custom model loading\nin the same configuration list.\n\nIt is important to add the\nmodel_client_cls\nfield and set it to a\nstring that corresponds to the class name:\n\"CustomModelClient\"\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nos\nconfig_list_claude\n=\n[\n{\n# Choose your model name.\n\"model\"\n:\n\"claude-3-sonnet-20240229\"\n,\n# You need to provide your API key here.\n\"api_key\"\n:\nos\n.\ngetenv\n(\n\"ANTHROPIC_API_KEY\"\n)\n,\n\"base_url\"\n:\n\"https://api.anthropic.com\"\n,\n\"api_type\"\n:\n\"anthropic\"\n,\n\"model_client_cls\"\n:\n\"AnthropicClient\"\n,\n}\n]"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Construct Agents\n​",
+            "content": [
+                {
+                    "text": "Construct a simple conversation between a User proxy and an\nConversableAgent based on Claude-3 model."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant\n=\nAssistantAgent\n(\n\"assistant\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list_claude\n,\n}\n,\n)\nuser_proxy\n=\nUserProxyAgent\n(\n\"user_proxy\"\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\ncode_execution_config\n=\n{\n\"work_dir\"\n:\n\"coding\"\n,\n\"use_docker\"\n:\nFalse\n,\n}\n,\nis_termination_msg\n=\nlambda\nx\n:\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\nand\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\n.\nrstrip\n(\n)\n.\nendswith\n(\n\"TERMINATE\"\n)\n,\nmax_consecutive_auto_reply\n=\n1\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "[autogen.oai.client: 04-08 22:15:59] {419} INFO - Detected custom model client in config: AnthropicClient, model client can not be used until register_model_client is called."
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Function Call in Latest Anthropic API\n​",
+            "content": [
+                {
+                    "text": "Anthropic just announced that tool use is now in public beta in the\nAnthropic API. To use this feature, please install\nanthropic>=0.23.1\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "@user_proxy\n.\nregister_for_execution\n(\n)\n@assistant\n.\nregister_for_llm\n(\nname\n=\n\"get_weather\"\n,\ndescription\n=\n\"Get the current weather in a given location.\"\n)\ndef\npreprocess\n(\nlocation\n:\nAnnotated\n[\nstr\n,\n\"The city and state, e.g. Toronto, ON.\"\n]\n)\n-\n>\nstr\n:\nreturn\n\"Absolutely cloudy and rainy\""
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "[autogen.oai.client: 04-08 22:15:59] {419} INFO - Detected custom model client in config: AnthropicClient, model client can not be used until register_model_client is called."
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Register the custom client class to the assistant agent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant\n.\nregister_model_client\n(\nmodel_client_cls\n=\nAnthropicClient\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "user_proxy\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\n\"What's the weather in Toronto?\"\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "user_proxy\n(\nto\nassistant\n)\n:\nWhat's the weather in Toronto?\n--------------------------------------------------------------------------------\nassistant\n(\nto\nuser_proxy\n)\n:\n***** Suggested function call: get_weather *****\nArguments:\n{\"location\": \"Toronto, ON\"}\n************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING FUNCTION get_weather...\nuser_proxy\n(\nto\nassistant\n)\n:\n***** Response from calling function (get_weather) *****\nAbsolutely cloudy and rainy\n********************************************************\n--------------------------------------------------------------------------------\nassistant\n(\nto\nuser_proxy\n)\n:\nThe tool returned that the current weather in Toronto, ON is absolutely cloudy and rainy.\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "ChatResult(chat_id=None, chat_history=[{'content': \"What's the weather in Toronto?\", 'role': 'assistant'}, {'function_call': {'arguments': '{\"location\": \"Toronto, ON\"}', 'name': 'get_weather'}, 'content': None, 'role': 'assistant'}, {'content': 'Absolutely cloudy and rainy', 'name': 'get_weather', 'role': 'function'}, {'content': 'The tool returned that the current weather in Toronto, ON is absolutely cloudy and rainy.', 'role': 'user'}], summary='The tool returned that the current weather in Toronto, ON is absolutely cloudy and rainy.', cost=({'total_cost': 0.030494999999999998, 'claude-3-sonnet-20240229': {'cost': 0.030494999999999998, 'prompt_tokens': 1533, 'completion_tokens': 100, 'total_tokens': 1633}}, {'total_cost': 0}), human_input=[])"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

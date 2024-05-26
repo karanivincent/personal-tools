@@ -1,0 +1,30 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/contributor-guide/maintainer",
+    "title": "Guidance for Maintainers",
+    "sections": [
+        {
+            "title": "General\n​",
+            "content": [],
+            "subsections": []
+        },
+        {
+            "title": "Pull Requests\n​",
+            "content": [
+                {
+                    "text": "For new PR, decide whether to close without review. If not, find the right reviewers. The default reviewer is microsoft/autogen. Ask users who can benefit from the PR to review it.\n\nFor old PR, check the blocker: reviewer or PR creator. Try to unblock. Get additional help when needed.\n\nWhen requesting changes, make sure you can check back in time because it blocks merging.\n\nMake sure all the checks are passed.\n\nFor changes that require running OpenAI tests, make sure the OpenAI tests pass too. Running these tests requires approval.\n\nIn general, suggest small PRs instead of a giant PR.\n\nFor documentation change, request snapshot of the compiled website, or compile by yourself to verify the format.\n\nFor new contributors who have not signed the contributing agreement, remind them to sign before reviewing.\n\nFor multiple PRs which may have conflict, coordinate them to figure out the right order.\n\nPay special attention to:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Issues and Discussions\n​",
+            "content": [
+                {
+                    "text": "For new issues, write a reply, apply a label if relevant. Ask on discord when necessary. For roadmap issues, add to the roadmap project and encourage community discussion. Mention relevant experts when necessary.\n\nFor old issues, provide an update or close. Ask on discord when necessary. Encourage PR creation when relevant.\n\nUse “good first issue” for easy fix suitable for first-time contributors.\n\nUse “task list” for issues that require multiple PRs.\n\nFor discussions, create an issue when relevant. Discuss on discord when appropriate."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

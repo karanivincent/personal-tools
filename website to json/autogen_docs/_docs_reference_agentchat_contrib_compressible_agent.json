@@ -1,0 +1,83 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/compressible_agent",
+    "title": "agentchat.contrib.compressible_agent",
+    "sections": [
+        {
+            "title": "CompressibleAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCompressibleAgent\n(\nConversableAgent\n)"
+                    }
+                },
+                {
+                    "text": "CompressibleAgent agent. While this agent retains all the default functionalities of the\nAssistantAgent\n,\nit also provides the added feature of compression when activated through the\ncompress_config\nsetting.\n\ncompress_config\nis set to False by default, making this agent equivalent to the\nAssistantAgent\n.\nThis agent does not work well in a GroupChat: The compressed messages will not be sent to all the agents in the group.\nThe default system message is the same as AssistantAgent.\nhuman_input_mode\nis default to \"NEVER\"\nand\ncode_execution_config\nis default to False.\nThis agent doesn't execute code or function call by default."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nname\n:\nstr\n,\nsystem_message\n:\nOptional\n[\nstr\n]\n=\nDEFAULT_SYSTEM_MESSAGE\n,\nis_termination_msg\n:\nOptional\n[\nCallable\n[\n[\nDict\n]\n,\nbool\n]\n]\n=\nNone\n,\nmax_consecutive_auto_reply\n:\nOptional\n[\nint\n]\n=\nNone\n,\nhuman_input_mode\n:\nOptional\n[\nstr\n]\n=\n\"NEVER\"\n,\nfunction_map\n:\nOptional\n[\nDict\n[\nstr\n,\nCallable\n]\n]\n=\nNone\n,\ncode_execution_config\n:\nOptional\n[\nUnion\n[\nDict\n,\nbool\n]\n]\n=\nFalse\n,\nllm_config\n:\nOptional\n[\nUnion\n[\nDict\n,\nbool\n]\n]\n=\nNone\n,\ndefault_auto_reply\n:\nOptional\n[\nUnion\n[\nstr\n,\nDict\n,\nNone\n]\n]\n=\n\"\"\n,\ncompress_config\n:\nOptional\n[\nDict\n]\n=\nFalse\n,\ndescription\n:\nOptional\n[\nstr\n]\n=\nNone\n,\n**\nkwargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "generate_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nexclude\n:\nOptional\n[\nList\n[\nCallable\n]\n]\n=\nNone\n)\n-\n>\nUnion\n[\nstr\n,\nDict\n,\nNone\n]"
+                            }
+                        },
+                        {
+                            "text": "Adding to line 202:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "on_oai_token_limit\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\non_oai_token_limit\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nstr\n,\nDict\n,\nNone\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Compress previous messages when a threshold of tokens is reached.\n\nTODO: async compress\nTODO: maintain a list for old oai messages (messages before compression)"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "compress_messages\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncompress_messages\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nUnion\n[\nstr\n,\nDict\n,\nNone\n,\nList\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Compress a list of messages into one message.\n\nThe first message (the initial prompt) will not be compressed.\nThe rest of the messages will be compressed into one message, the model is asked to distinguish the role of each message: USER, ASSISTANT, FUNCTION_CALL, FUNCTION_RETURN.\nCheck out the compress_sys_msg.\n\nTODO: model used in compression agent is different from assistant agent: For example, if original model used by is gpt-4; we start compressing at 70% of usage, 70% of 8092 = 5664; and we use gpt 3.5 here max_toke = 4096, it will raise error. choosinng model automatically?"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

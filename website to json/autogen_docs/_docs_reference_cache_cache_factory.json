@@ -1,0 +1,59 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/cache/cache_factory",
+    "title": "cache.cache_factory",
+    "sections": [
+        {
+            "title": "CacheFactory\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCacheFactory\n(\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "cache_factory\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\ncache_factory\n(\nseed\n:\nUnion\n[\nstr\n,\nint\n]\n,\nredis_url\n:\nOptional\n[\nstr\n]\n=\nNone\n,\ncache_path_root\n:\nstr\n=\n\".cache\"\n,\ncosmosdb_config\n:\nOptional\n[\nDict\n[\nstr\n,\nAny\n]\n]\n=\nNone\n)\n-\n>\nAbstractCache"
+                            }
+                        },
+                        {
+                            "text": "Factory function for creating cache instances.\n\nThis function decides whether to create a RedisCache, DiskCache, or CosmosDBCache instance\nbased on the provided parameters. If RedisCache is available and a redis_url is provided,\na RedisCache instance is created. If connection_string, database_id, and container_id\nare provided, a CosmosDBCache is created. Otherwise, a DiskCache instance is used.\n\nArguments\n:\n\nReturns\n:\n\nAn instance of RedisCache, DiskCache, or CosmosDBCache.\n\nExamples\n:\n\nCreating a Redis cache"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "redis_cache\n=\ncache_factory\n(\n\"myseed\"\n,\n\"redis://localhost:6379/0\"\n)"
+                            }
+                        },
+                        {
+                            "text": "Creating a Disk cache"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "disk_cache\n=\ncache_factory\n(\n\"myseed\"\n,\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Creating a Cosmos DB cache:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "cosmos_cache\n=\ncache_factory\n(\n\"myseed\"\n,\ncosmosdb_config\n=\n{\n\"connection_string\"\n:\n\"your_connection_string\"\n,\n\"database_id\"\n:\n\"your_database_id\"\n,\n\"container_id\"\n:\n\"your_container_id\"\n}\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

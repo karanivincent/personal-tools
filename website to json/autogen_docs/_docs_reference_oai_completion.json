@@ -1,0 +1,287 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/oai/completion",
+    "title": "oai.completion",
+    "sections": [
+        {
+            "title": "Completion\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCompletion\n(\nopenai_Completion\n)"
+                    }
+                },
+                {
+                    "text": "(openai<1) A class for OpenAI completion API.\n\nIt also supports: ChatCompletion, Azure OpenAI API."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "set_cache\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@classmethod\ndef\nset_cache\n(\ncls\n,\nseed\n:\nOptional\n[\nint\n]\n=\n41\n,\ncache_path_root\n:\nOptional\n[\nstr\n]\n=\n\".cache\"\n)"
+                            }
+                        },
+                        {
+                            "text": "Set cache path.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "clear_cache\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@classmethod\ndef\nclear_cache\n(\ncls\n,\nseed\n:\nOptional\n[\nint\n]\n=\nNone\n,\ncache_path_root\n:\nOptional\n[\nstr\n]\n=\n\".cache\"\n)"
+                            }
+                        },
+                        {
+                            "text": "Clear cache.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "tune\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@classmethod\ndef\ntune\n(\ncls\n,\ndata\n:\nList\n[\nDict\n]\n,\nmetric\n:\nstr\n,\nmode\n:\nstr\n,\neval_func\n:\nCallable\n,\nlog_file_name\n:\nOptional\n[\nstr\n]\n=\nNone\n,\ninference_budget\n:\nOptional\n[\nfloat\n]\n=\nNone\n,\noptimization_budget\n:\nOptional\n[\nfloat\n]\n=\nNone\n,\nnum_samples\n:\nOptional\n[\nint\n]\n=\n1\n,\nlogging_level\n:\nOptional\n[\nint\n]\n=\nlogging\n.\nWARNING\n,\n**\nconfig\n)"
+                            }
+                        },
+                        {
+                            "text": "Tune the parameters for the OpenAI API call.\n\nTODO: support parallel tuning with ray or spark.\nTODO: support agg_method as in test\n\nArguments\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\neval_func\n(\nresponses\n,\n**\ndata\n)\n:\nsolution\n=\ndata\n[\n\"solution\"\n]\nsuccess_list\n=\n[\n]\nn\n=\nlen\n(\nresponses\n)\nfor\ni\nin\nrange\n(\nn\n)\n:\nresponse\n=\nresponses\n[\ni\n]\nsucceed\n=\nis_equiv_chain_of_thought\n(\nresponse\n,\nsolution\n)\nsuccess_list\n.\nappend\n(\nsucceed\n)\nreturn\n{\n\"expected_success\"\n:\n1\n-\npow\n(\n1\n-\nsum\n(\nsuccess_list\n)\n/\nn\n,\nn\n)\n,\n\"success\"\n:\nany\n(\ns\nfor\ns\nin\nsuccess_list\n)\n,\n}"
+                            }
+                        },
+                        {
+                            "text": "Returns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "create\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@classmethod\ndef\ncreate\n(\ncls\n,\ncontext\n:\nOptional\n[\nDict\n]\n=\nNone\n,\nuse_cache\n:\nOptional\n[\nbool\n]\n=\nTrue\n,\nconfig_list\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nfilter_func\n:\nOptional\n[\nCallable\n[\n[\nDict\n,\nDict\n]\n,\nbool\n]\n]\n=\nNone\n,\nraise_on_ratelimit_or_timeout\n:\nOptional\n[\nbool\n]\n=\nTrue\n,\nallow_format_str_template\n:\nOptional\n[\nbool\n]\n=\nFalse\n,\n**\nconfig\n)"
+                            }
+                        },
+                        {
+                            "text": "Make a completion for a given context.\n\nArguments\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "response\n=\noai\n.\nCompletion\n.\ncreate\n(\nconfig_list\n=\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n.\nget\n(\n\"AZURE_OPENAI_API_KEY\"\n)\n,\n\"api_type\"\n:\n\"azure\"\n,\n\"base_url\"\n:\nos\n.\nenviron\n.\nget\n(\n\"AZURE_OPENAI_API_BASE\"\n)\n,\n\"api_version\"\n:\n\"2024-02-15-preview\"\n,\n}\n,\n{\n\"model\"\n:\n\"gpt-3.5-turbo\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n.\nget\n(\n\"OPENAI_API_KEY\"\n)\n,\n\"api_type\"\n:\n\"openai\"\n,\n\"base_url\"\n:\n\"https://api.openai.com/v1\"\n,\n}\n,\n{\n\"model\"\n:\n\"llama-7B\"\n,\n\"base_url\"\n:\n\"http://127.0.0.1:8080\"\n,\n\"api_type\"\n:\n\"openai\"\n,\n}\n]\n,\nprompt\n=\n\"Hi\"\n,\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nyes_or_no_filter\n(\ncontext\n,\nconfig\n,\nresponse\n)\n:\nreturn\ncontext\n.\nget\n(\n\"yes_or_no_choice\"\n,\nFalse\n)\nis\nFalse\nor\nany\n(\ntext\nin\n[\n\"Yes.\"\n,\n\"No.\"\n]\nfor\ntext\nin\noai\n.\nCompletion\n.\nextract_text\n(\nresponse\n)\n)"
+                            }
+                        },
+                        {
+                            "text": "Returns\n:\n\nResponses from OpenAI API, with additional fields."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "test\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@classmethod\ndef\ntest\n(\ncls\n,\ndata\n,\neval_func\n=\nNone\n,\nuse_cache\n=\nTrue\n,\nagg_method\n=\n\"avg\"\n,\nreturn_responses_and_per_instance_result\n=\nFalse\n,\nlogging_level\n=\nlogging\n.\nWARNING\n,\n**\nconfig\n)"
+                            }
+                        },
+                        {
+                            "text": "Evaluate the responses created with the config for the OpenAI API call.\n\nArguments\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\neval_func\n(\nresponses\n,\n**\ndata\n)\n:\nsolution\n=\ndata\n[\n\"solution\"\n]\nsuccess_list\n=\n[\n]\nn\n=\nlen\n(\nresponses\n)\nfor\ni\nin\nrange\n(\nn\n)\n:\nresponse\n=\nresponses\n[\ni\n]\nsucceed\n=\nis_equiv_chain_of_thought\n(\nresponse\n,\nsolution\n)\nsuccess_list\n.\nappend\n(\nsucceed\n)\nreturn\n{\n\"expected_success\"\n:\n1\n-\npow\n(\n1\n-\nsum\n(\nsuccess_list\n)\n/\nn\n,\nn\n)\n,\n\"success\"\n:\nany\n(\ns\nfor\ns\nin\nsuccess_list\n)\n,\n}"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "agg_method\n=\n'median'"
+                            }
+                        },
+                        {
+                            "text": "An example agg_method in a Callable:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "agg_method\n=\nnp\n.\nmedian"
+                            }
+                        },
+                        {
+                            "text": "An example agg_method in a dict of Callable:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "agg_method\n=\n{\n'median_success'\n:\nnp\n.\nmedian\n,\n'avg_success'\n:\nnp\n.\nmean\n}"
+                            }
+                        },
+                        {
+                            "text": "Returns\n:\n\nNone when no valid eval_func is provided in either test or tune;\nOtherwise, a dict of aggregated results, responses and per instance results if\nreturn_responses_and_per_instance_result\nis True;\nOtherwise, a dict of aggregated results (responses and per instance results are not returned)."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "cost\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@classmethod\ndef\ncost\n(\ncls\n,\nresponse\n:\ndict\n)"
+                            }
+                        },
+                        {
+                            "text": "Compute the cost of an API call.\n\nArguments\n:\n\nReturns\n:\n\nThe cost in USD. 0 if the model is not supported."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "extract_text\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@classmethod\ndef\nextract_text\n(\ncls\n,\nresponse\n:\ndict\n)\n-\n>\nList\n[\nstr\n]"
+                            }
+                        },
+                        {
+                            "text": "Extract the text from a completion or chat response.\n\nArguments\n:\n\nReturns\n:\n\nA list of text in the responses."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "extract_text_or_function_call\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@classmethod\ndef\nextract_text_or_function_call\n(\ncls\n,\nresponse\n:\ndict\n)\n-\n>\nList\n[\nstr\n]"
+                            }
+                        },
+                        {
+                            "text": "Extract the text or function calls from a completion or chat response.\n\nArguments\n:\n\nReturns\n:\n\nA list of text or function calls in the responses."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "logged_history\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@classmethod\n@property\ndef\nlogged_history\n(\ncls\n)\n-\n>\nDict"
+                            }
+                        },
+                        {
+                            "text": "Return the book keeping dictionary."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "print_usage_summary\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@classmethod\ndef\nprint_usage_summary\n(\ncls\n)\n-\n>\nDict"
+                            }
+                        },
+                        {
+                            "text": "Return the usage summary."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "start_logging\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@classmethod\ndef\nstart_logging\n(\ncls\n,\nhistory_dict\n:\nOptional\n[\nDict\n]\n=\nNone\n,\ncompact\n:\nOptional\n[\nbool\n]\n=\nTrue\n,\nreset_counter\n:\nOptional\n[\nbool\n]\n=\nTrue\n)"
+                            }
+                        },
+                        {
+                            "text": "Start book keeping.\n\nArguments\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "{\n\"create_at\"\n:\n[\n0\n,\n1\n]\n,\n\"cost\"\n:\n[\n0.1\n,\n0.2\n]\n,\n}"
+                            }
+                        },
+                        {
+                            "text": "where \"created_at\" is the index of API calls indicating the order of all the calls,\nand \"cost\" is the cost of each call. This example shows that the conversation is based\non two API calls. The compact format is useful for condensing the history of a conversation.\nIf compact is False, the history dictionary will contain all the API calls: the key\nis the index of the API call, and the value is a dictionary like:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "{\n\"request\"\n:\nrequest_dict\n,\n\"response\"\n:\nresponse_dict\n,\n}"
+                            }
+                        },
+                        {
+                            "text": "where request_dict is the request sent to OpenAI API, and response_dict is the response.\nFor a conversation containing two API calls, the non-compact history dictionary will be like:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "{\n0\n:\n{\n\"request\"\n:\nrequest_dict_0\n,\n\"response\"\n:\nresponse_dict_0\n,\n}\n,\n1\n:\n{\n\"request\"\n:\nrequest_dict_1\n,\n\"response\"\n:\nresponse_dict_1\n,\n}\n,"
+                            }
+                        },
+                        {
+                            "text": "The first request's messages plus the response is equal to the second request's messages.\nFor a conversation with many turns, the non-compact history dictionary has a quadratic size\nwhile the compact history dict has a linear size."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "ChatCompletion\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nChatCompletion\n(\nCompletion\n)"
+                    }
+                },
+                {
+                    "text": "(openai<1) A class for OpenAI API ChatCompletion. Share the same API as Completion."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

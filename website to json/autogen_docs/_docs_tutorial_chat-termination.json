@@ -1,0 +1,101 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/tutorial/chat-termination",
+    "title": "Terminating Conversations Between Agents",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nIn this chapter, we will explore how to terminate a conversation between\nAutoGen agents.\n\nBut why is this important?\nIts because in any complex, autonomous\nworkflows it’s crucial to know when to stop the workflow. For example,\nwhen the task is completed, or perhaps when the process has consumed\nenough resources and needs to either stop or adopt different strategies,\nsuch as user intervention. So AutoGen natively supports several\nmechanisms to terminate conversations.\n\nHow to Control Termination with AutoGen? Currently there are two broad\nmechanism to control the termination of conversations between agents:\n\nSpecify parameters in\ninitiate_chat\n: When initiating a chat,\nyou can define parameters that determine when the conversation\nshould end.\n\nConfigure an agent to trigger termination\n: When defining\nindividual agents, you can specify parameters that allow agents to\nterminate of a conversation based on particular (configurable)\nconditions."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Parameters in\ninitiate_chat\n​",
+            "content": [
+                {
+                    "text": "In the previous chapter we actually demonstrated this when we used the\nmax_turns\nparameter to limit the number of turns. If we increase\nmax_turns\nto say\n3\nnotice the conversation takes more rounds to\nterminate:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nos\nfrom\nautogen\nimport\nConversableAgent"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "cathy\n=\nConversableAgent\n(\n\"cathy\"\n,\nsystem_message\n=\n\"Your name is Cathy and you are a part of a duo of comedians.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"temperature\"\n:\n0.9\n,\n\"api_key\"\n:\nos\n.\nenviron\n.\nget\n(\n\"OPENAI_API_KEY\"\n)\n}\n]\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n# Never ask for human input.\n)\njoe\n=\nConversableAgent\n(\n\"joe\"\n,\nsystem_message\n=\n\"Your name is Joe and you are a part of a duo of comedians.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"temperature\"\n:\n0.7\n,\n\"api_key\"\n:\nos\n.\nenviron\n.\nget\n(\n\"OPENAI_API_KEY\"\n)\n}\n]\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n# Never ask for human input.\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "result\n=\njoe\n.\ninitiate_chat\n(\ncathy\n,\nmessage\n=\n\"Cathy, tell me a joke.\"\n,\nmax_turns\n=\n2\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "joe\n(\nto\ncathy\n)\n:\nCathy, tell me a joke.\n--------------------------------------------------------------------------------\ncathy\n(\nto\njoe\n)\n:\nSure, here's one for you:\nWhy don't scientists trust atoms?\nBecause they make up everything!\n--------------------------------------------------------------------------------\njoe\n(\nto\ncathy\n)\n:\nHaha, that's a good one, Cathy! Okay, my turn.\nWhy don't we ever tell secrets on a farm?\nBecause the potatoes have eyes, the corn has ears, and the beans stalk.\n--------------------------------------------------------------------------------\ncathy\n(\nto\njoe\n)\n:\nHaha, that's a great one! A farm is definitely not the place for secrets. Okay, my turn again.\nWhy couldn't the bicycle stand up by itself?\nBecause it was two-tired!\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "result\n=\njoe\n.\ninitiate_chat\n(\ncathy\n,\nmessage\n=\n\"Cathy, tell me a joke.\"\n,\nmax_turns\n=\n3\n)\n# increase the number of max turns before termination"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "joe\n(\nto\ncathy\n)\n:\nCathy, tell me a joke.\n--------------------------------------------------------------------------------\ncathy\n(\nto\njoe\n)\n:\nSure, here's one for you:\nWhy don't scientists trust atoms?\nBecause they make up everything!\n--------------------------------------------------------------------------------\njoe\n(\nto\ncathy\n)\n:\nHaha, that's a good one, Cathy! Okay, my turn.\nWhy don't we ever tell secrets on a farm?\nBecause the potatoes have eyes, the corn has ears, and the beans stalk.\n--------------------------------------------------------------------------------\ncathy\n(\nto\njoe\n)\n:\nHaha, that's a great one! A farm is definitely not the place for secrets. Okay, my turn again.\nWhy couldn't the bicycle stand up by itself?\nBecause it was two-tired!\n--------------------------------------------------------------------------------\njoe\n(\nto\ncathy\n)\n:\nHaha, that's a wheely good one, Cathy!\nWhy did the golfer bring two pairs of pants?\nIn case he got a hole in one!\n--------------------------------------------------------------------------------\ncathy\n(\nto\njoe\n)\n:\nHaha, that's a perfect swing of a joke!\nWhy did the scarecrow win an award?\nBecause he was outstanding in his field!\n--------------------------------------------------------------------------------"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Agent-triggered termination\n​",
+            "content": [
+                {
+                    "text": "You can also terminate a conversation by configuring parameters of an\nagent. Currently, there are two parameters you can configure:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Using\nmax_consecutive_auto_reply\n​",
+                    "content": [
+                        {
+                            "text": "In the example below lets set\nmax_consecutive_auto_reply\nto\n1\nand\nnotice how this ensures that Joe only replies once."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "joe\n=\nConversableAgent\n(\n\"joe\"\n,\nsystem_message\n=\n\"Your name is Joe and you are a part of a duo of comedians.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"gpt-4\"\n,\n\"temperature\"\n:\n0.7\n,\n\"api_key\"\n:\nos\n.\nenviron\n.\nget\n(\n\"OPENAI_API_KEY\"\n)\n}\n]\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n# Never ask for human input.\nmax_consecutive_auto_reply\n=\n1\n,\n# Limit the number of consecutive auto-replies.\n)\nresult\n=\njoe\n.\ninitiate_chat\n(\ncathy\n,\nmessage\n=\n\"Cathy, tell me a joke.\"\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "joe\n(\nto\ncathy\n)\n:\nCathy, tell me a joke.\n--------------------------------------------------------------------------------\ncathy\n(\nto\njoe\n)\n:\nSure, here's one for you:\nWhy don't scientists trust atoms?\nBecause they make up everything!\n--------------------------------------------------------------------------------\njoe\n(\nto\ncathy\n)\n:\nHaha, that's a good one, Cathy! Okay, my turn.\nWhy don't we ever tell secrets on a farm?\nBecause the potatoes have eyes, the corn has ears, and the beans stalk.\n--------------------------------------------------------------------------------\ncathy\n(\nto\njoe\n)\n:\nHaha, that's a great one! A farm is definitely not the place for secrets. Okay, my turn again.\nWhy couldn't the bicycle stand up by itself?\nBecause it was two-tired!\n--------------------------------------------------------------------------------"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Summary\n​",
+            "content": [
+                {
+                    "text": "In this chapter we introduced mechanisms to terminate a conversation\nbetween agents. You can configure both parameters in\ninitiate_chat\nand\nalso configuration of agents.\n\nThat said, it is important to note that when a termination condition is\ntriggered, the conversation may not always terminated immediately. The\nactual termination depends on the\nhuman_input_mode\nargument of the\nConversableAgent\nclass. For example, when mode is\nNEVER\nthe\ntermination conditions above will end the conversations. But when mode\nis\nALWAYS\nor\nTERMINATE\n, it will not terminate immediately. We will\ndescribe this behavior and explain why it is important in the next\nchapter."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

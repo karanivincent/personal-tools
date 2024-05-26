@@ -1,0 +1,16 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/ecosystem/ollama",
+    "title": "Ollama",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nOllama\nallows the users to run open-source large language models, such as Llama 2, locally. Ollama bundles model weights, configuration, and data into a single package, defined by a Modelfile. It optimizes setup and configuration details, including GPU usage."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

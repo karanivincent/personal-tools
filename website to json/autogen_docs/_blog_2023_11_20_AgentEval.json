@@ -1,0 +1,81 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2023/11/20/AgentEval",
+    "title": "How to Assess Utility of LLM-powered Applications?",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nFig.1 illustrates the general flow of AgentEval\n\nTL;DR:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "AutoGen aims to simplify the development of LLM-powered multi-agent systems for various applications, ultimately making end users' lives easier by assisting with their tasks. Next, we all yearn to understand how our developed systems perform, their utility for users, and, perhaps most crucially, how we can enhance them. Directly evaluating multi-agent systems poses challenges as current approaches predominantly rely on success metrics – essentially, whether the agent accomplishes tasks. However, comprehending user interaction with a system involves far more than success alone. Take math problems, for instance; it's not merely about the agent solving the problem. Equally significant is its ability to convey solutions based on various criteria, including completeness, conciseness, and the clarity of the provided explanation. Furthermore, success isn't always clearly defined for every task.\n\nRapid advances in LLMs and multi-agent systems have brought forth many emerging capabilities that we're keen on translating into tangible utilities for end users. We introduce the first version of\nAgentEval\nframework - a tool crafted to empower developers in swiftly gauging the utility of LLM-powered applications designed to help end users accomplish the desired task.\n\n\n\nFig. 2 provides  an overview of the tasks taxonomy\n\n\n\nLet's first look into an overview of the suggested task taxonomy that a multi-agent system can be designed for. In general, the tasks can be split into two types, where:\n\nIn our\nAgentEval\nframework, we are currently focusing on tasks where\nSuccess is clearly defined\n. Next, we will introduce the suggested framework."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "AgentEval\nFramework\n​",
+            "content": [
+                {
+                    "text": "Our previous research on\nassistive agents in Minecraft\nsuggested that the most optimal way to obtain human judgments is to present humans with two agents side by side and ask for preferences. In this setup of pairwise comparison, humans can develop criteria to explain why they prefer the behavior of one agent over another. For instance,\n'the first agent was faster in execution,'\nor\n'the second agent moves more naturally.'\nSo, the comparative nature led humans to come up with a list of criteria that helps to infer the utility of the task. With this idea in mind, we designed\nAgentEval\n(shown in Fig. 1), where we employ LLMs to help us understand, verify, and assess task\nutility\nfor the multi-agent system. Namely:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "critic\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"critic\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n}\n,\nsystem_message\n=\n\"\"\"You are a helpful assistant. You suggest criteria for evaluating different tasks. They should be distinguishable, quantifiable, and not redundant.\nConvert the evaluation criteria into a dictionary where the keys are the criteria.\nThe value of each key is a dictionary as follows {\"description\": criteria description, \"accepted_values\": possible accepted inputs for this key}\nMake sure the keys are criteria for assessing the given task. \"accepted_values\" include the acceptable inputs for each key that are fine-grained and preferably multi-graded levels. \"description\" includes the criterion description.\nReturn only the dictionary.\"\"\"\n)"
+                    }
+                },
+                {
+                    "text": "Next, the critic is given successful and failed examples of the task execution; then, it is able to return a list of criteria (Fig. 1). For reference, use the\nfollowing notebook\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "quantifier\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"quantifier\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n}\n,\nsystem_message\n=\n\"\"\"You are a helpful assistant. You quantify the output of different tasks based on the given criteria.\nThe criterion is given in a dictionary format where each key is a distinct criteria.\nThe value of each key is a dictionary as follows {\"description\": criteria description , \"accepted_values\": possible accepted inputs for this key}\nYou are going to quantify each of the criteria for a given task based on the task description.\nReturn a dictionary where the keys are the criteria and the values are the assessed performance based on accepted values for each criteria.\nReturn only the dictionary.\"\"\"\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "AgentEval\nResults based on Math Problems Dataset\n​",
+            "content": [
+                {
+                    "text": "As an example, after running CriticAgent, we obtained the following criteria to verify the results for math problem dataset:\n\nThen, after running QuantifierAgent, we obtained the results presented in Fig. 3, where you can see three models:\n\nLighter colors represent estimates for failed cases, and brighter colors show how discovered criteria were quantified.\n\n\n\nFig.3 presents results based on overall math problems dataset\n_s\nstands for successful cases,\n_f\n- stands for failed cases\n\n\n\nWe note that while applying agentEval to math problems, the agent was not exposed to any ground truth information about the problem. As such, this figure illustrates an estimated performance of the three different agents, namely, Autogen (blue), Gpt-4 (red), and ReAct (green). We observe that by comparing the performance of any of the three agents in successful cases (dark bars of any color) versus unsuccessful cases (lighter version of the same bar), we note that AgentEval was able to assign higher quantification to successful cases than that of failed ones. This observation verifies AgentEval's ability for task utility prediction. Additionally, AgentEval allows us to go beyond just a binary definition of success, enabling a more in-depth comparison between successful and failed cases.\n\nIt's important not only to identify what is not working but also to recognize what and why actually went well."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Limitations and Future Work\n​",
+            "content": [
+                {
+                    "text": "The current implementation of\nAgentEval\nhas a number of limitations which are planning to overcome in the future:\n\nTo mitigate the limitations mentioned above, we are working on VerifierAgent, whose goal is to stabilize the results and provide additional explanations."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Summary\n​",
+            "content": [
+                {
+                    "text": "CriticAgent\nand\nQuantifierAgent\ncan be applied to the logs of any type of application, providing you with an in-depth understanding of the utility your solution brings to the user for a given task.\n\nWe would love to hear about how AgentEval works for your application. Any feedback would be useful for future development. Please contact us on our\nDiscord\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Previous Research\n​",
+            "content": [],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

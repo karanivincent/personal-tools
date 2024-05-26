@@ -1,0 +1,103 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_lmm_gpt-4v",
+    "title": "Engaging with Multimodal Models: GPT-4V in AutoGen",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nIn AutoGen, leveraging multimodal models can be done through two\ndifferent methodologies: 1.\nMultimodalAgent\n: Supported by GPT-4V and\nother LMMs, this agent is endowed with visual cognitive abilities,\nallowing it to engage in interactions comparable to those of other\nConversableAgents. 2.\nVisionCapability\n: For LLM-based agents lacking\ninherent visual comprehension, we introduce vision capabilities by\nconverting images into descriptive captions.\n\nThis guide will delve into each approach, providing insights into their\napplication and integration."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Vision Capability: Group Chat Example with Multimodal Agent\n​",
+            "content": [
+                {
+                    "text": "We recommend using VisionCapability for group chat managers so that it\ncan organize and understand images better."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "agent1\n=\nMultimodalConversableAgent\n(\nname\n=\n\"image-explainer-1\"\n,\nmax_consecutive_auto_reply\n=\n10\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list_4v\n,\n\"temperature\"\n:\n0.5\n,\n\"max_tokens\"\n:\n300\n}\n,\nsystem_message\n=\n\"Your image description is poetic and engaging.\"\n,\n)\nagent2\n=\nMultimodalConversableAgent\n(\nname\n=\n\"image-explainer-2\"\n,\nmax_consecutive_auto_reply\n=\n10\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list_4v\n,\n\"temperature\"\n:\n0.5\n,\n\"max_tokens\"\n:\n300\n}\n,\nsystem_message\n=\n\"Your image description is factual and to the point.\"\n,\n)\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"User_proxy\"\n,\nsystem_message\n=\n\"Desribe image for me.\"\n,\nhuman_input_mode\n=\n\"TERMINATE\"\n,\n# Try between ALWAYS, NEVER, and TERMINATE\nmax_consecutive_auto_reply\n=\n10\n,\ncode_execution_config\n=\n{\n\"use_docker\"\n:\nFalse\n}\n,\n# Please set use_docker=True if docker is available to run the generated code. Using docker is safer than running the generated code directly.\n)\n# We set max_round to 5\ngroupchat\n=\nautogen\n.\nGroupChat\n(\nagents\n=\n[\nagent1\n,\nagent2\n,\nuser_proxy\n]\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n5\n)\nvision_capability\n=\nVisionCapability\n(\nlmm_config\n=\n{\n\"config_list\"\n:\nconfig_list_4v\n,\n\"temperature\"\n:\n0.5\n,\n\"max_tokens\"\n:\n300\n}\n)\ngroup_chat_manager\n=\nautogen\n.\nGroupChatManager\n(\ngroupchat\n=\ngroupchat\n,\nllm_config\n=\ngpt4_llm_config\n)\nvision_capability\n.\nadd_to_agent\n(\ngroup_chat_manager\n)\nrst\n=\nuser_proxy\n.\ninitiate_chat\n(\ngroup_chat_manager\n,\nmessage\n=\n\"\"\"Write a poet for my image:\n<img https://th.bing.com/th/id/R.422068ce8af4e15b0634fe2540adea7a?rik=y4OcXBE%2fqutDOw&pid=ImgRaw&r=0>.\"\"\"\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "User_proxy\n(\nto\nchat_manager\n)\n:\nWrite a poet for my image:\n<img https://th.bing.com/th/id/R.422068ce8af4e15b0634fe2540adea7a?rik=y4OcXBE%2fqutDOw&pid=ImgRaw&r=0>.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nimage-explainer-1\n(\nto\nchat_manager\n)\n:\nIn a cozy nook by the door, where whispers of adventure pour,\nLies a curly apricot dream, with eyes that softly gleam.\nWestphal, a name upon his tag, a dapper bow, no room to brag.\nA poodle or a mix so sweet, with paws that barely seem to meet\nThe floor that holds his tender frame, in this quiet household game.\nA sentinel of love and joy, more charming than any toy.\nHis gaze, a tale of gentle days, and love that in his heart blazes.\nWith boots behind, like silent guards, he watches without regards\nTo the world's rush and its tides, in his serene abode, he abides.\nOh, little guardian of the hearth, your worth is not defined by birth.\nBut by the joy you bring to life, a respite from our daily strife.\nIn you, we find a friend so true, Westphal, a treasure through and through.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nimage-explainer-2\n(\nto\nchat_manager\n)\n:\nA pup so young with fur of gold,\nIn a house where stories unfold.\nWestphal, with your bow so neat,\nYour puppy eyes, oh so sweet.\nCurled up on the floor so light,\nYour coat a soft, delightful sight.\nA mix, perhaps, of breeds so kind,\nIn your face, pure joy we find.\nWith a tag that jingles slight,\nAnd a bow tie oh so bright,\nYou lie there with such grace,\nA calm presence in this place.\nBehind you, boots await the rain,\nBut inside, you contently remain.\nA symbol of love, a furry delight,\nA beacon of warmth, shining so bright.\nIn a world that's fast and vast,\nYour gentle spirit holds us fast.\nWestphal, with your charm so grand,\nYou bring peace to this human land.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nUser_proxy\n(\nto\nchat_manager\n)\n:\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nUser_proxy\n(\nto\nchat_manager\n)\n:\n--------------------------------------------------------------------------------"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Behavior with and without VisionCapability for Agents\n​",
+            "content": [
+                {
+                    "text": "Here, we show the behavior of an agent with and without\nVisionCapability. We use the same image and question as in the previous\nexample."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "agent_no_vision\n=\nAssistantAgent\n(\nname\n=\n\"Regular LLM Agent\"\n,\nllm_config\n=\ngpt4_llm_config\n)\nagent_with_vision\n=\nAssistantAgent\n(\nname\n=\n\"Regular LLM Agent with Vision Capability\"\n,\nllm_config\n=\ngpt4_llm_config\n)\nvision_capability\n=\nVisionCapability\n(\nlmm_config\n=\n{\n\"config_list\"\n:\nconfig_list_4v\n,\n\"temperature\"\n:\n0.5\n,\n\"max_tokens\"\n:\n300\n}\n)\nvision_capability\n.\nadd_to_agent\n(\nagent_with_vision\n)\nuser\n=\nUserProxyAgent\n(\nname\n=\n\"User\"\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nmax_consecutive_auto_reply\n=\n0\n,\ncode_execution_config\n=\n{\n\"use_docker\"\n:\nFalse\n}\n,\n)\nmessage\n=\n\"\"\"Write a poet for my image:\n<img https://th.bing.com/th/id/R.422068ce8af4e15b0634fe2540adea7a?rik=y4OcXBE%2fqutDOw&pid=ImgRaw&r=0>.\"\"\""
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "user\n.\nsend\n(\nmessage\n=\nmessage\n,\nrecipient\n=\nagent_no_vision\n,\nrequest_reply\n=\nTrue\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "User (to Regular LLM Agent):\nWrite a poet for my image:\n<img https://th.bing.com/th/id/R.422068ce8af4e15b0634fe2540adea7a?rik=y4OcXBE%2fqutDOw&pid=ImgRaw&r=0>.\n--------------------------------------------------------------------------------\nRegular LLM\nAgent\n(\nto\nUser\n)\n:\nAs an AI, I can't directly view images or web content. However, I can help you generate a poem by gathering information about the image. Please describe the image for me, including details such as the setting, prominent colors, the mood it evokes, and any specific elements like animals, nature, cityscapes, or people that you want to be highlighted in the poem. Once you provide a description of the image, I can compose a poem based on that description.\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "user\n.\nsend\n(\nmessage\n=\nmessage\n,\nrecipient\n=\nagent_with_vision\n,\nrequest_reply\n=\nTrue\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "User (to Regular LLM Agent with Vision Capability):\nWrite a poet for my image:\n<img https://th.bing.com/th/id/R.422068ce8af4e15b0634fe2540adea7a?rik=y4OcXBE%2fqutDOw&pid=ImgRaw&r=0>.\n--------------------------------------------------------------------------------\nRegular LLM Agent with Vision\nCapability\n(\nto\nUser\n)\n:\nIn apricot hues, a curl-coated pup reclines,\nWith Westphal's name upon his tag that shines.\nA bow tie blooms in a brilliant blue sky,\nAmid a light-drenched floor where soft paws lie.\nPossessor of gazes, tender and deep,\nIn the quiet foyer, his watch he keeps.\nBeneath black rubber guards of rainy days,\nHe stirs a comfort, a homely embrace.\nHis lineage drawn from the poodles' grace,\nOr maybe a mix, with a doodle's face,\nGold or Lab, his curls are just as sweet,\nIn each bouncing step, in each heartbeat.\nA picture of love, in a tiny frame,\nA heartbeat wrapped in an apricot mane.\nThe pup in his calm, an invite to cheer,\nA whisper of joy in a pet-lover's ear.\nAround him, life's simple clutter does unfold,\nYet untouched by worry, untouched by cold.\nWith every breath, he claims this slice of earth,\nA master of mirth, from the moment of his birth.\nPaws outstretched on the soft, forgiving ground,\nHis soulful eyes speak, without a sound.\nFor in the sweet stillness of his gentle rest,\nLies the simple truth that we are blessed.\nTERMINATE\n--------------------------------------------------------------------------------"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Custom Caption Function for Vision Capability\n​",
+            "content": [
+                {
+                    "text": "In many use cases, we can use a custom function within the Vision\nCapability to transcribe an image into a caption.\n\nFor instance, we can use rule-based algorithm or other models to detect\nthe color, box, and other components inside the image.\n\nThe custom model should take a path to the image and return a string\ncaption.\n\nIn the example below, the Vision Capability will call LMM to get caption\nand also call the custom function to get more information."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "def\nmy_description\n(\nimage_url\n:\nstr\n,\nimage_data\n:\nImage\n=\nNone\n,\nlmm_client\n:\nobject\n=\nNone\n)\n-\n>\nstr\n:\n\"\"\"\nThis function takes an image URL and returns the description.\nParameters:\n- image_url (str): The URL of the image.\n- image_data (PIL.Image): The image data.\n- lmm_client (object): The LLM client object.\nReturns:\n- str: A description of the color of the image.\n\"\"\"\n# Print the arguments for illustration purpose\nprint\n(\n\"image_url\"\n,\nimage_url\n)\nprint\n(\n\"image_data\"\n,\nimage_data\n)\nprint\n(\n\"lmm_client\"\n,\nlmm_client\n)\nimg_uri\n=\npil_to_data_uri\n(\nimage_data\n)\n# cast data into URI (str) format for API call\nlmm_out\n=\nlmm_client\n.\ncreate\n(\ncontext\n=\nNone\n,\nmessages\n=\n[\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n[\n{\n\"type\"\n:\n\"text\"\n,\n\"text\"\n:\n\"Describe this image in 10 words.\"\n}\n,\n{\n\"type\"\n:\n\"image_url\"\n,\n\"image_url\"\n:\n{\n\"url\"\n:\nimg_uri\n,\n}\n,\n}\n,\n]\n,\n}\n]\n,\n)\ndescription\n=\nlmm_out\n.\nchoices\n[\n0\n]\n.\nmessage\n.\ncontent\ndescription\n=\ncontent_str\n(\ndescription\n)\n# Convert the image into an array of pixels.\npixels\n=\nnp\n.\narray\n(\nimage_data\n)\n# Calculate the average color.\navg_color_per_row\n=\nnp\n.\nmean\n(\npixels\n,\naxis\n=\n0\n)\navg_color\n=\nnp\n.\nmean\n(\navg_color_per_row\n,\naxis\n=\n0\n)\navg_color\n=\navg_color\n.\nastype\n(\nint\n)\n# Convert to integer for color values\n# Format the average color as a string description.\ncaption\n=\nf\"\"\"The image is from\n{\nimage_url\n}\nIt is about:\n{\ndescription\n}\nThe average color of the image is RGB:\n(\n{\navg_color\n[\n0\n]\n}\n,\n{\navg_color\n[\n1\n]\n}\n,\n{\navg_color\n[\n2\n]\n}\n)\"\"\"\nprint\n(\ncaption\n)\n# For illustration purpose\nreturn\ncaption"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "agent_with_vision_and_func\n=\nAssistantAgent\n(\nname\n=\n\"Regular LLM Agent with Custom Func and LMM\"\n,\nllm_config\n=\ngpt4_llm_config\n)\nvision_capability_with_func\n=\nVisionCapability\n(\nlmm_config\n=\n{\n\"config_list\"\n:\nconfig_list_4v\n,\n\"temperature\"\n:\n0.5\n,\n\"max_tokens\"\n:\n300\n}\n,\ncustom_caption_func\n=\nmy_description\n,\n)\nvision_capability_with_func\n.\nadd_to_agent\n(\nagent_with_vision_and_func\n)\nuser\n.\nsend\n(\nmessage\n=\nmessage\n,\nrecipient\n=\nagent_with_vision_and_func\n,\nrequest_reply\n=\nTrue\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "User (to Regular LLM Agent with Custom Func and LMM):\nWrite a poet for my image:\n<img https://th.bing.com/th/id/R.422068ce8af4e15b0634fe2540adea7a?rik=y4OcXBE%2fqutDOw&pid=ImgRaw&r=0>.\n--------------------------------------------------------------------------------\nimage_url https://th.bing.com/th/id/R.422068ce8af4e15b0634fe2540adea7a?rik=y4OcXBE%2fqutDOw&pid=ImgRaw&r=0\nimage_data <PIL.Image.Image image mode=RGB size=1920x1080 at 0x7F599DA4CCA0>\nlmm_client <autogen.oai.client.OpenAIWrapper object at 0x7f599da3ab20>\nThe image is from https://th.bing.com/th/id/R.422068ce8af4e15b0634fe2540adea7a?rik=y4OcXBE%2fqutDOw&pid=ImgRaw&r=0\nIt is about: Cute brown curly-haired puppy with blue collar indoors.\nThe average color of the image is RGB:\n(170, 155, 137)\nRegular LLM Agent with Custom Func and\nLMM\n(\nto\nUser\n)\n:\nBeneath a sky of homely hue,\nWhere RGB blends a gentle stew,\nLies a pup of curls and capers,\nBound by blue, his neck in drapers.\nSoft in gaze, his eyes implore,\nWarming hearts down to the core,\nCoat of brown, with tangles sweet,\nWhispers of play in each petite feet.\nIn a world quite vast and wide,\nIndoors he sits, with pride inside.\nA silent wish, a breath, a start,\nCurly companion, a work of art.\nWithin the frame, he's captured still,\nYet, through the lens, his charm does spill.\nA tiny heartbeat in the quiet room,\nHis presence banishes all gloom.\nA puppy's joy, in sepia tone,\nWith collar blue, he reigns alone.\nA picture's worth, this moment's glee,\nCute curly friend, for all to see.\nThis poem encapsulates the essence of the cute brown curly-haired puppy wearing a blue collar, blending an emotional portrayal with the aesthetic elements you provided.\n--------------------------------------------------------------------------------"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

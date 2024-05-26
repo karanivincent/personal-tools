@@ -1,0 +1,157 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics/non-openai-models/local-litellm-ollama",
+    "title": "LiteLLM with Ollama",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "LiteLLM\nis an open-source locally run proxy server that provides an\nOpenAI-compatible API. It interfaces with a large number of providers that do the inference.\nTo handle the inference, a popular open-source inference engine is\nOllama\n.\n\nAs not all proxy servers support OpenAI's\nFunction Calling\n(usable with AutoGen),\nLiteLLM together with Ollama enable this useful feature.\n\nRunning this stack requires the installation of:\n\nNote: We recommend using a virtual environment for your stack, see\nthis article\nfor guidance."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Installing LiteLLM\n​",
+            "content": [
+                {
+                    "text": "Install LiteLLM with the proxy server functionality:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install 'litellm[proxy]'"
+                    }
+                },
+                {
+                    "text": "Note: If using Windows, run LiteLLM and Ollama within a\nWSL2\n.\n\nFor custom LiteLLM installation instructions, see their\nGitHub repository\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Installing Ollama\n​",
+            "content": [
+                {
+                    "text": "For Mac and Windows,\ndownload Ollama\n.\n\nFor Linux:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "curl -fsSL https://ollama.com/install.sh | sh"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Downloading models\n​",
+            "content": [
+                {
+                    "text": "Ollama has a library of models to choose from, see them\nhere\n.\n\nBefore you can use a model, you need to download it (using the name of the model from the library):"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "ollama pull llama2"
+                    }
+                },
+                {
+                    "text": "To view the models you have downloaded and can use:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "ollama list"
+                    }
+                },
+                {
+                    "text": "Ollama enables the use of GGUF model files, available readily on Hugging Face. See Ollama`s\nGitHub repository\nfor examples."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Running LiteLLM proxy server\n​",
+            "content": [
+                {
+                    "text": "To run LiteLLM with the model you have downloaded, in your terminal:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "litellm --model ollama_chat/llama2"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "INFO:     Started server process [19040]\nINFO:     Waiting for application startup.\n#\n------------------------------------------------------------\n#\n#                                                            #\n#       'This feature doesn't meet my needs because...'       #\n#        https://github.com/BerriAI/litellm/issues/new        #\n#                                                            #\n#\n------------------------------------------------------------\n#\nThank you for using LiteLLM! - Krrish & Ishaan\nGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://0.0.0.0:4000 (Press CTRL+C to quit)"
+                    }
+                },
+                {
+                    "text": "This will run the proxy server and it will be available at '\nhttp://0.0.0.0:4000/\n'."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Using LiteLLM+Ollama with AutoGen\n​",
+            "content": [
+                {
+                    "text": "Now that we have the URL for the LiteLLM proxy server, you can use it within AutoGen\nin the same way as OpenAI or cloud-based proxy servers.\n\nAs you are running this proxy server locally, no API key is required. Additionally, as\nthe model is being set when running the\nLiteLLM command, no model name needs to be configured in AutoGen. However,\nmodel\nand\napi_key\nare mandatory fields for configurations within AutoGen so we put dummy\nvalues in them, as per the example below."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nUserProxyAgent\n,\nConversableAgent\nlocal_llm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"NotRequired\"\n,\n# Loaded with LiteLLM command\n\"api_key\"\n:\n\"NotRequired\"\n,\n# Not needed\n\"base_url\"\n:\n\"http://0.0.0.0:4000\"\n# Your LiteLLM URL\n}\n]\n,\n\"cache_seed\"\n:\nNone\n# Turns off caching, useful for testing different models\n}\n# Create the agent that uses the LLM.\nassistant\n=\nConversableAgent\n(\n\"agent\"\n,\nllm_config\n=\nlocal_llm_config\n)\n# Create the agent that represents the user in the conversation.\nuser_proxy\n=\nUserProxyAgent\n(\n\"user\"\n,\ncode_execution_config\n=\nFalse\n)\n# Let the assistant start the conversation.  It will end when the user types exit.\nassistant\n.\ninitiate_chat\n(\nuser_proxy\n,\nmessage\n=\n\"How can I help you today?\"\n)"
+                    }
+                },
+                {
+                    "text": "Output:"
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "agent\n(\nto\nuser\n)\n:\nHow can I help you today?\n--------------------------------------------------------------------------------\nProvide feedback to agent. Press enter to skip and use auto-reply, or type 'exit' to end the conversation: Tell me, why is the sky blue?\nuser\n(\nto\nagent\n)\n:\nTell me, why is the sky blue?\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nagent\n(\nto\nuser\n)\n:\nAh, a classic question! The sky appears blue because of a phenomenon called Rayleigh scattering. When sunlight enters Earth's atmosphere, it encounters tiny molecules of gases such as nitrogen and oxygen. These molecules scatter the light in all directions, but they scatter shorter (blue) wavelengths more than longer (red) wavelengths. This is why the sky looks blue during the daytime, especially in the direction of the sun.\nBut wait, there's more! The color of the sky can also change depending on the time of day and atmospheric conditions. For example, during sunrise and sunset, the sky can take on hues of red, orange, and pink due to the way that light interacts with the Earth's atmosphere. And if you're in a location with a lot of dust or pollution, the sky may appear more hazy or gray.\nSo there you have it! The sky is blue because of the way that light interacts with the Earth's atmosphere, and there are many factors that can affect its appearance. Is there anything else you'd like to know?\n--------------------------------------------------------------------------------\nProvide feedback to agent. Press enter to skip and use auto-reply, or type 'exit' to end the conversation: And what would it take to make it red?\nuser\n(\nto\nagent\n)\n:\nAnd what would it take to make it red?\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nagent\n(\nto\nuser\n)\n:\nAh, an interesting question! To make the sky appear red, we need to look at the scattering of light in a different way. When the sun is low on the horizon, the light it emits has to travel through a longer distance in the atmosphere to reach our eyes. As a result, much of the shorter wavelength blue light is scattered away, leaving mainly the longer wavelength red and orange light to reach our eyes. This is why the sky can take on hues of red, orange, and pink during sunrise and sunset.\nHowever, if we were to somehow change the composition of the atmosphere or add some additional particles into the air, we could potentially make the sky appear red even when the sun is high in the sky. For example, if we were to add a lot of dust or smoke into the atmosphere, the sky might take on a reddish hue due to the scattering of light by these particles. Or, if we were to create a situation where the air was filled with a high concentration of certain gases, such as nitrogen oxides or sulfur compounds, the sky could potentially appear red or orange as a result of the way that these gases interact with light.\nSo there you have it! While the sky is typically blue during the daytime due to Rayleigh scattering, there are many other factors that can affect its appearance, and with the right conditions, we can even make the sky appear red! Is there anything else you'd like to know?\n--------------------------------------------------------------------------------\nProvide feedback to agent. Press enter to skip and use auto-reply, or type 'exit' to end the conversation: exit"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example with Function Calling\n​",
+            "content": [
+                {
+                    "text": "Function calling (aka Tool calling) is a feature of OpenAI's API that AutoGen and LiteLLM support.\n\nBelow is an example of using function calling with LiteLLM and Ollama. Based on this\ncurrency conversion\nnotebook.\n\nLiteLLM is loaded in the same way as the previous example, however the DolphinCoder model is used as it is better at constructing the\nfunction calling message required.\n\nIn your terminal:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "litellm --model ollama_chat/dolphincoder"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nautogen\nfrom\ntyping\nimport\nLiteral\nfrom\ntyping_extensions\nimport\nAnnotated\nlocal_llm_config\n=\n{\n\"config_list\"\n:\n[\n{\n\"model\"\n:\n\"NotRequired\"\n,\n# Loaded with LiteLLM command\n\"api_key\"\n:\n\"NotRequired\"\n,\n# Not needed\n\"base_url\"\n:\n\"http://0.0.0.0:4000\"\n# Your LiteLLM URL\n}\n]\n,\n\"cache_seed\"\n:\nNone\n# Turns off caching, useful for testing different models\n}\n# Create the agent and include examples of the function calling JSON in the prompt\n# to help guide the model\nchatbot\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"chatbot\"\n,\nsystem_message\n=\n\"\"\"For currency exchange tasks,\nonly use the functions you have been provided with.\nOutput 'TERMINATE' when an answer has been provided.\nDo not include the function name or result in the JSON.\nExample of the return JSON is:\n{\n\"parameter_1_name\": 100.00,\n\"parameter_2_name\": \"ABC\",\n\"parameter_3_name\": \"DEF\",\n}.\nAnother example of the return JSON is:\n{\n\"parameter_1_name\": \"GHI\",\n\"parameter_2_name\": \"ABC\",\n\"parameter_3_name\": \"DEF\",\n\"parameter_4_name\": 123.00,\n}. \"\"\"\n,\nllm_config\n=\nlocal_llm_config\n,\n)\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\nis_termination_msg\n=\nlambda\nx\n:\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\nand\n\"TERMINATE\"\nin\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nmax_consecutive_auto_reply\n=\n1\n,\n)\nCurrencySymbol\n=\nLiteral\n[\n\"USD\"\n,\n\"EUR\"\n]\n# Define our function that we expect to call\ndef\nexchange_rate\n(\nbase_currency\n:\nCurrencySymbol\n,\nquote_currency\n:\nCurrencySymbol\n)\n-\n>\nfloat\n:\nif\nbase_currency\n==\nquote_currency\n:\nreturn\n1.0\nelif\nbase_currency\n==\n\"USD\"\nand\nquote_currency\n==\n\"EUR\"\n:\nreturn\n1\n/\n1.1\nelif\nbase_currency\n==\n\"EUR\"\nand\nquote_currency\n==\n\"USD\"\n:\nreturn\n1.1\nelse\n:\nraise\nValueError\n(\nf\"Unknown currencies\n{\nbase_currency\n}\n,\n{\nquote_currency\n}\n\"\n)\n# Register the function with the agent\n@user_proxy\n.\nregister_for_execution\n(\n)\n@chatbot\n.\nregister_for_llm\n(\ndescription\n=\n\"Currency exchange calculator.\"\n)\ndef\ncurrency_calculator\n(\nbase_amount\n:\nAnnotated\n[\nfloat\n,\n\"Amount of currency in base_currency\"\n]\n,\nbase_currency\n:\nAnnotated\n[\nCurrencySymbol\n,\n\"Base currency\"\n]\n=\n\"USD\"\n,\nquote_currency\n:\nAnnotated\n[\nCurrencySymbol\n,\n\"Quote currency\"\n]\n=\n\"EUR\"\n,\n)\n-\n>\nstr\n:\nquote_amount\n=\nexchange_rate\n(\nbase_currency\n,\nquote_currency\n)\n*\nbase_amount\nreturn\nf\"\n{\nformat\n(\nquote_amount\n,\n'.2f'\n)\n}\n{\nquote_currency\n}\n\"\n# start the conversation\nres\n=\nuser_proxy\n.\ninitiate_chat\n(\nchatbot\n,\nmessage\n=\n\"How much is 123.45 EUR in USD?\"\n,\nsummary_method\n=\n\"reflection_with_llm\"\n,\n)"
+                    }
+                },
+                {
+                    "text": "Output:"
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "user_proxy\n(\nto\nchatbot\n)\n:\nHow much is 123.45 EUR in USD?\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\n***** Suggested tool Call (call_c93c4390-93d5-4a28-b40d-09fe74cc58da): currency_calculator *****\nArguments:\n{\n\"base_amount\": 123.45,\n\"base_currency\": \"EUR\",\n\"quote_currency\": \"USD\"\n}\n************************************************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING FUNCTION currency_calculator...\nuser_proxy\n(\nto\nchatbot\n)\n:\nuser_proxy\n(\nto\nchatbot\n)\n:\n***** Response from calling tool \"call_c93c4390-93d5-4a28-b40d-09fe74cc58da\" *****\n135.80 USD\n**********************************************************************************\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\n***** Suggested tool Call (call_d8fd94de-5286-4ef6-b1f6-72c826531ff9): currency_calculator *****\nArguments:\n{\n\"base_amount\": 123.45,\n\"base_currency\": \"EUR\",\n\"quote_currency\": \"USD\"\n}\n************************************************************************************************"
+                    }
+                },
+                {
+                    "text": "Not all open source/weight models are suitable for function calling and AutoGen continues to be\ndeveloped to provide wider support for open source models.\n\nThe\n#alt-models\nchannel\non AutoGen's Discord is an active community discussing the use of open source/weight models\nwith AutoGen."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

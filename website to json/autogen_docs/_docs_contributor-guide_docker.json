@@ -1,0 +1,75 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/contributor-guide/docker",
+    "title": "Docker for Development",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "For developers contributing to the AutoGen project, we offer a specialized Docker environment. This setup is designed to streamline the development process, ensuring that all contributors work within a consistent and well-equipped environment."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Autogen Developer Image (autogen_dev_img)\n​",
+            "content": [],
+            "subsections": []
+        },
+        {
+            "title": "Building the Developer Docker Image\n​",
+            "content": [
+                {
+                    "text": "To build the developer Docker image (\nautogen_dev_img\n), use the following commands:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "docker build -f .devcontainer/dev/Dockerfile -t autogen_dev_img https://github.com/microsoft/autogen.git#main"
+                    }
+                },
+                {
+                    "text": "For building the developer image built from a specific Dockerfile in a branch other than main/master"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "# clone the branch you want to work out of\ngit clone --branch {branch-name} https://github.com/microsoft/autogen.git\n# cd to your new directory\ncd autogen\n# build your Docker image\ndocker build -f .devcontainer/dev/Dockerfile -t autogen_dev-srv_img ."
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Using the Developer Docker Image\n​",
+            "content": [
+                {
+                    "text": "Once you have built the\nautogen_dev_img\n, you can run it using the standard Docker commands. This will place you inside the containerized development environment where you can run tests, develop code, and ensure everything is functioning as expected before submitting your contributions."
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "docker run -it -p 8081:3000 -v `pwd`/autogen-newcode:newstuff/ autogen_dev_img bash"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "docker run -it -p 8081:3000 -v /home/AutoGenDeveloper/autogen-newcode:newstuff/ autogen_dev_img bash"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Develop in Remote Container\n​",
+            "content": [
+                {
+                    "text": "If you use vscode, you can open the autogen folder in a\nContainer\n.\nWe have provided the configuration in\ndevcontainer\n. They can be used in GitHub codespace too. Developing AutoGen in dev containers is recommended."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

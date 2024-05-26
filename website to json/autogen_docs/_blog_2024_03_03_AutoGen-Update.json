@@ -1,0 +1,94 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2024/03/03/AutoGen-Update",
+    "title": "What's New in AutoGen?",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nTL;DR\n\nFive months have passed since the initial spinoff of AutoGen from\nFLAML\n. What have we learned since then? What are the milestones achieved? What's next?"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Background\n​",
+            "content": [
+                {
+                    "text": "AutoGen was motivated by two big questions:\n\nLast year, I worked with my colleagues and collaborators from Penn State University and University of Washington, on a new multi-agent framework, to enable the next generation of applications powered by large language models.\nWe have been building AutoGen, as a programming framework for agentic AI, just like PyTorch for deep learning.\nWe developed AutoGen in an open source project\nFLAML\n: a fast library for AutoML and tuning. After a few studies like\nEcoOptiGen\nand\nMathChat\n, in August, we published a\ntechnical report\nabout the multi-agent framework.\nIn October, we moved AutoGen from FLAML to a standalone repo on GitHub, and published an\nupdated technical report\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Feedback\n​",
+            "content": [
+                {
+                    "text": "Since then, we've got new feedback every day, everywhere. Users have shown really high recognition of the new levels of capability enabled by AutoGen. For example, there are many comments like the following on X (Twitter) or YouTube.\n\nAutogen gave me the same a-ha moment that I haven't felt since trying out GPT-3\nfor the first time.\n\nI have never been this surprised since ChatGPT.\n\nMany users have deep understanding of the value in different dimensions, such as the modularity, flexibility and simplicity.\n\nThe same reason autogen is significant is the same reason OOP is a good idea. Autogen packages up all that complexity into an agent I can create in one line, or modify with another.\n\nOver time, more and more users share their experiences in using or contributing to autogen.\n\nIn our Data Science department Autogen is helping us develop a production ready\nmulti-agents framework.\n\nSam Khalil, VP Data Insights & FounData, Novo Nordisk\n\nWhen I built an interactive learning tool for students, I looked for a tool that\ncould streamline the logistics but also give enough flexibility so I could use\ncustomized tools. AutoGen has both. It simplified the work. Thanks to Chi and his\nteam for sharing such a wonderful tool with the community.\n\nYongsheng Lian, Professor at the University of Louisville, Mechanical Engineering\n\nExciting news: the latest AutoGen release now features my contribution…\nThis experience has been a wonderful blend of learning and contributing,\ndemonstrating the dynamic and collaborative spirit of the tech community.\n\nDavor Runje, Cofounder @ airt / President of the board @ CISEx\n\nWith the support of a grant through the Data Intensive Studies Center at Tufts\nUniversity, our group is hoping to solve some of the challenges students face when\ntransitioning from undergraduate to graduate-level courses, particularly in Tufts'\nDoctor of Physical Therapy program in the School of Medicine. We're experimenting\nwith Autogen to create tailored assessments, individualized study guides, and focused\ntutoring. This approach has led to significantly better results than those we\nachieved using standard chatbots. With the help of Chi and his group at Microsoft,\nour current experiments include using multiple agents in sequential chat, teachable\nagents, and round-robin style debate formats. These methods have proven more\neffective in generating assessments and feedback compared to other large language\nmodels (LLMs) we've explored. I've also used OpenAI Assistant agents through Autogen\nin my Primary Care class to facilitate student engagement in patient interviews\nthrough digital simulations. The agent retrieved information from a real patient\nfeatured in a published case study, allowing students to practice their interview\nskills with realistic information.\n\nBenjamin D Stern, MS, DPT, Assistant Professor, Doctor of Physical Therapy Program,\nTufts University School of Medicine\n\nAutogen has been a game changer for how we analyze companies and products! Through\ncollaborative discourse between AI Agents we are able to shave days off our research\nand analysis process.\n\nJustin Trugman, Cofounder & Head of Technology at BetterFutureLabs\n\nThese are just a small fraction of examples. We have seen big enterprise customers’ interest from pretty much every vertical industry: Accounting, Airlines, Biotech, Consulting, Consumer Packaged Goods, Electronics, Entertainment, Finance, Fintech, Government, Healthcare, Manufacturer, Metals, Pharmacy, Research, Retailer, Social Media, Software, Supply Chain, Technology, Telecom…\n\nAutoGen is used or contributed by companies, organizations, universities from A to Z, in all over the world. We have seen hundreds of example applications. Some organization uses AutoGen as the backbone to build their agent platform. Others use AutoGen for diverse scenarios, including research and investment to novel and creative applications of multiple agents."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Milestones\n​",
+            "content": [
+                {
+                    "text": "AutoGen has a large and active community of developers, researchers and AI practitioners.\n\nI am so amazed by their creativity and passion.\nI also appreciate the recognition and awards AutoGen has received, such as:\n\nOn March 1, the initial AutoGen multi-agent experiment on the challenging\nGAIA\nbenchmark turned out to achieve the No. 1 accuracy with a big leap, in all the three levels.\n\n\n\nThat shows the big potential of using AutoGen in solving complex tasks.\nAnd it's just the beginning of the community's effort to answering a few hard open questions."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Open Questions\n​",
+            "content": [
+                {
+                    "text": "In the\nAutoGen technical report\n, we laid out a number of challenging research questions:\n\nThe community has been working hard to address them in several dimensions:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "New Features & Ongoing Research\n​",
+            "content": [],
+            "subsections": [
+                {
+                    "title": "Evaluation\n​",
+                    "content": [
+                        {
+                            "text": "We are working on agent-based evaluation tools and benchmarking tools. For example:\n\nThese tools have been used for improving the AutoGen library as well as applications. For example, the new state-of-the-art performance achieved by a multi-agent solution to the\nGAIA\nbenchmark has benefited from these evaluation tools."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Interface\n​",
+                    "content": [
+                        {
+                            "text": "We are making rapid progress in further improving the interface to make it even easier to build agent applications. For example:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Learning/Optimization/Teaching\n​",
+                    "content": [
+                        {
+                            "text": "The features in this category allow agents to remember teachings from users or other agents long term, or improve over iterations. For example:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Call for Help\n​",
+            "content": [
+                {
+                    "text": "I appreciate the huge support from more than 14K members in the Discord community.\nDespite all the exciting progress, there are tons of open problems, issues and feature requests awaiting to be solved.\nWe need more help to tackle the challenging problems and accelerate the development.\nYou're all welcome to join our community and define the future of AI agents together.\n\nDo you find this update helpful? Would you like to join force? Please join our\nDiscord\nserver for discussion.\n\n"
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

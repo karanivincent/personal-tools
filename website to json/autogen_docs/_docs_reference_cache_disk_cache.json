@@ -1,0 +1,113 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/cache/disk_cache",
+    "title": "cache.disk_cache",
+    "sections": [
+        {
+            "title": "DiskCache\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nDiskCache\n(\nAbstractCache\n)"
+                    }
+                },
+                {
+                    "text": "Implementation of AbstractCache using the DiskCache library.\n\nThis class provides a concrete implementation of the AbstractCache\ninterface using the diskcache library for caching data on disk.\n\nAttributes\n:\n\nMethods\n:\n\ninit\n(self, seed): Initializes the DiskCache with the given seed.\nget(self, key, default=None): Retrieves an item from the cache.\nset(self, key, value): Sets an item in the cache."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nseed\n:\nUnion\n[\nstr\n,\nint\n]\n)"
+                            }
+                        },
+                        {
+                            "text": "Initialize the DiskCache instance.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget\n(\nkey\n:\nstr\n,\ndefault\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nOptional\n[\nAny\n]"
+                            }
+                        },
+                        {
+                            "text": "Retrieve an item from the cache.\n\nArguments\n:\n\nReturns\n:\n\nThe value associated with the key if found, else the default value."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "set\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nset\n(\nkey\n:\nstr\n,\nvalue\n:\nAny\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Set an item in the cache.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "close\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nclose\n(\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Close the cache.\n\nPerform any necessary cleanup, such as closing file handles or\nreleasing resources."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "__enter__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__enter__\n(\n)\n-\n>\nSelf"
+                            }
+                        },
+                        {
+                            "text": "Enter the runtime context related to the object.\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "__exit__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__exit__\n(\nexc_type\n:\nOptional\n[\nType\n[\nBaseException\n]\n]\n,\nexc_value\n:\nOptional\n[\nBaseException\n]\n,\ntraceback\n:\nOptional\n[\nTracebackType\n]\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Exit the runtime context related to the object.\n\nPerform cleanup actions such as closing the cache.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

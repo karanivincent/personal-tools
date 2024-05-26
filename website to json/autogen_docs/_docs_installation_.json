@@ -1,0 +1,103 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/installation/",
+    "title": "Installation",
+    "sections": [
+        {
+            "title": "Create a virtual environment (optional)\n​",
+            "content": [
+                {
+                    "text": "When installing AutoGen locally, we recommend using a virtual environment for the installation. This will ensure that the dependencies for AutoGen are isolated from the rest of your system.\n\nCreate and activate:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "python3 -m venv pyautogen\nsource pyautogen/bin/activate"
+                    }
+                },
+                {
+                    "text": "To deactivate later, run:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "deactivate"
+                    }
+                },
+                {
+                    "text": "Install Conda\nif you have not already.\n\nCreate and activate:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "conda create -n pyautogen python=3.10\nconda activate pyautogen"
+                    }
+                },
+                {
+                    "text": "To deactivate later, run:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "conda deactivate"
+                    }
+                },
+                {
+                    "text": "Install Poetry\nif you have not already.\n\nCreate and activate:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "poetry init\npoetry shell\npoetry add pyautogen"
+                    }
+                },
+                {
+                    "text": "To deactivate later, run:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "exit"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Install AutoGen\n​",
+            "content": [
+                {
+                    "text": "AutoGen requires\nPython version >= 3.8, < 3.13\n. It can be installed from pip:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen"
+                    }
+                },
+                {
+                    "text": "pyautogen<0.2\nrequired\nopenai<1\n. Starting from pyautogen v0.2,\nopenai>=1\nis required."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Install Docker for Code Execution\n​",
+            "content": [
+                {
+                    "text": "We recommend using Docker for code execution.\nTo install Docker, follow the instructions for your operating system on the\nDocker website\n.\n\nA simple example of how to use Docker for code execution is shown below:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\npathlib\nimport\nPath\nfrom\nautogen\nimport\nUserProxyAgent\nfrom\nautogen\n.\ncoding\nimport\nDockerCommandLineCodeExecutor\nwork_dir\n=\nPath\n(\n\"coding\"\n)\nwork_dir\n.\nmkdir\n(\nexist_ok\n=\nTrue\n)\nwith\nDockerCommandLineCodeExecutor\n(\nwork_dir\n=\nwork_dir\n)\nas\ncode_executor\n:\nuser_proxy\n=\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\ncode_execution_config\n=\n{\n\"executor\"\n:\ncode_executor\n}\n,\n)"
+                    }
+                },
+                {
+                    "text": "To learn more about code executors, see the\ncode executors tutorial\n.\n\nYou might have seen a different way of defining the executors without creating the\nexecutor object, please refer to FAQ for this\nlegacy code executor\n."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

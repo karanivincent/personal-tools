@@ -1,0 +1,79 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/tutorial",
+    "title": "Tutorial",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Tutorial on the basic concepts of AutoGen"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nIntroduction",
+            "content": [
+                {
+                    "text": "Open In Colab"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nChat Termination",
+            "content": [
+                {
+                    "text": "Open In Colab"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nHuman in the Loop",
+            "content": [
+                {
+                    "text": "Open In Colab"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nCode Executors",
+            "content": [
+                {
+                    "text": "Open In Colab"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nTool Use",
+            "content": [
+                {
+                    "text": "Open In Colab"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nConversation Patterns",
+            "content": [
+                {
+                    "text": "Open In Colab"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nWhat Next?",
+            "content": [
+                {
+                    "text": "Now that you have learned the basics of AutoGen, you can start to build your own"
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

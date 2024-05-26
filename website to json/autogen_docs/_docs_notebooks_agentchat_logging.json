@@ -1,0 +1,94 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_logging",
+    "title": "Runtime Logging with AutoGen",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nAutoGen offers utilities to log data for debugging and performance\nanalysis. This notebook demonstrates how to use them.\n\nwe log data in different modes: - SQlite Database - File\n\nIn general, users can initiate logging by calling\nautogen.runtime_logging.start()\nand stop logging by calling\nautogen.runtime_logging.stop()"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\njson\nimport\npandas\nas\npd\nimport\nautogen\nfrom\nautogen\nimport\nAssistantAgent\n,\nUserProxyAgent\n# Setup API key. Add your own API key to config file or environment variable\nllm_config\n=\n{\n\"config_list\"\n:\nautogen\n.\nconfig_list_from_json\n(\nenv_or_file\n=\n\"OAI_CONFIG_LIST\"\n,\n)\n,\n\"temperature\"\n:\n0.9\n,\n}\n# Start logging\nlogging_session_id\n=\nautogen\n.\nruntime_logging\n.\nstart\n(\nconfig\n=\n{\n\"dbname\"\n:\n\"logs.db\"\n}\n)\nprint\n(\n\"Logging session ID: \"\n+\nstr\n(\nlogging_session_id\n)\n)\n# Create an agent workflow and run it\nassistant\n=\nAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nllm_config\n=\nllm_config\n)\nuser_proxy\n=\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\ncode_execution_config\n=\nFalse\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nis_termination_msg\n=\nlambda\nmsg\n:\n\"TERMINATE\"\nin\nmsg\n[\n\"content\"\n]\n,\n)\nuser_proxy\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\n\"What is the height of the Eiffel Tower? Only respond with the answer and terminate\"\n)\nautogen\n.\nruntime_logging\n.\nstop\n(\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Logging session ID: 6e08f3e0-392b-434e-8b69-4ab36c4fcf99\nuser_proxy\n(\nto\nassistant\n)\n:\nWhat is the height of the Eiffel Tower? Only respond with the answer and terminate\n--------------------------------------------------------------------------------\nassistant\n(\nto\nuser_proxy\n)\n:\nThe height of the Eiffel Tower is approximately 330 meters.\nTERMINATE\n--------------------------------------------------------------------------------"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Getting Data from the SQLite Database\n​",
+            "content": [
+                {
+                    "text": "logs.db\nshould be generated, by default it’s using SQLite database.\nYou can view the data with GUI tool like\nsqlitebrowser\n, using SQLite\ncommand line shell or using python script:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "def\nget_log\n(\ndbname\n=\n\"logs.db\"\n,\ntable\n=\n\"chat_completions\"\n)\n:\nimport\nsqlite3\ncon\n=\nsqlite3\n.\nconnect\n(\ndbname\n)\nquery\n=\nf\"SELECT * from\n{\ntable\n}\n\"\ncursor\n=\ncon\n.\nexecute\n(\nquery\n)\nrows\n=\ncursor\n.\nfetchall\n(\n)\ncolumn_names\n=\n[\ndescription\n[\n0\n]\nfor\ndescription\nin\ncursor\n.\ndescription\n]\ndata\n=\n[\ndict\n(\nzip\n(\ncolumn_names\n,\nrow\n)\n)\nfor\nrow\nin\nrows\n]\ncon\n.\nclose\n(\n)\nreturn\ndata"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "def\nstr_to_dict\n(\ns\n)\n:\nreturn\njson\n.\nloads\n(\ns\n)\nlog_data\n=\nget_log\n(\n)\nlog_data_df\n=\npd\n.\nDataFrame\n(\nlog_data\n)\nlog_data_df\n[\n\"total_tokens\"\n]\n=\nlog_data_df\n.\napply\n(\nlambda\nrow\n:\nstr_to_dict\n(\nrow\n[\n\"response\"\n]\n)\n[\n\"usage\"\n]\n[\n\"total_tokens\"\n]\n,\naxis\n=\n1\n)\nlog_data_df\n[\n\"request\"\n]\n=\nlog_data_df\n.\napply\n(\nlambda\nrow\n:\nstr_to_dict\n(\nrow\n[\n\"request\"\n]\n)\n[\n\"messages\"\n]\n[\n0\n]\n[\n\"content\"\n]\n,\naxis\n=\n1\n)\nlog_data_df\n[\n\"response\"\n]\n=\nlog_data_df\n.\napply\n(\nlambda\nrow\n:\nstr_to_dict\n(\nrow\n[\n\"response\"\n]\n)\n[\n\"choices\"\n]\n[\n0\n]\n[\n\"message\"\n]\n[\n\"content\"\n]\n,\naxis\n=\n1\n)\nlog_data_df"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Computing Cost\n​",
+            "content": [
+                {
+                    "text": "One use case of logging data is to compute the cost of a session."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Sum totoal tokens for all sessions\ntotal_tokens\n=\nlog_data_df\n[\n\"total_tokens\"\n]\n.\nsum\n(\n)\n# Sum total cost for all sessions\ntotal_cost\n=\nlog_data_df\n[\n\"cost\"\n]\n.\nsum\n(\n)\n# Total tokens for specific session\nsession_tokens\n=\nlog_data_df\n[\nlog_data_df\n[\n\"session_id\"\n]\n==\nlogging_session_id\n]\n[\n\"total_tokens\"\n]\n.\nsum\n(\n)\nsession_cost\n=\nlog_data_df\n[\nlog_data_df\n[\n\"session_id\"\n]\n==\nlogging_session_id\n]\n[\n\"cost\"\n]\n.\nsum\n(\n)\nprint\n(\n\"Total tokens for all sessions: \"\n+\nstr\n(\ntotal_tokens\n)\n+\n\", total cost: \"\n+\nstr\n(\nround\n(\ntotal_cost\n,\n4\n)\n)\n)\nprint\n(\n\"Total tokens for session \"\n+\nstr\n(\nlogging_session_id\n)\n+\n\": \"\n+\nstr\n(\nsession_tokens\n)\n+\n\", cost: \"\n+\nstr\n(\nround\n(\nsession_cost\n,\n4\n)\n)\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Total tokens for all sessions: 1521, total cost: 0.0472\nTotal tokens for session 6e08f3e0-392b-434e-8b69-4ab36c4fcf99: 507, cost: 0.0157"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Log data in File mode\n​",
+            "content": [
+                {
+                    "text": "By default, the log type is set to\nsqlite\nas shown above, but we\nintroduced a new parameter for the\nautogen.runtime_logging.start()\n\nthe\nlogger_type = \"file\"\nwill start to log data in the File mode."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\npandas\nas\npd\nimport\nautogen\nfrom\nautogen\nimport\nAssistantAgent\n,\nUserProxyAgent\n# Setup API key. Add your own API key to config file or environment variable\nllm_config\n=\n{\n\"config_list\"\n:\nautogen\n.\nconfig_list_from_json\n(\nenv_or_file\n=\n\"OAI_CONFIG_LIST\"\n,\n)\n,\n\"temperature\"\n:\n0.9\n,\n}\n# Start logging with logger_type and the filename to log to\nlogging_session_id\n=\nautogen\n.\nruntime_logging\n.\nstart\n(\nlogger_type\n=\n\"file\"\n,\nconfig\n=\n{\n\"filename\"\n:\n\"runtime.log\"\n}\n)\nprint\n(\n\"Logging session ID: \"\n+\nstr\n(\nlogging_session_id\n)\n)\n# Create an agent workflow and run it\nassistant\n=\nAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nllm_config\n=\nllm_config\n)\nuser_proxy\n=\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\ncode_execution_config\n=\nFalse\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nis_termination_msg\n=\nlambda\nmsg\n:\n\"TERMINATE\"\nin\nmsg\n[\n\"content\"\n]\n,\n)\nuser_proxy\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\n\"What is the height of the Eiffel Tower? Only respond with the answer and terminate\"\n)\nautogen\n.\nruntime_logging\n.\nstop\n(\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Logging session ID: ed493ebf-d78e-49f0-b832-69557276d557\nuser_proxy\n(\nto\nassistant\n)\n:\nWhat is the height of the Eiffel Tower? Only respond with the answer and terminate\n--------------------------------------------------------------------------------\nassistant\n(\nto\nuser_proxy\n)\n:\nThe height of the Eiffel Tower is 330 meters.\nTERMINATE\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "This should create a\nruntime.log\nfile in your current directory."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

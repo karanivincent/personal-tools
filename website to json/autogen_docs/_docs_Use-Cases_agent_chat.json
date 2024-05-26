@@ -1,0 +1,72 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/Use-Cases/agent_chat",
+    "title": "Multi-agent Conversation Framework",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "AutoGen offers a unified multi-agent conversation framework as a high-level abstraction of using foundation models. It features capable, customizable and conversable agents which integrate LLMs, tools, and humans via automated agent chat.\nBy automating chat among multiple capable agents, one can easily make them collectively perform tasks autonomously or with human feedback, including tasks that require using tools via code.\n\nThis framework simplifies the orchestration, automation and optimization of a complex LLM workflow. It maximizes the performance of LLM models and overcomes their weaknesses. It enables building next-gen LLM applications based on multi-agent conversations with minimal effort."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Multi-agent Conversations\n​",
+            "content": [],
+            "subsections": [
+                {
+                    "title": "A Basic Two-Agent Conversation Example\n​",
+                    "content": [
+                        {
+                            "text": "Once the participating agents are constructed properly, one can start a multi-agent conversation session by an initialization step as shown in the following code:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "# the assistant receives a message from the user, which contains the task description\nuser_proxy\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\n\"\"\"What date is today? Which big tech stock has the largest year-to-date gain this year? How much is the gain?\"\"\"\n,\n)"
+                            }
+                        },
+                        {
+                            "text": "After the initialization step, the conversation could proceed automatically. Find a visual illustration of how the user_proxy and assistant collaboratively solve the above task autonomously below:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Supporting Diverse Conversation Patterns\n​",
+                    "content": [
+                        {
+                            "text": "On the one hand, one can achieve fully autonomous conversations after an initialization step. On the other hand, AutoGen can be used to implement human-in-the-loop problem-solving by configuring human involvement levels and patterns (e.g., setting the\nhuman_input_mode\nto\nALWAYS\n), as human involvement is expected and/or desired in many applications."
+                        },
+                        {
+                            "text": "AutoGen, by integrating conversation-driven control utilizing both programming and natural language, inherently supports dynamic conversations. This dynamic nature allows the agent topology to adapt based on the actual conversation flow under varying input problem scenarios. Conversely, static conversations adhere to a predefined topology. Dynamic conversations are particularly beneficial in complex settings where interaction patterns cannot be predetermined.\n\nWith the pluggable auto-reply function, one can choose to invoke conversations with other agents depending on the content of the current message and context. For example:\n\nAnother approach involves LLM-based function calls, where LLM decides if a specific function should be invoked based on the conversation's status during each inference. This approach enables dynamic multi-agent conversations, as seen in scenarios like\nmulti-user math problem solving scenario\n, where a student assistant automatically seeks expertise via function calls."
+                        }
+                    ],
+                    "subsections": [
+                        {
+                            "title": "Conversations with different levels of autonomy, and human-involvement patterns\n​",
+                            "content": [],
+                            "subsections": []
+                        },
+                        {
+                            "title": "Static and dynamic conversations\n​",
+                            "content": [],
+                            "subsections": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "For Further Reading\n​",
+            "content": [
+                {
+                    "text": "Interested in the research that leads to this package? Please check the following papers.\n\nAutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation Framework\n. Qingyun Wu, Gagan Bansal, Jieyu Zhang, Yiran Wu, Shaokun Zhang, Erkang Zhu, Beibin Li, Li Jiang, Xiaoyun Zhang and Chi Wang. ArXiv 2023.\n\nAn Empirical Study on Challenging Math Problem Solving with GPT-4\n. Yiran Wu, Feiran Jia, Shaokun Zhang, Hangyu Li, Erkang Zhu, Yue Wang, Yin Tat Lee, Richard Peng, Qingyun Wu, Chi Wang. ArXiv preprint arXiv:2306.01337 (2023)."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

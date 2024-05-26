@@ -1,0 +1,22 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/retrieve_assistant_agent",
+    "title": "agentchat.contrib.retrieve_assistant_agent",
+    "sections": [
+        {
+            "title": "RetrieveAssistantAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nRetrieveAssistantAgent\n(\nAssistantAgent\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) Retrieve Assistant agent, designed to solve a task with LLM.\n\nRetrieveAssistantAgent is a subclass of AssistantAgent configured with a default system message.\nThe default system message is designed to solve a task with LLM,\nincluding suggesting python code blocks and debugging.\nhuman_input_mode\nis default to \"NEVER\"\nand\ncode_execution_config\nis default to False.\nThis agent doesn't execute code by default, and expects the user to execute the code."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

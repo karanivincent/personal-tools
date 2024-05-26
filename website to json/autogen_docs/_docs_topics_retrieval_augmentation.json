@@ -1,0 +1,93 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics/retrieval_augmentation",
+    "title": "Retrieval Augmentation",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Retrieval Augmented Generation (RAG) is a powerful technique that combines language models with external knowledge retrieval to improve the quality and relevance of generated responses.\n\nOne way to realize RAG in AutoGen is to construct agent chats with\nRetrieveAssistantAgent\nand\nRetrieveUserProxyAgent\nclasses."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example Setup: RAG with Retrieval Augmented Agents\n​",
+            "content": [
+                {
+                    "text": "The following is an example setup demonstrating how to create retrieval augmented agents in AutoGen:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Step 1. Create an instance of\nRetrieveAssistantAgent\nand\nRetrieveUserProxyAgent\n.\n​",
+                    "content": [
+                        {
+                            "text": "Here\nRetrieveUserProxyAgent\ninstance acts as a proxy agent that retrieves relevant information based on the user's input."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "assistant\n=\nRetrieveAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nsystem_message\n=\n\"You are a helpful assistant.\"\n,\nllm_config\n=\n{\n\"timeout\"\n:\n600\n,\n\"cache_seed\"\n:\n42\n,\n\"config_list\"\n:\nconfig_list\n,\n}\n,\n)\nragproxyagent\n=\nRetrieveUserProxyAgent\n(\nname\n=\n\"ragproxyagent\"\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nmax_consecutive_auto_reply\n=\n3\n,\nretrieve_config\n=\n{\n\"task\"\n:\n\"code\"\n,\n\"docs_path\"\n:\n[\n\"https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Examples/Integrate%20-%20Spark.md\"\n,\n\"https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Research.md\"\n,\nos\n.\npath\n.\njoin\n(\nos\n.\npath\n.\nabspath\n(\n\"\"\n)\n,\n\"..\"\n,\n\"website\"\n,\n\"docs\"\n)\n,\n]\n,\n\"custom_text_types\"\n:\n[\n\"mdx\"\n]\n,\n\"chunk_token_size\"\n:\n2000\n,\n\"model\"\n:\nconfig_list\n[\n0\n]\n[\n\"model\"\n]\n,\n\"client\"\n:\nchromadb\n.\nPersistentClient\n(\npath\n=\n\"/tmp/chromadb\"\n)\n,\n\"embedding_model\"\n:\n\"all-mpnet-base-v2\"\n,\n\"get_or_create\"\n:\nTrue\n,\n# set to False if you don't want to reuse an existing collection, but you'll need to remove the collection manually\n}\n,\ncode_execution_config\n=\nFalse\n,\n# set to False if you don't want to execute the code\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Example Setup: RAG with Retrieval Augmented Agents with PGVector\n​",
+            "content": [
+                {
+                    "text": "The following is an example setup demonstrating how to create retrieval augmented agents in AutoGen:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Step 1. Create an instance of\nRetrieveAssistantAgent\nand\nRetrieveUserProxyAgent\n.\n​",
+                    "content": [
+                        {
+                            "text": "Here\nRetrieveUserProxyAgent\ninstance acts as a proxy agent that retrieves relevant information based on the user's input.\n\nSpecify the connection_string, or the host, port, database, username, and password in the db_config."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "assistant\n=\nRetrieveAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nsystem_message\n=\n\"You are a helpful assistant.\"\n,\nllm_config\n=\n{\n\"timeout\"\n:\n600\n,\n\"cache_seed\"\n:\n42\n,\n\"config_list\"\n:\nconfig_list\n,\n}\n,\n)\nragproxyagent\n=\nRetrieveUserProxyAgent\n(\nname\n=\n\"ragproxyagent\"\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nmax_consecutive_auto_reply\n=\n3\n,\nretrieve_config\n=\n{\n\"task\"\n:\n\"code\"\n,\n\"docs_path\"\n:\n[\n\"https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Examples/Integrate%20-%20Spark.md\"\n,\n\"https://raw.githubusercontent.com/microsoft/FLAML/main/website/docs/Research.md\"\n,\nos\n.\npath\n.\njoin\n(\nos\n.\npath\n.\nabspath\n(\n\"\"\n)\n,\n\"..\"\n,\n\"website\"\n,\n\"docs\"\n)\n,\n]\n,\n\"vector_db\"\n:\n\"pgvector\"\n,\n\"collection_name\"\n:\n\"autogen_docs\"\n,\n\"db_config\"\n:\n{\n\"connection_string\"\n:\n\"postgresql://testuser:testpwd@localhost:5432/vectordb\"\n,\n# Optional - connect to an external vector database\n# \"host\": None, # Optional vector database host\n# \"port\": None, # Optional vector database port\n# \"database\": None, # Optional vector database name\n# \"username\": None, # Optional vector database username\n# \"password\": None, # Optional vector database password\n}\n,\n\"custom_text_types\"\n:\n[\n\"mdx\"\n]\n,\n\"chunk_token_size\"\n:\n2000\n,\n\"model\"\n:\nconfig_list\n[\n0\n]\n[\n\"model\"\n]\n,\n\"get_or_create\"\n:\nTrue\n,\n}\n,\ncode_execution_config\n=\nFalse\n,\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Online Demo\n​",
+            "content": [
+                {
+                    "text": "Retrival-Augmented Chat Demo on Huggingface"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "More Examples and Notebooks\n​",
+            "content": [
+                {
+                    "text": "For more detailed examples and notebooks showcasing the usage of retrieval augmented agents in AutoGen, refer to the following:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Roadmap\n​",
+            "content": [
+                {
+                    "text": "Explore our detailed roadmap\nhere\nfor further advancements plan around RAG. Your contributions, feedback, and use cases are highly appreciated! We invite you to engage with us and play a pivotal role in the development of this impactful feature."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

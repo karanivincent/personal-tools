@@ -1,0 +1,73 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_groupchat",
+    "title": "Group Chat",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nAutoGen offers conversable agents powered by LLM, tool or human, which\ncan be used to perform tasks collectively via automated chat. This\nframework allows tool use and human participation through multi-agent\nconversation. Please find documentation about this feature\nhere\n.\n\nThis notebook is modified based on\nhttps://github.com/microsoft/FLAML/blob/4ea686af5c3e8ff24d9076a7a626c8b28ab5b1d7/notebook/autogen_multiagent_roleplay_chat.ipynb\n\nInstall\npyautogen\n:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen"
+                    }
+                },
+                {
+                    "text": "For more information, please refer to the\ninstallation guide\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Set your API Endpoint\n​",
+            "content": [
+                {
+                    "text": "The\nconfig_list_from_json\nfunction loads a list of configurations from an environment variable or\na json file."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nautogen\nconfig_list\n=\nautogen\n.\nconfig_list_from_json\n(\n\"OAI_CONFIG_LIST\"\n,\nfilter_dict\n=\n{\n\"model\"\n:\n[\n\"gpt-4\"\n,\n\"gpt-4-0314\"\n,\n\"gpt4\"\n,\n\"gpt-4-32k\"\n,\n\"gpt-4-32k-0314\"\n,\n\"gpt-4-32k-v0314\"\n]\n,\n}\n,\n)"
+                    }
+                },
+                {
+                    "text": "Learn more about configuring LLMs for agents\nhere\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Construct Agents\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "llm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"cache_seed\"\n:\n42\n}\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"User_proxy\"\n,\nsystem_message\n=\n\"A human admin.\"\n,\ncode_execution_config\n=\n{\n\"last_n_messages\"\n:\n2\n,\n\"work_dir\"\n:\n\"groupchat\"\n,\n\"use_docker\"\n:\nFalse\n,\n}\n,\n# Please set use_docker=True if docker is available to run the generated code. Using docker is safer than running the generated code directly.\nhuman_input_mode\n=\n\"TERMINATE\"\n,\n)\ncoder\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Coder\"\n,\nllm_config\n=\nllm_config\n,\n)\npm\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Product_manager\"\n,\nsystem_message\n=\n\"Creative in software product ideas.\"\n,\nllm_config\n=\nllm_config\n,\n)\ngroupchat\n=\nautogen\n.\nGroupChat\n(\nagents\n=\n[\nuser_proxy\n,\ncoder\n,\npm\n]\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n12\n)\nmanager\n=\nautogen\n.\nGroupChatManager\n(\ngroupchat\n=\ngroupchat\n,\nllm_config\n=\nllm_config\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Start Chat\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "user_proxy\n.\ninitiate_chat\n(\nmanager\n,\nmessage\n=\n\"Find a latest paper about gpt-4 on arxiv and find its potential applications in software.\"\n)\n# type exit to terminate the chat"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "User_proxy\n(\nto\nchat_manager\n)\n:\nFind a latest paper about gpt-4 on arxiv and find its potential applications in software.\n--------------------------------------------------------------------------------\nCoder\n(\nto\nchat_manager\n)\n:\nTo find the latest paper about GPT-4 on arxiv, I'll provide you with a Python code that fetches the most recent papers from the arxiv API and filters the results to get the most relevant paper related to GPT-4. After fetching the paper, I'll extract the information for potential applications in software. Please execute the following Python code:\n```python\nimport requests\nfrom bs4 import BeautifulSoup\nimport re\ndef fetch_arxiv_papers(query):\nbase_url = \"http://export.arxiv.org/api/query?\"\nsearch_query = \"all:\" + query\nresponse = requests.get(base_url, params={\"search_query\": search_query, \"sortBy\": \"submittedDate\", \"sortOrder\": \"descending\"})\nreturn BeautifulSoup(response.content, \"xml\")\ndef find_gpt4_paper():\npapers = fetch_arxiv_papers(\"gpt-4\")\nfor entry in papers.find_all(\"entry\"):\ntitle = entry.title.text.strip()\nsummary = entry.summary.text.strip()\nif \"gpt-4\" in title.lower() or \"gpt-4\" in summary.lower():\nreturn {\"title\": title, \"summary\": summary}\ngpt4_paper = find_gpt4_paper()\nif gpt4_paper:\nprint(\"Title:\", gpt4_paper[\"title\"])\nprint(\"Summary:\", gpt4_paper[\"summary\"])\nelse:\nprint(\"No recent GPT-4 papers found.\")\n```\nOnce we have the paper details, I'll analyze the summary to identify potential applications in software development.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n>>>>>>>> EXECUTING CODE BLOCK 0 (inferred language is python)...\nUser_proxy\n(\nto\nchat_manager\n)\n:\nexitcode: 0 (execution succeeded)\nCode output:\nTitle: FIMO: A Challenge Formal Dataset for Automated Theorem Proving\nSummary: We present FIMO, an innovative dataset comprising formal mathematical problem\nstatements sourced from the International Mathematical Olympiad (IMO)\nShortlisted Problems. Designed to facilitate advanced automated theorem proving\nat the IMO level, FIMO is currently tailored for the Lean formal language. It\ncomprises 149 formal problem statements, accompanied by both informal problem\ndescriptions and their corresponding LaTeX-based informal proofs. Through\ninitial experiments involving GPT-4, our findings underscore the existing\nlimitations in current methodologies, indicating a substantial journey ahead\nbefore achieving satisfactory IMO-level automated theorem proving outcomes.\n--------------------------------------------------------------------------------\nProduct_manager\n(\nto\nchat_manager\n)\n:\nBased on the paper titled \"FIMO: A Challenge Formal Dataset for Automated Theorem Proving\" and its summary, the potential applications of GPT-4 in software development can be related to the field of automated theorem proving.\n1. **Automated theorem proving**: GPT-4 can be utilized in the development of automated theorem proving software that attempts to prove complex mathematical problems taken from International Mathematical Olympiad (IMO) or other challenging sources. By fine-tuning GPT-4 with a dataset like FIMO consisting of formal mathematical problems, the model can potentially better understand the problem statements and generate appropriate proofs.\n2. **Mathematical problem-solving assistants**: Software tools can be developed using GPT-4 to guide users in solving complex mathematical problems. The AI model can be integrated into educational platforms, online math tutoring services, or even standalone tools to help make solving problems easier and faster for students and professionals alike.\n3. **Formal language translation**: GPT-4 can potentially be integrated into software for translating between formal languages, assisting in the understanding and comparison of various formal systems. This would be especially useful in research communities employing different formal languages and wanting to share ideas and results.\n4. **Mathematical proof checking**: GPT-4 can be employed in proof-checking software to identify and correct inconsistencies. By improving the correctness of proofs, this application would ultimately help users save time and contribute to the overall quality of mathematical research.\nPlease note that this paper highlights the current limitations of GPT-4 in the context of IMO-level theorem proving. Nevertheless, these potential applications suggest directions for further research and software development as the model and related techniques continue to improve.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nUser_proxy\n(\nto\nchat_manager\n)\n:\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nUser_proxy\n(\nto\nchat_manager\n)\n:\n--------------------------------------------------------------------------------\nCoder\n(\nto\nchat_manager\n)\n:\nTERMINATE\n--------------------------------------------------------------------------------"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

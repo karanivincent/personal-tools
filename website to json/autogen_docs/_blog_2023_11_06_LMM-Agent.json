@@ -1,0 +1,90 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2023/11/06/LMM-Agent",
+    "title": "Multimodal with GPT-4V and LLaVA",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nIn Brief:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "Large multimodal models (LMMs) augment large language models (LLMs) with the ability to process multi-sensory data.\n\nThis blog post and the latest AutoGen update concentrate on visual comprehension. Users can input images, pose questions about them, and receive text-based responses from these LMMs.\nWe support the\ngpt-4-vision-preview\nmodel from OpenAI and\nLLaVA\nmodel from Microsoft now.\n\nHere, we emphasize the\nMultimodal Conversable Agent\nand the\nLLaVA Agent\ndue to their growing popularity.\nGPT-4V represents the forefront in image comprehension, while LLaVA is an efficient model, fine-tuned from LLama-2."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Installation\n​",
+            "content": [
+                {
+                    "text": "Incorporate the\nlmm\nfeature during AutoGen installation:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[lmm]\""
+                    }
+                },
+                {
+                    "text": "Subsequently, import the\nMultimodal Conversable Agent\nor\nLLaVA Agent\nfrom AutoGen:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\n.\nagentchat\n.\ncontrib\n.\nmultimodal_conversable_agent\nimport\nMultimodalConversableAgent\n# for GPT-4V\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\nllava_agent\nimport\nLLaVAAgent\n# for LLaVA"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Usage\n​",
+            "content": [
+                {
+                    "text": "A simple syntax has been defined to incorporate both messages and images within a single string.\n\nExample of an in-context learning prompt:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "prompt\n=\n\"\"\"You are now an image classifier for facial expressions. Here are\nsome examples.\n<img happy.jpg> depicts a happy expression.\n<img http://some_location.com/sad.jpg> represents a sad expression.\n<img obama.jpg> portrays a neutral expression.\nNow, identify the facial expression of this individual: <img unknown.png>\n\"\"\"\nagent\n=\nMultimodalConversableAgent\n(\n)\nuser\n=\nUserProxyAgent\n(\n)\nuser\n.\ninitiate_chat\n(\nagent\n,\nmessage\n=\nprompt\n)"
+                    }
+                },
+                {
+                    "text": "The\nMultimodalConversableAgent\ninterprets the input prompt, extracting images from local or internet sources."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Advanced Usage\n​",
+            "content": [
+                {
+                    "text": "Similar to other AutoGen agents, multimodal agents support multi-round dialogues with other agents, code generation, factual queries, and management via a GroupChat interface.\n\nFor example, the\nFigureCreator\nin our\nGPT-4V notebook\nand\nLLaVA notebook\nintegrates two agents: a coder (an AssistantAgent) and critics (a multimodal agent).\nThe coder drafts Python code for visualizations, while the critics provide insights for enhancement. Collaboratively, these agents aim to refine visual outputs.\nWith\nhuman_input_mode=ALWAYS\n, you can also contribute suggestions for better visualizations."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Reference\n​",
+            "content": [],
+            "subsections": []
+        },
+        {
+            "title": "Future Enhancements\n​",
+            "content": [
+                {
+                    "text": "For further inquiries or suggestions, please open an issue in the\nAutoGen repository\nor contact me directly at\nbeibin.li@microsoft.com\n.\n\nAutoGen will continue to evolve, incorporating more multimodal functionalities such as DALLE model integration, audio interaction, and video comprehension. Stay tuned for these exciting developments."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

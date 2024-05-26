@@ -1,0 +1,206 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_function_call_currency_calculator",
+    "title": "Currency Calculator: Task Solving with Provided Tools as Functions",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nAutoGen offers conversable agents powered by LLM, tool, or human, which\ncan be used to perform tasks collectively via automated chat. This\nframework allows tool use and human participation through multi-agent\nconversation. Please find documentation about this feature\nhere\n.\n\nIn this notebook, we demonstrate how to use\nAssistantAgent\nand\nUserProxyAgent\nto make function calls with the new feature of OpenAI\nmodels (in model version 0613). A specified prompt and function configs\nmust be passed to\nAssistantAgent\nto initialize the agent. The\ncorresponding functions must be passed to\nUserProxyAgent\n, which will\nexecute any function calls made by\nAssistantAgent\n. Besides this\nrequirement of matching descriptions with functions, we recommend\nchecking the system message in the\nAssistantAgent\nto ensure the\ninstructions align with the function call descriptions."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Requirements\n​",
+            "content": [
+                {
+                    "text": "AutoGen requires\nPython>=3.8\n. To run this notebook example, please\ninstall\npyautogen\n:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# %pip install \"pyautogen>=0.2.3\""
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Set your API Endpoint\n​",
+            "content": [
+                {
+                    "text": "The\nconfig_list_from_json\nfunction loads a list of configurations from an environment variable or\na json file."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\ntyping\nimport\nLiteral\nfrom\npydantic\nimport\nBaseModel\n,\nField\nfrom\ntyping_extensions\nimport\nAnnotated\nimport\nautogen\nfrom\nautogen\n.\ncache\nimport\nCache\nconfig_list\n=\nautogen\n.\nconfig_list_from_json\n(\n\"OAI_CONFIG_LIST\"\n,\nfilter_dict\n=\n{\n\"tags\"\n:\n[\n\"3.5-tool\"\n]\n}\n,\n# comment out to get all\n)"
+                    }
+                },
+                {
+                    "text": "It first looks for environment variable “OAI_CONFIG_LIST” which needs to\nbe a valid json string. If that variable is not found, it then looks for\na json file named “OAI_CONFIG_LIST”. It filters the configs by tags (you\ncan filter by other keys as well). Only the configs with matching tags\nare kept in the list based on the filter condition.\n\nThe config list looks like the following:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "config_list\n=\n[\n{\n'model'\n:\n'gpt-3.5-turbo'\n,\n'api_key'\n:\n'<your OpenAI API key here>'\n,\n'tags'\n:\n[\n'tool'\n,\n'3.5-tool'\n]\n,\n}\n,\n{\n'model'\n:\n'gpt-3.5-turbo'\n,\n'api_key'\n:\n'<your Azure OpenAI API key here>'\n,\n'base_url'\n:\n'<your Azure OpenAI API base here>'\n,\n'api_type'\n:\n'azure'\n,\n'api_version'\n:\n'2024-02-15-preview'\n,\n'tags'\n:\n[\n'tool'\n,\n'3.5-tool'\n]\n,\n}\n,\n{\n'model'\n:\n'gpt-3.5-turbo-16k'\n,\n'api_key'\n:\n'<your Azure OpenAI API key here>'\n,\n'base_url'\n:\n'<your Azure OpenAI API base here>'\n,\n'api_type'\n:\n'azure'\n,\n'api_version'\n:\n'2024-02-15-preview'\n,\n'tags'\n:\n[\n'tool'\n,\n'3.5-tool'\n]\n,\n}\n,\n]"
+                    }
+                },
+                {
+                    "text": "You can set the value of config_list in any way you prefer. Please refer\nto this\nnotebook\nfor full code examples of the different methods."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Making Function Calls\n​",
+            "content": [
+                {
+                    "text": "In this example, we demonstrate function call execution with\nAssistantAgent\nand\nUserProxyAgent\n. With the default system prompt of\nAssistantAgent\n, we allow the LLM assistant to perform tasks with code,\nand the\nUserProxyAgent\nwould extract code blocks from the LLM response\nand execute them. With the new “function_call” feature, we define\nfunctions and specify the description of the function in the OpenAI\nconfig for the\nAssistantAgent\n. Then we register the functions in\nUserProxyAgent\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "llm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n120\n,\n}\nchatbot\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"chatbot\"\n,\nsystem_message\n=\n\"For currency exchange tasks, only use the functions you have been provided with. Reply TERMINATE when the task is done.\"\n,\nllm_config\n=\nllm_config\n,\n)\n# create a UserProxyAgent instance named \"user_proxy\"\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\nis_termination_msg\n=\nlambda\nx\n:\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\nand\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\n.\nrstrip\n(\n)\n.\nendswith\n(\n\"TERMINATE\"\n)\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nmax_consecutive_auto_reply\n=\n10\n,\n)\nCurrencySymbol\n=\nLiteral\n[\n\"USD\"\n,\n\"EUR\"\n]\ndef\nexchange_rate\n(\nbase_currency\n:\nCurrencySymbol\n,\nquote_currency\n:\nCurrencySymbol\n)\n-\n>\nfloat\n:\nif\nbase_currency\n==\nquote_currency\n:\nreturn\n1.0\nelif\nbase_currency\n==\n\"USD\"\nand\nquote_currency\n==\n\"EUR\"\n:\nreturn\n1\n/\n1.1\nelif\nbase_currency\n==\n\"EUR\"\nand\nquote_currency\n==\n\"USD\"\n:\nreturn\n1.1\nelse\n:\nraise\nValueError\n(\nf\"Unknown currencies\n{\nbase_currency\n}\n,\n{\nquote_currency\n}\n\"\n)\n@user_proxy\n.\nregister_for_execution\n(\n)\n@chatbot\n.\nregister_for_llm\n(\ndescription\n=\n\"Currency exchange calculator.\"\n)\ndef\ncurrency_calculator\n(\nbase_amount\n:\nAnnotated\n[\nfloat\n,\n\"Amount of currency in base_currency\"\n]\n,\nbase_currency\n:\nAnnotated\n[\nCurrencySymbol\n,\n\"Base currency\"\n]\n=\n\"USD\"\n,\nquote_currency\n:\nAnnotated\n[\nCurrencySymbol\n,\n\"Quote currency\"\n]\n=\n\"EUR\"\n,\n)\n-\n>\nstr\n:\nquote_amount\n=\nexchange_rate\n(\nbase_currency\n,\nquote_currency\n)\n*\nbase_amount\nreturn\nf\"\n{\nquote_amount\n}\n{\nquote_currency\n}\n\""
+                    }
+                },
+                {
+                    "text": "The decorator\n@chatbot.register_for_llm()\nreads the annotated\nsignature of the function\ncurrency_calculator\nand generates the\nfollowing JSON schema used by OpenAI API to suggest calling the\nfunction. We can check the JSON schema generated as follows:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "chatbot\n.\nllm_config\n[\n\"tools\"\n]"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "[{'type': 'function',\n'function': {'description': 'Currency exchange calculator.',\n'name': 'currency_calculator',\n'parameters': {'type': 'object',\n'properties': {'base_amount': {'type': 'number',\n'description': 'Amount of currency in base_currency'},\n'base_currency': {'enum': ['USD', 'EUR'],\n'type': 'string',\n'default': 'USD',\n'description': 'Base currency'},\n'quote_currency': {'enum': ['USD', 'EUR'],\n'type': 'string',\n'default': 'EUR',\n'description': 'Quote currency'}},\n'required': ['base_amount']}}}]"
+                    }
+                },
+                {
+                    "text": "The decorator\n@user_proxy.register_for_execution()\nmaps the name of\nthe function to be proposed by OpenAI API to the actual implementation.\nThe function mapped is wrapped since we also automatically handle\nserialization of the output of function as follows:\n\nstring are untouched, and\n\nobjects of the Pydantic BaseModel type are serialized to JSON.\n\nWe can check the correctness of of function map by using\n._origin\nproperty of the wrapped function as follows:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assert\nuser_proxy\n.\nfunction_map\n[\n\"currency_calculator\"\n]\n.\n_origin\n==\ncurrency_calculator"
+                    }
+                },
+                {
+                    "text": "Finally, we can use this function to accurately calculate exchange\namounts:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "with\nCache\n.\ndisk\n(\n)\nas\ncache\n:\n# start the conversation\nres\n=\nuser_proxy\n.\ninitiate_chat\n(\nchatbot\n,\nmessage\n=\n\"How much is 123.45 USD in EUR?\"\n,\nsummary_method\n=\n\"reflection_with_llm\"\n,\ncache\n=\ncache\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "user_proxy\n(\nto\nchatbot\n)\n:\nHow much is 123.45 USD in EUR?\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\n***** Suggested tool call (call_9ogJS4d40BT1rXfMn7YJb151): currency_calculator *****\nArguments:\n{\n\"base_amount\": 123.45,\n\"base_currency\": \"USD\",\n\"quote_currency\": \"EUR\"\n}\n************************************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING FUNCTION currency_calculator...\nuser_proxy\n(\nto\nchatbot\n)\n:\nuser_proxy\n(\nto\nchatbot\n)\n:\n***** Response from calling tool (call_9ogJS4d40BT1rXfMn7YJb151) *****\n112.22727272727272 EUR\n**********************************************************************\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\n123.45 USD is equivalent to 112.23 EUR.\n--------------------------------------------------------------------------------\nuser_proxy\n(\nto\nchatbot\n)\n:\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\nTERMINATE\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "print\n(\n\"Chat summary:\"\n,\nres\n.\nsummary\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Chat summary: 123.45 USD is equivalent to 112.23 EUR."
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Pydantic models\n​",
+                    "content": [
+                        {
+                            "text": "We can also use Pydantic Base models to rewrite the function as follows:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "llm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n120\n,\n}\nchatbot\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"chatbot\"\n,\nsystem_message\n=\n\"For currency exchange tasks, only use the functions you have been provided with. Reply TERMINATE when the task is done.\"\n,\nllm_config\n=\nllm_config\n,\n)\n# create a UserProxyAgent instance named \"user_proxy\"\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\nis_termination_msg\n=\nlambda\nx\n:\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\nand\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\n.\nrstrip\n(\n)\n.\nendswith\n(\n\"TERMINATE\"\n)\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nmax_consecutive_auto_reply\n=\n10\n,\n)\nclass\nCurrency\n(\nBaseModel\n)\n:\ncurrency\n:\nAnnotated\n[\nCurrencySymbol\n,\nField\n(\n.\n.\n.\n,\ndescription\n=\n\"Currency symbol\"\n)\n]\namount\n:\nAnnotated\n[\nfloat\n,\nField\n(\n0\n,\ndescription\n=\n\"Amount of currency\"\n,\nge\n=\n0\n)\n]\n# another way to register a function is to use register_function instead of register_for_execution and register_for_llm decorators\ndef\ncurrency_calculator\n(\nbase\n:\nAnnotated\n[\nCurrency\n,\n\"Base currency: amount and currency symbol\"\n]\n,\nquote_currency\n:\nAnnotated\n[\nCurrencySymbol\n,\n\"Quote currency symbol\"\n]\n=\n\"USD\"\n,\n)\n-\n>\nCurrency\n:\nquote_amount\n=\nexchange_rate\n(\nbase\n.\ncurrency\n,\nquote_currency\n)\n*\nbase\n.\namount\nreturn\nCurrency\n(\namount\n=\nquote_amount\n,\ncurrency\n=\nquote_currency\n)\nautogen\n.\nagentchat\n.\nregister_function\n(\ncurrency_calculator\n,\ncaller\n=\nchatbot\n,\nexecutor\n=\nuser_proxy\n,\ndescription\n=\n\"Currency exchange calculator.\"\n,\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "chatbot\n.\nllm_config\n[\n\"tools\"\n]"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "[{'type': 'function',\n'function': {'description': 'Currency exchange calculator.',\n'name': 'currency_calculator',\n'parameters': {'type': 'object',\n'properties': {'base': {'properties': {'currency': {'description': 'Currency symbol',\n'enum': ['USD', 'EUR'],\n'title': 'Currency',\n'type': 'string'},\n'amount': {'default': 0,\n'description': 'Amount of currency',\n'minimum': 0.0,\n'title': 'Amount',\n'type': 'number'}},\n'required': ['currency'],\n'title': 'Currency',\n'type': 'object',\n'description': 'Base currency: amount and currency symbol'},\n'quote_currency': {'enum': ['USD', 'EUR'],\n'type': 'string',\n'default': 'USD',\n'description': 'Quote currency symbol'}},\n'required': ['base']}}}]"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "with\nCache\n.\ndisk\n(\n)\nas\ncache\n:\n# start the conversation\nres\n=\nuser_proxy\n.\ninitiate_chat\n(\nchatbot\n,\nmessage\n=\n\"How much is 112.23 Euros in US Dollars?\"\n,\nsummary_method\n=\n\"reflection_with_llm\"\n,\ncache\n=\ncache\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "user_proxy\n(\nto\nchatbot\n)\n:\nHow much is 112.23 Euros in US Dollars?\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\n***** Suggested tool call (call_BQkSmdFHsrKvmtDWCk0mY5sF): currency_calculator *****\nArguments:\n{\n\"base\": {\n\"currency\": \"EUR\",\n\"amount\": 112.23\n},\n\"quote_currency\": \"USD\"\n}\n************************************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING FUNCTION currency_calculator...\nuser_proxy\n(\nto\nchatbot\n)\n:\nuser_proxy\n(\nto\nchatbot\n)\n:\n***** Response from calling tool (call_BQkSmdFHsrKvmtDWCk0mY5sF) *****\n{\"currency\":\"USD\",\"amount\":123.45300000000002}\n**********************************************************************\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\n112.23 Euros is equivalent to 123.45 US Dollars.\nTERMINATE\n--------------------------------------------------------------------------------"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "print\n(\n\"Chat summary:\"\n,\nres\n.\nsummary\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "Chat summary: 112.23 Euros is equivalent to 123.45 US Dollars."
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "with\nCache\n.\ndisk\n(\n)\nas\ncache\n:\n# start the conversation\nres\n=\nuser_proxy\n.\ninitiate_chat\n(\nchatbot\n,\nmessage\n=\n\"How much is 123.45 US Dollars in Euros?\"\n,\ncache\n=\ncache\n,\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "user_proxy\n(\nto\nchatbot\n)\n:\nHow much is 123.45 US Dollars in Euros?\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\n***** Suggested tool call (call_Xxol42xTswZHGX60OjvIQRG1): currency_calculator *****\nArguments:\n{\n\"base\": {\n\"currency\": \"USD\",\n\"amount\": 123.45\n},\n\"quote_currency\": \"EUR\"\n}\n************************************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING FUNCTION currency_calculator...\nuser_proxy\n(\nto\nchatbot\n)\n:\nuser_proxy\n(\nto\nchatbot\n)\n:\n***** Response from calling tool (call_Xxol42xTswZHGX60OjvIQRG1) *****\n{\"currency\":\"EUR\",\"amount\":112.22727272727272}\n**********************************************************************\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\n123.45 US Dollars is equivalent to 112.23 Euros.\n--------------------------------------------------------------------------------\nuser_proxy\n(\nto\nchatbot\n)\n:\n--------------------------------------------------------------------------------\nchatbot\n(\nto\nuser_proxy\n)\n:\nTERMINATE\n--------------------------------------------------------------------------------"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "print\n(\n\"Chat history:\"\n,\nres\n.\nchat_history\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "Chat history: [{'content': 'How much is 123.45 US Dollars in Euros?', 'role': 'assistant'}, {'tool_calls': [{'id': 'call_Xxol42xTswZHGX60OjvIQRG1', 'function': {'arguments': '{\\n  \"base\": {\\n    \"currency\": \"USD\",\\n    \"amount\": 123.45\\n  },\\n  \"quote_currency\": \"EUR\"\\n}', 'name': 'currency_calculator'}, 'type': 'function'}], 'content': None, 'role': 'assistant'}, {'content': '{\"currency\":\"EUR\",\"amount\":112.22727272727272}', 'tool_responses': [{'tool_call_id': 'call_Xxol42xTswZHGX60OjvIQRG1', 'role': 'tool', 'content': '{\"currency\":\"EUR\",\"amount\":112.22727272727272}'}], 'role': 'tool'}, {'content': '123.45 US Dollars is equivalent to 112.23 Euros.', 'role': 'user'}, {'content': '', 'role': 'assistant'}, {'content': '\nTERMINATE\n', 'role': 'user'}]"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

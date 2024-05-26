@@ -1,0 +1,80 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/qdrant_retrieve_user_proxy_agent",
+    "title": "agentchat.contrib.qdrant_retrieve_user_proxy_agent",
+    "sections": [
+        {
+            "title": "QdrantRetrieveUserProxyAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nQdrantRetrieveUserProxyAgent\n(\nRetrieveUserProxyAgent\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nname\n=\n\"RetrieveChatAgent\"\n,\nhuman_input_mode\n:\nOptional\n[\nstr\n]\n=\n\"ALWAYS\"\n,\nis_termination_msg\n:\nOptional\n[\nCallable\n[\n[\nDict\n]\n,\nbool\n]\n]\n=\nNone\n,\nretrieve_config\n:\nOptional\n[\nDict\n]\n=\nNone\n,\n**\nkwargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "retrieve_docs\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nretrieve_docs\n(\nproblem\n:\nstr\n,\nn_results\n:\nint\n=\n20\n,\nsearch_string\n:\nstr\n=\n\"\"\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "create_qdrant_from_dir\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncreate_qdrant_from_dir\n(\ndir_path\n:\nstr\n,\nmax_tokens\n:\nint\n=\n4000\n,\nclient\n:\nQdrantClient\n=\nNone\n,\ncollection_name\n:\nstr\n=\n\"all-my-documents\"\n,\nchunk_mode\n:\nstr\n=\n\"multi_lines\"\n,\nmust_break_at_empty_line\n:\nbool\n=\nTrue\n,\nembedding_model\n:\nstr\n=\n\"BAAI/bge-small-en-v1.5\"\n,\ncustom_text_split_function\n:\nCallable\n=\nNone\n,\ncustom_text_types\n:\nList\n[\nstr\n]\n=\nTEXT_FORMATS\n,\nrecursive\n:\nbool\n=\nTrue\n,\nextra_docs\n:\nbool\n=\nFalse\n,\nparallel\n:\nint\n=\n0\n,\non_disk\n:\nbool\n=\nFalse\n,\nquantization_config\n:\nOptional\n[\nmodels\n.\nQuantizationConfig\n]\n=\nNone\n,\nhnsw_config\n:\nOptional\n[\nmodels\n.\nHnswConfigDiff\n]\n=\nNone\n,\npayload_indexing\n:\nbool\n=\nFalse\n,\nqdrant_client_options\n:\nOptional\n[\nDict\n]\n=\n{\n}\n)"
+                            }
+                        },
+                        {
+                            "text": "Create a Qdrant collection from all the files in a given directory, the directory can also be a single file or a\nurl to a single file.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "query_qdrant\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nquery_qdrant\n(\nquery_texts\n:\nList\n[\nstr\n]\n,\nn_results\n:\nint\n=\n10\n,\nclient\n:\nQdrantClient\n=\nNone\n,\ncollection_name\n:\nstr\n=\n\"all-my-documents\"\n,\nsearch_string\n:\nstr\n=\n\"\"\n,\nembedding_model\n:\nstr\n=\n\"BAAI/bge-small-en-v1.5\"\n,\nqdrant_client_options\n:\nOptional\n[\nDict\n]\n=\n{\n}\n)\n-\n>\nList\n[\nList\n[\nQueryResponse\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Perform a similarity search with filters on a Qdrant collection\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

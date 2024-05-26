@@ -1,0 +1,128 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/coding/base",
+    "title": "coding.base",
+    "sections": [
+        {
+            "title": "CodeBlock\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCodeBlock\n(\nBaseModel\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) A class that represents a code block."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "CodeResult\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCodeResult\n(\nBaseModel\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) A class that represents the result of a code execution."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "CodeExtractor\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCodeExtractor\n(\nProtocol\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) A code extractor class that extracts code blocks from a message."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "CodeExecutor\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "@runtime_checkable\nclass\nCodeExecutor\n(\nProtocol\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) A code executor class that executes code blocks and returns the result."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "code_extractor\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\ncode_extractor\n(\n)\n-\n>\nCodeExtractor"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) The code extractor used by this code executor."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "execute_code_blocks\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nexecute_code_blocks\n(\ncode_blocks\n:\nList\n[\nCodeBlock\n]\n)\n-\n>\nCodeResult"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Execute code blocks and return the result.\n\nThis method should be implemented by the code executor.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "IPythonCodeResult\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nIPythonCodeResult\n(\nCodeResult\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) A code result class for IPython code executor."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "CommandLineCodeResult\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCommandLineCodeResult\n(\nCodeResult\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) A code result class for command line code executor."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

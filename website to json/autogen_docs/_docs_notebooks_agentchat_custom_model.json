@@ -1,0 +1,199 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_custom_model",
+    "title": "Agent Chat with custom model loading",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nIn this notebook, we demonstrate how a custom model can be defined and\nloaded, and what protocol it needs to comply to.\n\nNOTE: Depending on what model you use, you may need to play with the\ndefault prompts of the Agent’s"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Requirements\n​",
+            "content": [
+                {
+                    "text": "Some extra dependencies are needed for this notebook, which can be installed via pip:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen torch transformers sentencepiece"
+                    }
+                },
+                {
+                    "text": "For more information, please refer to the\ninstallation guide\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\ntypes\nimport\nSimpleNamespace\nfrom\ntransformers\nimport\nAutoModelForCausalLM\n,\nAutoTokenizer\n,\nGenerationConfig\nimport\nautogen\nfrom\nautogen\nimport\nAssistantAgent\n,\nUserProxyAgent"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Create and configure the custom model\n​",
+            "content": [
+                {
+                    "text": "A custom model class can be created in many ways, but needs to adhere to\nthe\nModelClient\nprotocol and response structure which is defined in\nclient.py and shown below.\n\nThe response protocol has some minimum requirements, but can be extended\nto include any additional information that is needed. Message retrieval\ntherefore can be customized, but needs to return a list of strings or a\nlist of\nModelClientResponseProtocol.Choice.Message\nobjects."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nModelClient\n(\nProtocol\n)\n:\n\"\"\"\nA client class must implement the following methods:\n- create must return a response object that implements the ModelClientResponseProtocol\n- cost must return the cost of the response\n- get_usage must return a dict with the following keys:\n- prompt_tokens\n- completion_tokens\n- total_tokens\n- cost\n- model\nThis class is used to create a client that can be used by OpenAIWrapper.\nThe response returned from create must adhere to the ModelClientResponseProtocol but can be extended however needed.\nThe message_retrieval method must be implemented to return a list of str or a list of messages from the response.\n\"\"\"\nRESPONSE_USAGE_KEYS\n=\n[\n\"prompt_tokens\"\n,\n\"completion_tokens\"\n,\n\"total_tokens\"\n,\n\"cost\"\n,\n\"model\"\n]\nclass\nModelClientResponseProtocol\n(\nProtocol\n)\n:\nclass\nChoice\n(\nProtocol\n)\n:\nclass\nMessage\n(\nProtocol\n)\n:\ncontent\n:\nOptional\n[\nstr\n]\nmessage\n:\nMessage\nchoices\n:\nList\n[\nChoice\n]\nmodel\n:\nstr\ndef\ncreate\n(\nself\n,\nparams\n)\n-\n>\nModelClientResponseProtocol\n:\n.\n.\n.\ndef\nmessage_retrieval\n(\nself\n,\nresponse\n:\nModelClientResponseProtocol\n)\n-\n>\nUnion\n[\nList\n[\nstr\n]\n,\nList\n[\nModelClient\n.\nModelClientResponseProtocol\n.\nChoice\n.\nMessage\n]\n]\n:\n\"\"\"\nRetrieve and return a list of strings or a list of Choice.Message from the response.\nNOTE: if a list of Choice.Message is returned, it currently needs to contain the fields of OpenAI's ChatCompletion Message object,\nsince that is expected for function or tool calling in the rest of the codebase at the moment, unless a custom agent is being used.\n\"\"\"\n.\n.\n.\ndef\ncost\n(\nself\n,\nresponse\n:\nModelClientResponseProtocol\n)\n-\n>\nfloat\n:\n.\n.\n.\n@staticmethod\ndef\nget_usage\n(\nresponse\n:\nModelClientResponseProtocol\n)\n-\n>\nDict\n:\n\"\"\"Return usage summary of the response using RESPONSE_USAGE_KEYS.\"\"\"\n.\n.\n."
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example of simple custom client\n​",
+            "content": [
+                {
+                    "text": "Following the huggingface example for using\nMistral’s\nOpen-Orca\n\nFor the response object, python’s\nSimpleNamespace\nis used to create a\nsimple object that can be used to store the response data, but any\nobject that follows the\nClientResponseProtocol\ncan be used."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# custom client with custom model loader\nclass\nCustomModelClient\n:\ndef\n__init__\n(\nself\n,\nconfig\n,\n**\nkwargs\n)\n:\nprint\n(\nf\"CustomModelClient config:\n{\nconfig\n}\n\"\n)\nself\n.\ndevice\n=\nconfig\n.\nget\n(\n\"device\"\n,\n\"cpu\"\n)\nself\n.\nmodel\n=\nAutoModelForCausalLM\n.\nfrom_pretrained\n(\nconfig\n[\n\"model\"\n]\n)\n.\nto\n(\nself\n.\ndevice\n)\nself\n.\nmodel_name\n=\nconfig\n[\n\"model\"\n]\nself\n.\ntokenizer\n=\nAutoTokenizer\n.\nfrom_pretrained\n(\nconfig\n[\n\"model\"\n]\n,\nuse_fast\n=\nFalse\n)\nself\n.\ntokenizer\n.\npad_token_id\n=\nself\n.\ntokenizer\n.\neos_token_id\n# params are set by the user and consumed by the user since they are providing a custom model\n# so anything can be done here\ngen_config_params\n=\nconfig\n.\nget\n(\n\"params\"\n,\n{\n}\n)\nself\n.\nmax_length\n=\ngen_config_params\n.\nget\n(\n\"max_length\"\n,\n256\n)\nprint\n(\nf\"Loaded model\n{\nconfig\n[\n'model'\n]\n}\nto\n{\nself\n.\ndevice\n}\n\"\n)\ndef\ncreate\n(\nself\n,\nparams\n)\n:\nif\nparams\n.\nget\n(\n\"stream\"\n,\nFalse\n)\nand\n\"messages\"\nin\nparams\n:\nraise\nNotImplementedError\n(\n\"Local models do not support streaming.\"\n)\nelse\n:\nnum_of_responses\n=\nparams\n.\nget\n(\n\"n\"\n,\n1\n)\n# can create my own data response class\n# here using SimpleNamespace for simplicity\n# as long as it adheres to the ClientResponseProtocol\nresponse\n=\nSimpleNamespace\n(\n)\ninputs\n=\nself\n.\ntokenizer\n.\napply_chat_template\n(\nparams\n[\n\"messages\"\n]\n,\nreturn_tensors\n=\n\"pt\"\n,\nadd_generation_prompt\n=\nTrue\n)\n.\nto\n(\nself\n.\ndevice\n)\ninputs_length\n=\ninputs\n.\nshape\n[\n-\n1\n]\n# add inputs_length to max_length\nmax_length\n=\nself\n.\nmax_length\n+\ninputs_length\ngeneration_config\n=\nGenerationConfig\n(\nmax_length\n=\nmax_length\n,\neos_token_id\n=\nself\n.\ntokenizer\n.\neos_token_id\n,\npad_token_id\n=\nself\n.\ntokenizer\n.\neos_token_id\n,\n)\nresponse\n.\nchoices\n=\n[\n]\nresponse\n.\nmodel\n=\nself\n.\nmodel_name\nfor\n_\nin\nrange\n(\nnum_of_responses\n)\n:\noutputs\n=\nself\n.\nmodel\n.\ngenerate\n(\ninputs\n,\ngeneration_config\n=\ngeneration_config\n)\n# Decode only the newly generated text, excluding the prompt\ntext\n=\nself\n.\ntokenizer\n.\ndecode\n(\noutputs\n[\n0\n,\ninputs_length\n:\n]\n)\nchoice\n=\nSimpleNamespace\n(\n)\nchoice\n.\nmessage\n=\nSimpleNamespace\n(\n)\nchoice\n.\nmessage\n.\ncontent\n=\ntext\nchoice\n.\nmessage\n.\nfunction_call\n=\nNone\nresponse\n.\nchoices\n.\nappend\n(\nchoice\n)\nreturn\nresponse\ndef\nmessage_retrieval\n(\nself\n,\nresponse\n)\n:\n\"\"\"Retrieve the messages from the response.\"\"\"\nchoices\n=\nresponse\n.\nchoices\nreturn\n[\nchoice\n.\nmessage\n.\ncontent\nfor\nchoice\nin\nchoices\n]\ndef\ncost\n(\nself\n,\nresponse\n)\n-\n>\nfloat\n:\n\"\"\"Calculate the cost of the response.\"\"\"\nresponse\n.\ncost\n=\n0\nreturn\n0\n@staticmethod\ndef\nget_usage\n(\nresponse\n)\n:\n# returns a dict of prompt_tokens, completion_tokens, total_tokens, cost, model\n# if usage needs to be tracked, else None\nreturn\n{\n}"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Set your API Endpoint\n​",
+            "content": [
+                {
+                    "text": "The\nconfig_list_from_json\nfunction loads a list of configurations from an environment variable or\na json file.\n\nIt first looks for an environment variable of a specified name\n(“OAI_CONFIG_LIST” in this example), which needs to be a valid json\nstring. If that variable is not found, it looks for a json file with the\nsame name. It filters the configs by models (you can filter by other\nkeys as well).\n\nThe json looks like the following:"
+                },
+                {
+                    "code": {
+                        "language": "json",
+                        "script": "[\n{\n\"model\": \"gpt-4\",\n\"api_key\": \"<your OpenAI API key here>\"\n},\n{\n\"model\": \"gpt-4\",\n\"api_key\": \"<your Azure OpenAI API key here>\",\n\"base_url\": \"<your Azure OpenAI API base here>\",\n\"api_type\": \"azure\",\n\"api_version\": \"2024-02-15-preview\"\n},\n{\n\"model\": \"gpt-4-32k\",\n\"api_key\": \"<your Azure OpenAI API key here>\",\n\"base_url\": \"<your Azure OpenAI API base here>\",\n\"api_type\": \"azure\",\n\"api_version\": \"2024-02-15-preview\"\n}\n]"
+                    }
+                },
+                {
+                    "text": "You can set the value of config_list in any way you prefer. Please refer\nto this\nnotebook\nfor full code examples of the different methods."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Set the config for the custom model\n​",
+            "content": [
+                {
+                    "text": "You can add any paramteres that are needed for the custom model loading\nin the same configuration list.\n\nIt is important to add the\nmodel_client_cls\nfield and set it to a\nstring that corresponds to the class name:\n\"CustomModelClient\"\n."
+                },
+                {
+                    "code": {
+                        "language": "json",
+                        "script": "{\n\"model\": \"Open-Orca/Mistral-7B-OpenOrca\",\n\"model_client_cls\": \"CustomModelClient\",\n\"device\": \"cuda\",\n\"n\": 1,\n\"params\": {\n\"max_length\": 1000,\n}\n},"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "config_list_custom\n=\nautogen\n.\nconfig_list_from_json\n(\n\"OAI_CONFIG_LIST\"\n,\nfilter_dict\n=\n{\n\"model_client_cls\"\n:\n[\n\"CustomModelClient\"\n]\n}\n,\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Construct Agents\n​",
+            "content": [
+                {
+                    "text": "Consturct a simple conversation between a User proxy and an Assistent\nagent"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant\n=\nAssistantAgent\n(\n\"assistant\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list_custom\n}\n)\nuser_proxy\n=\nUserProxyAgent\n(\n\"user_proxy\"\n,\ncode_execution_config\n=\n{\n\"work_dir\"\n:\n\"coding\"\n,\n\"use_docker\"\n:\nFalse\n,\n# Please set use_docker=True if docker is available to run the generated code. Using docker is safer than running the generated code directly.\n}\n,\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Register the custom client class to the assistant agent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant\n.\nregister_model_client\n(\nmodel_client_cls\n=\nCustomModelClient\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "user_proxy\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\n\"Write python code to print Hello World!\"\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Register a custom client class with a pre-loaded model\n​",
+            "content": [
+                {
+                    "text": "If you want to have more control over when the model gets loaded, you\ncan load the model yourself and pass it as an argument to the\nCustomClient during registration"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# custom client with custom model loader\nclass\nCustomModelClientWithArguments\n(\nCustomModelClient\n)\n:\ndef\n__init__\n(\nself\n,\nconfig\n,\nloaded_model\n,\ntokenizer\n,\n**\nkwargs\n)\n:\nprint\n(\nf\"CustomModelClientWithArguments config:\n{\nconfig\n}\n\"\n)\nself\n.\nmodel_name\n=\nconfig\n[\n\"model\"\n]\nself\n.\nmodel\n=\nloaded_model\nself\n.\ntokenizer\n=\ntokenizer\nself\n.\ndevice\n=\nconfig\n.\nget\n(\n\"device\"\n,\n\"cpu\"\n)\ngen_config_params\n=\nconfig\n.\nget\n(\n\"params\"\n,\n{\n}\n)\nself\n.\nmax_length\n=\ngen_config_params\n.\nget\n(\n\"max_length\"\n,\n256\n)\nprint\n(\nf\"Loaded model\n{\nconfig\n[\n'model'\n]\n}\nto\n{\nself\n.\ndevice\n}\n\"\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# load model here\nconfig\n=\nconfig_list_custom\n[\n0\n]\ndevice\n=\nconfig\n.\nget\n(\n\"device\"\n,\n\"cpu\"\n)\nloaded_model\n=\nAutoModelForCausalLM\n.\nfrom_pretrained\n(\nconfig\n[\n\"model\"\n]\n)\n.\nto\n(\ndevice\n)\ntokenizer\n=\nAutoTokenizer\n.\nfrom_pretrained\n(\nconfig\n[\n\"model\"\n]\n,\nuse_fast\n=\nFalse\n)\ntokenizer\n.\npad_token_id\n=\ntokenizer\n.\neos_token_id"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Add the config of the new custom model\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "json",
+                        "script": "{\n\"model\": \"Open-Orca/Mistral-7B-OpenOrca\",\n\"model_client_cls\": \"CustomModelClientWithArguments\",\n\"device\": \"cuda\",\n\"n\": 1,\n\"params\": {\n\"max_length\": 1000,\n}\n},"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "config_list_custom\n=\nautogen\n.\nconfig_list_from_json\n(\n\"OAI_CONFIG_LIST\"\n,\nfilter_dict\n=\n{\n\"model_client_cls\"\n:\n[\n\"CustomModelClientWithArguments\"\n]\n}\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant\n=\nAssistantAgent\n(\n\"assistant\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list_custom\n}\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant\n.\nregister_model_client\n(\nmodel_client_cls\n=\nCustomModelClientWithArguments\n,\nloaded_model\n=\nloaded_model\n,\ntokenizer\n=\ntokenizer\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "user_proxy\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\n\"Write python code to print Hello World!\"\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

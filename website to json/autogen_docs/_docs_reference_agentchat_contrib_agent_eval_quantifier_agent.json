@@ -1,0 +1,38 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/agent_eval/quantifier_agent",
+    "title": "agentchat.contrib.agent_eval.quantifier_agent",
+    "sections": [
+        {
+            "title": "QuantifierAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nQuantifierAgent\n(\nConversableAgent\n)"
+                    }
+                },
+                {
+                    "text": "An agent for quantifying the performance of a system using the provided criteria."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nname\n=\n\"quantifier\"\n,\nsystem_message\n:\nOptional\n[\nstr\n]\n=\nDEFAULT_SYSTEM_MESSAGE\n,\ndescription\n:\nOptional\n[\nstr\n]\n=\nDEFAULT_DESCRIPTION\n,\n**\nkwargs\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

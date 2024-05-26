@@ -1,0 +1,16 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/ecosystem/pgvector",
+    "title": "PGVector",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "PGVector\nis an open-source vector similarity search for Postgres."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

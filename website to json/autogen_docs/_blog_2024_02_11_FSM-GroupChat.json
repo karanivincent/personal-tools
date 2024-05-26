@@ -1,0 +1,62 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2024/02/11/FSM-GroupChat",
+    "title": "FSM Group Chat -- User-specified agent transitions",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nFinite State Machine (FSM) Group Chat allows the user to constrain agent transitions.\n\n"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "TL;DR\n​",
+            "content": [
+                {
+                    "text": "Recently, FSM Group Chat is released that allows the user to input a transition graph to constrain agent transitions. This is useful as the number of agents increases because the number of transition pairs (N choose 2 combinations) increases exponentially increasing the risk of sub-optimal transitions, which leads to wastage of tokens and/or poor outcomes."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Possible use-cases for transition graph\n​",
+            "content": [
+                {
+                    "text": "Note that we are not enforcing a directed acyclic graph; the user can specify the graph to be acyclic, but cyclic workflows can also be useful to iteratively work on a problem, and layering additional analysis onto the solution."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Usage Guide\n​",
+            "content": [
+                {
+                    "text": "We have added two parameters\nallowed_or_disallowed_speaker_transitions\nand\nspeaker_transitions_type\n."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Application of the FSM Feature\n​",
+                    "content": [
+                        {
+                            "text": "A quick demonstration of how to initiate a FSM-based\nGroupChat\nin the\nAutoGen\nframework. In this demonstration, if we consider each agent as a state, and each agent speaks according to certain conditions. For example, User always initiates the task first, followed by Planner creating a plan. Then Engineer and Executor work alternately, with Critic intervening when necessary, and after Critic, only Planner should revise additional plans. Each state can only exist at a time, and there are transition conditions between states. Therefore, GroupChat can be well abstracted as a Finite-State Machine (FSM).\n\n"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Notebook examples\n​",
+            "content": [
+                {
+                    "text": "More examples can be found in the\nnotebook\n. The notebook includes more examples of possible transition paths such as (1) hub and spoke, (2) sequential team operations, and (3) think aloud and debate. It also uses the function\nvisualize_speaker_transitions_dict\nfrom\nautogen.graph_utils\nto visualize the various graphs."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

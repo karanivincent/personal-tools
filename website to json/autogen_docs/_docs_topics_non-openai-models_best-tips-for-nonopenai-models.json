@@ -1,0 +1,61 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics/non-openai-models/best-tips-for-nonopenai-models",
+    "title": "Tips for Non-OpenAI Models",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Here are some tips for using non-OpenAI Models with AutoGen."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Finding the right model\n​",
+            "content": [
+                {
+                    "text": "Every model will perform differently across the operations within your AutoGen\nsetup, such as speaker selection, coding, function calling, content creation,\netc. On the whole, larger models (13B+) perform better with following directions\nand providing more cohesive responses.\n\nContent creation can be performed by most models.\n\nFine-tuned models can be great for very specific tasks, such as function calling\nand coding.\n\nSpecific tasks, such as speaker selection in a Group Chat scenario, that require\nvery accurate outputs can be a challenge with most open source/weight models. The\nuse of chain-of-thought and/or few-shot prompting can help guide the LLM to provide\nthe output in the format you want."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Validating your program\n​",
+            "content": [
+                {
+                    "text": "Testing your AutoGen setup against a very large LLM, such as OpenAI's ChatGPT or\nAnthropic's Claude 3, can help validate your agent setup and configuration.\n\nOnce a setup is performing as you want, you can replace the models for your agents\nwith non-OpenAI models and iteratively tweak system messages, prompts, and model\nselection."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Chat template\n​",
+            "content": [
+                {
+                    "text": "AutoGen utilises a set of chat messages for the conversation between AutoGen/user\nand LLMs. Each chat message has a role attribute that is typically\nuser\n,\nassistant\n, or\nsystem\n.\n\nA chat template is applied during inference and some chat templates implement rules about\nwhat roles can be used in specific sequences of messages.\n\nFor example, when using Mistral AI's API the last chat message must have a role of\nuser\n.\nIn a Group Chat scenario the message used to select the next speaker will have a role of\nsystem\nby default and the API will throw an exception for this step. To overcome this the\nGroupChat's constructor has a parameter called\nrole_for_select_speaker_messages\nthat can\nbe used to change the role name to\nuser\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "groupchat\n=\nautogen\n.\nGroupChat\n(\nagents\n=\n[\nuser_proxy\n,\ncoder\n,\npm\n]\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n12\n,\n# Role for select speaker message will be set to 'user' instead of 'system'\nrole_for_select_speaker_messages\n=\n'user'\n,\n)"
+                    }
+                },
+                {
+                    "text": "If the chat template associated with a model you want to use doesn't support the role\nsequence and names used in AutoGen you can modify the chat template. See an example of\nthis on our\nvLLM page\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Discord\n​",
+            "content": [
+                {
+                    "text": "Join AutoGen's\n#alt-models\nchannel on their Discord and discuss non-OpenAI models and configurations."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

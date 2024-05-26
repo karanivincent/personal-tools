@@ -1,0 +1,52 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2024/02/02/AutoAnny",
+    "title": "Anny: Assisting AutoGen Devs Via AutoGen",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Anny is a Discord bot powered by AutoGen to help AutoGen's Discord server."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "TL;DR\n​",
+            "content": [
+                {
+                    "text": "We are adding a new sample app called Anny-- a simple Discord bot powered\nby AutoGen that's intended to assist AutoGen Devs. See\nsamples/apps/auto-anny\nfor details."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "Over the past few months, AutoGen has experienced large growth in number of users and number of community requests and feedback.\nHowever, accommodating this demand and feedback requires manually sifting through issues, PRs, and discussions on GitHub, as well as managing messages\nfrom AutoGen's 14000+ community members on Discord. There are many tasks that AutoGen's developer community has to perform everyday,\nbut here are some common ones:\n\nThis requires a significant amount of effort. Agentic-workflows and interfaces promise adding\nimmense value-added automation for many tasks, so we thought\nwhy don't we use AutoGen to make\nour lives easier?!\nSo we're turning to automation to help us and allow\nus to focus on what's most critical."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Current Version of Anny\n​",
+            "content": [
+                {
+                    "text": "The current version of Anny is pretty simple -- it uses the Discord API and AutoGen to enable a bot\nthat can respond to a set of commands.\n\nFor example, it supports commands like\n/heyanny help\nfor command listing,\n/heyanny ghstatus\nfor\nGitHub activity summary,\n/heyanny ghgrowth\nfor GitHub repo growth indicators, and\n/heyanny ghunattended\nfor listing unattended issues and PRs. Most of these commands use multiple AutoGen agents to accomplish these task.\n\nTo use Anny, please follow instructions in\nsamples/apps/auto-anny\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "It's Not Just for AutoGen\n​",
+            "content": [
+                {
+                    "text": "If you're an open-source developer managing your own project, you can probably relate to our challenges. We invite you to check out Anny and contribute to its development and roadmap."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

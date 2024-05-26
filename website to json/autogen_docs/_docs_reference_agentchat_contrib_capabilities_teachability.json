@@ -1,0 +1,189 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/capabilities/teachability",
+    "title": "agentchat.contrib.capabilities.teachability",
+    "sections": [
+        {
+            "title": "Teachability\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nTeachability\n(\nAgentCapability\n)"
+                    }
+                },
+                {
+                    "text": "Teachability uses a vector database to give an agent the ability to remember user teachings,\nwhere the user is any caller (human or not) sending messages to the teachable agent.\nTeachability is designed to be composable with other agent capabilities.\nTo make any conversable agent teachable, instantiate both the agent and the Teachability class,\nthen pass the agent to teachability.add_to_agent(agent).\nNote that teachable agents in a group chat must be given unique path_to_db_dir values.\n\nWhen adding Teachability to an agent, the following are modified:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nverbosity\n:\nOptional\n[\nint\n]\n=\n0\n,\nreset_db\n:\nOptional\n[\nbool\n]\n=\nFalse\n,\npath_to_db_dir\n:\nOptional\n[\nstr\n]\n=\n\"./tmp/teachable_agent_db\"\n,\nrecall_threshold\n:\nOptional\n[\nfloat\n]\n=\n1.5\n,\nmax_num_retrievals\n:\nOptional\n[\nint\n]\n=\n10\n,\nllm_config\n:\nOptional\n[\nUnion\n[\nDict\n,\nbool\n]\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "add_to_agent\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nadd_to_agent\n(\nagent\n:\nConversableAgent\n)"
+                            }
+                        },
+                        {
+                            "text": "Adds teachability to the given agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "prepopulate_db\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nprepopulate_db\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "Adds a few arbitrary memos to the DB."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "MemoStore\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nMemoStore\n(\n)"
+                    }
+                },
+                {
+                    "text": "Provides memory storage and retrieval for a teachable agent, using a vector database.\nEach DB entry (called a memo) is a pair of strings: an input text and an output text.\nThe input text might be a question, or a task to perform.\nThe output text might be an answer to the question, or advice on how to perform the task.\nVector embeddings are currently supplied by Chroma's default Sentence Transformers."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nverbosity\n:\nOptional\n[\nint\n]\n=\n0\n,\nreset\n:\nOptional\n[\nbool\n]\n=\nFalse\n,\npath_to_db_dir\n:\nOptional\n[\nstr\n]\n=\n\"./tmp/teachable_agent_db\"\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "list_memos\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nlist_memos\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "Prints the contents of MemoStore."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "reset_db\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nreset_db\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "Forces immediate deletion of the DB's contents, in memory and on disk."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "add_input_output_pair\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nadd_input_output_pair\n(\ninput_text\n:\nstr\n,\noutput_text\n:\nstr\n)"
+                            }
+                        },
+                        {
+                            "text": "Adds an input-output pair to the vector DB."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_nearest_memo\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_nearest_memo\n(\nquery_text\n:\nstr\n)"
+                            }
+                        },
+                        {
+                            "text": "Retrieves the nearest memo to the given query text."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_related_memos\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_related_memos\n(\nquery_text\n:\nstr\n,\nn_results\n:\nint\n,\nthreshold\n:\nUnion\n[\nint\n,\nfloat\n]\n)"
+                            }
+                        },
+                        {
+                            "text": "Retrieves memos that are related to the given query text within the specified distance threshold."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "prepopulate\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nprepopulate\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "Adds a few arbitrary examples to the vector DB, just to make retrieval less trivial."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

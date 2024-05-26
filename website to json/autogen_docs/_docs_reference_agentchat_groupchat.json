@@ -1,0 +1,369 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/groupchat",
+    "title": "agentchat.groupchat",
+    "sections": [
+        {
+            "title": "GroupChat\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "@dataclass\nclass\nGroupChat\n(\n)"
+                    }
+                },
+                {
+                    "text": "(In preview) A group chat class that contains the following data fields:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "agent_names\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nagent_names\n(\n)\n-\n>\nList\n[\nstr\n]"
+                            }
+                        },
+                        {
+                            "text": "Return the names of the agents in the group chat."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "reset\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nreset\n(\n)"
+                            }
+                        },
+                        {
+                            "text": "Reset the group chat."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "append\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nappend\n(\nmessage\n:\nDict\n,\nspeaker\n:\nAgent\n)"
+                            }
+                        },
+                        {
+                            "text": "Append a message to the group chat.\nWe cast the content to str here so that it can be managed by text-based\nmodel."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "agent_by_name\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nagent_by_name\n(\nname\n:\nstr\n,\nrecursive\n:\nbool\n=\nFalse\n,\nraise_on_name_conflict\n:\nbool\n=\nFalse\n)\n-\n>\nOptional\n[\nAgent\n]"
+                            }
+                        },
+                        {
+                            "text": "Returns the agent with a given name. If recursive is True, it will search in nested teams."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "nested_agents\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nnested_agents\n(\n)\n-\n>\nList\n[\nAgent\n]"
+                            }
+                        },
+                        {
+                            "text": "Returns all agents in the group chat manager."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "next_agent\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nnext_agent\n(\nagent\n:\nAgent\n,\nagents\n:\nOptional\n[\nList\n[\nAgent\n]\n]\n=\nNone\n)\n-\n>\nAgent"
+                            }
+                        },
+                        {
+                            "text": "Return the next agent in the list."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "select_speaker_msg\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nselect_speaker_msg\n(\nagents\n:\nOptional\n[\nList\n[\nAgent\n]\n]\n=\nNone\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Return the system message for selecting the next speaker. This is always the\nfirst\nmessage in the context."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "select_speaker_prompt\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nselect_speaker_prompt\n(\nagents\n:\nOptional\n[\nList\n[\nAgent\n]\n]\n=\nNone\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Return the floating system prompt selecting the next speaker. This is always the\nlast\nmessage in the context."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "introductions_msg\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nintroductions_msg\n(\nagents\n:\nOptional\n[\nList\n[\nAgent\n]\n]\n=\nNone\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Return the system message for selecting the next speaker. This is always the\nfirst\nmessage in the context."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "manual_select_speaker\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nmanual_select_speaker\n(\nagents\n:\nOptional\n[\nList\n[\nAgent\n]\n]\n=\nNone\n)\n-\n>\nUnion\n[\nAgent\n,\nNone\n]"
+                            }
+                        },
+                        {
+                            "text": "Manually select the next speaker."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "random_select_speaker\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nrandom_select_speaker\n(\nagents\n:\nOptional\n[\nList\n[\nAgent\n]\n]\n=\nNone\n)\n-\n>\nUnion\n[\nAgent\n,\nNone\n]"
+                            }
+                        },
+                        {
+                            "text": "Randomly select the next speaker."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "select_speaker\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nselect_speaker\n(\nlast_speaker\n:\nAgent\n,\nselector\n:\nConversableAgent\n)\n-\n>\nAgent"
+                            }
+                        },
+                        {
+                            "text": "Select the next speaker (with requery)."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_select_speaker\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_select_speaker\n(\nlast_speaker\n:\nAgent\n,\nselector\n:\nConversableAgent\n)\n-\n>\nAgent"
+                            }
+                        },
+                        {
+                            "text": "Select the next speaker (with requery), asynchronously."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "GroupChatManager\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nGroupChatManager\n(\nConversableAgent\n)"
+                    }
+                },
+                {
+                    "text": "(In preview) A chat manager agent that can manage a group chat of multiple agents."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "groupchat\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\ngroupchat\n(\n)\n-\n>\nGroupChat"
+                            }
+                        },
+                        {
+                            "text": "Returns the group chat managed by the group chat manager."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "chat_messages_for_summary\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nchat_messages_for_summary\n(\nagent\n:\nAgent\n)\n-\n>\nList\n[\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "The list of messages in the group chat as a conversation to summarize.\nThe agent is ignored."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "run_chat\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nrun_chat\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nGroupChat\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nOptional\n[\nstr\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Run a group chat."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_run_chat\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_run_chat\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nGroupChat\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Run a group chat asynchronously."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "resume\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nresume\n(\nmessages\n:\nUnion\n[\nList\n[\nDict\n]\n,\nstr\n]\n,\nremove_termination_string\n:\nstr\n=\nNone\n,\nsilent\n:\nOptional\n[\nbool\n]\n=\nFalse\n)\n-\n>\nTuple\n[\nConversableAgent\n,\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "Resumes a group chat using the previous messages as a starting point. Requires the agents, group chat, and group chat manager to be established\nas per the original group chat.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_resume\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_resume\n(\nmessages\n:\nUnion\n[\nList\n[\nDict\n]\n,\nstr\n]\n,\nremove_termination_string\n:\nstr\n=\nNone\n,\nsilent\n:\nOptional\n[\nbool\n]\n=\nFalse\n)\n-\n>\nTuple\n[\nConversableAgent\n,\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "Resumes a group chat using the previous messages as a starting point, asynchronously. Requires the agents, group chat, and group chat manager to be established\nas per the original group chat.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "messages_from_string\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nmessages_from_string\n(\nmessage_string\n:\nstr\n)\n-\n>\nList\n[\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "Reads the saved state of messages in Json format for resume and returns as a messages list\n\nargs:\n\nreturns:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "messages_to_string\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nmessages_to_string\n(\nmessages\n:\nList\n[\nDict\n]\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Converts the provided messages into a Json string that can be used for resuming the chat.\nThe state is made up of a list of messages\n\nargs:\n\nreturns:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "clear_agents_history\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nclear_agents_history\n(\nreply\n:\ndict\n,\ngroupchat\n:\nGroupChat\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Clears history of messages for all agents or selected one. Can preserve selected number of last messages.\nThat function is called when user manually provide \"clear history\" phrase in his reply.\nWhen \"clear history\" is provided, the history of messages for all agents is cleared.\nWhen \"clear history <agent_name>\" is provided, the history of messages for selected agent is cleared.\nWhen \"clear history <nr_of_messages_to_preserve>\" is provided, the history of messages for all agents is cleared\nexcept last <nr_of_messages_to_preserve> messages.\nWhen \"clear history <agent_name> <nr_of_messages_to_preserve>\" is provided, the history of messages for selected\nagent is cleared except last <nr_of_messages_to_preserve> messages.\nPhrase \"clear history\" and optional arguments are cut out from the reply before it passed to the chat.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

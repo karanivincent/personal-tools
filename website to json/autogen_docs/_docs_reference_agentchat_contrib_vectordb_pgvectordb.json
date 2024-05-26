@@ -1,0 +1,399 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/vectordb/pgvectordb",
+    "title": "agentchat.contrib.vectordb.pgvectordb",
+    "sections": [
+        {
+            "title": "Collection\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nCollection\n(\n)"
+                    }
+                },
+                {
+                    "text": "A Collection object for PGVector.\n\nAttributes\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nclient\n=\nNone\n,\ncollection_name\n:\nstr\n=\n\"autogen-docs\"\n,\nembedding_function\n:\nCallable\n=\nNone\n,\nmetadata\n=\nNone\n,\nget_or_create\n=\nNone\n,\nmodel_name\n=\n\"all-MiniLM-L6-v2\"\n)"
+                            }
+                        },
+                        {
+                            "text": "Initialize the Collection object.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "add\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nadd\n(\nids\n:\nList\n[\nItemID\n]\n,\ndocuments\n:\nList\n,\nembeddings\n:\nList\n=\nNone\n,\nmetadatas\n:\nList\n=\nNone\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Add documents to the collection.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "upsert\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nupsert\n(\nids\n:\nList\n[\nItemID\n]\n,\ndocuments\n:\nList\n,\nembeddings\n:\nList\n=\nNone\n,\nmetadatas\n:\nList\n=\nNone\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Upsert documents into the collection.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "count\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncount\n(\n)\n-\n>\nint"
+                            }
+                        },
+                        {
+                            "text": "Get the total number of documents in the collection.\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "table_exists\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ntable_exists\n(\ntable_name\n:\nstr\n)\n-\n>\nbool"
+                            }
+                        },
+                        {
+                            "text": "Check if a table exists in the PostgreSQL database.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget\n(\nids\n=\nNone\n,\ninclude\n=\nNone\n,\nwhere\n=\nNone\n,\nlimit\n=\nNone\n,\noffset\n=\nNone\n)\n-\n>\nList\n[\nDocument\n]"
+                            }
+                        },
+                        {
+                            "text": "Retrieve documents from the collection.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "update\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nupdate\n(\nids\n:\nList\n,\nembeddings\n:\nList\n,\nmetadatas\n:\nList\n,\ndocuments\n:\nList\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Update documents in the collection.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "euclidean_distance\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\neuclidean_distance\n(\narr1\n:\nList\n[\nfloat\n]\n,\narr2\n:\nList\n[\nfloat\n]\n)\n-\n>\nfloat"
+                            }
+                        },
+                        {
+                            "text": "Calculate the Euclidean distance between two vectors.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "cosine_distance\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\ncosine_distance\n(\narr1\n:\nList\n[\nfloat\n]\n,\narr2\n:\nList\n[\nfloat\n]\n)\n-\n>\nfloat"
+                            }
+                        },
+                        {
+                            "text": "Calculate the cosine distance between two vectors.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "inner_product_distance\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\ninner_product_distance\n(\narr1\n:\nList\n[\nfloat\n]\n,\narr2\n:\nList\n[\nfloat\n]\n)\n-\n>\nfloat"
+                            }
+                        },
+                        {
+                            "text": "Calculate the Euclidean distance between two vectors.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "query\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nquery\n(\nquery_texts\n:\nList\n[\nstr\n]\n,\ncollection_name\n:\nstr\n=\nNone\n,\nn_results\n:\nint\n=\n10\n,\ndistance_type\n:\nstr\n=\n\"euclidean\"\n,\ndistance_threshold\n:\nfloat\n=\n-\n1\n,\ninclude_embedding\n:\nbool\n=\nFalse\n)\n-\n>\nQueryResults"
+                            }
+                        },
+                        {
+                            "text": "Query documents in the collection.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "convert_string_to_array\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\nconvert_string_to_array\n(\narray_string\n)\n-\n>\nList\n[\nfloat\n]"
+                            }
+                        },
+                        {
+                            "text": "Convert a string representation of an array to a list of floats.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "modify\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nmodify\n(\nmetadata\n,\ncollection_name\n:\nstr\n=\nNone\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Modify metadata for the collection.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "delete\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ndelete\n(\nids\n:\nList\n[\nItemID\n]\n,\ncollection_name\n:\nstr\n=\nNone\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Delete documents from the collection.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "delete_collection\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ndelete_collection\n(\ncollection_name\n:\nstr\n=\nNone\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Delete the entire collection.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "PGVectorDB\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nPGVectorDB\n(\nVectorDB\n)"
+                    }
+                },
+                {
+                    "text": "A vector database that uses PGVector as the backend."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\n*\n,\nconnection_string\n:\nstr\n=\nNone\n,\nhost\n:\nstr\n=\nNone\n,\nport\n:\nint\n=\nNone\n,\ndbname\n:\nstr\n=\nNone\n,\nusername\n:\nstr\n=\nNone\n,\npassword\n:\nstr\n=\nNone\n,\nconnect_timeout\n:\nint\n=\n10\n,\nembedding_function\n:\nCallable\n=\nNone\n,\nmetadata\n:\ndict\n=\nNone\n,\nmodel_name\n:\nstr\n=\n\"all-MiniLM-L6-v2\"\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Initialize the vector database.\n\nNote: connection_string or host + port + dbname must be specified\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "create_collection\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncreate_collection\n(\ncollection_name\n:\nstr\n,\noverwrite\n:\nbool\n=\nFalse\n,\nget_or_create\n:\nbool\n=\nTrue\n)\n-\n>\nCollection"
+                            }
+                        },
+                        {
+                            "text": "Create a collection in the vector database.\nCase 1. if the collection does not exist, create the collection.\nCase 2. the collection exists, if overwrite is True, it will overwrite the collection.\nCase 3. the collection exists and overwrite is False, if get_or_create is True, it will get the collection,\notherwise it raise a ValueError.\n\nArguments\n:\n\nReturns\n:\n\nCollection | The collection object."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_collection\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_collection\n(\ncollection_name\n:\nstr\n=\nNone\n)\n-\n>\nCollection"
+                            }
+                        },
+                        {
+                            "text": "Get the collection from the vector database.\n\nArguments\n:\n\nReturns\n:\n\nCollection | The collection object."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "delete_collection\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ndelete_collection\n(\ncollection_name\n:\nstr\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Delete the collection from the vector database.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "insert_docs\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ninsert_docs\n(\ndocs\n:\nList\n[\nDocument\n]\n,\ncollection_name\n:\nstr\n=\nNone\n,\nupsert\n:\nbool\n=\nFalse\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Insert documents into the collection of the vector database.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "update_docs\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nupdate_docs\n(\ndocs\n:\nList\n[\nDocument\n]\n,\ncollection_name\n:\nstr\n=\nNone\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Update documents in the collection of the vector database.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "delete_docs\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ndelete_docs\n(\nids\n:\nList\n[\nItemID\n]\n,\ncollection_name\n:\nstr\n=\nNone\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Delete documents from the collection of the vector database.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "retrieve_docs\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nretrieve_docs\n(\nqueries\n:\nList\n[\nstr\n]\n,\ncollection_name\n:\nstr\n=\nNone\n,\nn_results\n:\nint\n=\n10\n,\ndistance_threshold\n:\nfloat\n=\n-\n1\n)\n-\n>\nQueryResults"
+                            }
+                        },
+                        {
+                            "text": "Retrieve documents from the collection of the vector database based on the queries.\n\nArguments\n:\n\nReturns\n:\n\nQueryResults | The query results. Each query result is a list of list of tuples containing the document and\nthe distance."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_docs_by_ids\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_docs_by_ids\n(\nids\n:\nList\n[\nItemID\n]\n=\nNone\n,\ncollection_name\n:\nstr\n=\nNone\n,\ninclude\n=\nNone\n,\n**\nkwargs\n)\n-\n>\nList\n[\nDocument\n]"
+                            }
+                        },
+                        {
+                            "text": "Retrieve documents from the collection of the vector database based on the ids.\n\nArguments\n:\n\nReturns\n:\n\nList[Document] | The results."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

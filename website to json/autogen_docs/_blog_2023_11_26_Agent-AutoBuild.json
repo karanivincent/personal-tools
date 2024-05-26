@@ -1,0 +1,211 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2023/11/26/Agent-AutoBuild",
+    "title": "Agent AutoBuild - Automatically Building Multi-agent Systems",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nTL;DR:\nIntroducing\nAutoBuild\n, building multi-agent system automatically, fast, and easily for complex tasks with minimal\nuser prompt required, powered by a new designed class\nAgentBuilder\n. AgentBuilder also supports open-source LLMs by\nleveraging\nvLLM\nand\nFastChat\n.\nCheckout example notebooks and source code for reference:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "In this blog, we introduce\nAutoBuild\n, a pipeline that can automatically build multi-agent systems for complex tasks.\nSpecifically, we design a new class called\nAgentBuilder\n, which will complete the generation of participant expert agents\nand the construction of group chat automatically after the user provides descriptions of a building task and an execution task.\n\nAgentBuilder supports open-source models on Hugging Face powered by\nvLLM\nand\nFastChat\n. Once the user chooses to use open-source LLM, AgentBuilder will set\nup an endpoint server automatically without any user participation."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Installation\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen[autobuild]"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install vllm fastchat"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Basic Example\n​",
+            "content": [
+                {
+                    "text": "In this section, we provide a step-by-step example of how to use AgentBuilder to build a multi-agent system for a specific task."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Step 1: prepare configurations\n​",
+                    "content": [
+                        {
+                            "text": "First, we need to prepare the Agent configurations.\nSpecifically, a config path containing the model name and API key, and a default config for each agent, are required."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "config_file_or_env\n=\n'/home/elpis_ubuntu/LLM/autogen/OAI_CONFIG_LIST'\n# modify path\ndefault_llm_config\n=\n{\n'temperature'\n:\n0\n}"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Step 2: create an AgentBuilder instance\n​",
+                    "content": [
+                        {
+                            "text": "Then, we create an AgentBuilder instance with the config path and default config.\nYou can also specific the builder model and agent model, which are the LLMs used for building and agent respectively."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "from\nautogen\n.\nagentchat\n.\ncontrib\n.\nagent_builder\nimport\nAgentBuilder\nbuilder\n=\nAgentBuilder\n(\nconfig_file_or_env\n=\nconfig_file_or_env\n,\nbuilder_model\n=\n'gpt-4-1106-preview'\n,\nagent_model\n=\n'gpt-4-1106-preview'\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Step 3: specify the building task\n​",
+                    "content": [
+                        {
+                            "text": "Specify a building task with a general description. Building task will help the build manager (a LLM) decide what agents should be built.\nNote that your building task should have a general description of the task. Adding some specific examples is better."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "building_task\n=\n\"Find a paper on arxiv by programming, and analyze its application in some domain. For example, find a latest paper about gpt-4 on arxiv and find its potential applications in software.\""
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Step 4: build group chat agents\n​",
+                    "content": [
+                        {
+                            "text": "Use\nbuild()\nto let the build manager (with a\nbuilder_model\nas backbone) complete the group chat agents generation.\nIf you think coding is necessary for your task, you can use\ncoding=True\nto add a user proxy (a local code interpreter) into the agent list as:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "agent_list\n,\nagent_configs\n=\nbuilder\n.\nbuild\n(\nbuilding_task\n,\ndefault_llm_config\n,\ncoding\n=\nTrue\n)"
+                            }
+                        },
+                        {
+                            "text": "If\ncoding\nis not specified, AgentBuilder will determine on its own whether the user proxy should be added or not according to the task.\nThe generated\nagent_list\nis a list of\nAssistantAgent\ninstances.\nIf\ncoding\nis true, a user proxy (a\nUserProxyAssistant\ninstance) will be added as the first element to the\nagent_list\n.\nagent_configs\nis a list of agent configurations including agent name, backbone LLM model, and system message.\nFor example"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Step 5: execute the task\n​",
+                    "content": [
+                        {
+                            "text": "Let agents generated in\nbuild()\ncomplete the task collaboratively in a group chat."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "import\nautogen\ndef\nstart_task\n(\nexecution_task\n:\nstr\n,\nagent_list\n:\nlist\n,\nllm_config\n:\ndict\n)\n:\nconfig_list\n=\nautogen\n.\nconfig_list_from_json\n(\nconfig_file_or_env\n,\nfilter_dict\n=\n{\n\"model\"\n:\n[\n\"gpt-4-1106-preview\"\n]\n}\n)\ngroup_chat\n=\nautogen\n.\nGroupChat\n(\nagents\n=\nagent_list\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n12\n)\nmanager\n=\nautogen\n.\nGroupChatManager\n(\ngroupchat\n=\ngroup_chat\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n**\nllm_config\n}\n)\nagent_list\n[\n0\n]\n.\ninitiate_chat\n(\nmanager\n,\nmessage\n=\nexecution_task\n)\nstart_task\n(\nexecution_task\n=\n\"Find a recent paper about gpt-4 on arxiv and find its potential applications in software.\"\n,\nagent_list\n=\nagent_list\n,\nllm_config\n=\ndefault_llm_config\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Save and Load\n​",
+            "content": [
+                {
+                    "text": "You can save all necessary information of the built group chat agents by"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "saved_path\n=\nbuilder\n.\nsave\n(\n)"
+                    }
+                },
+                {
+                    "text": "Configurations will be saved in JSON format with the following content:"
+                },
+                {
+                    "code": {
+                        "language": "json",
+                        "script": "// FILENAME: save_config_TASK_MD5.json\n{\n\"building_task\": \"Find a paper on arxiv by programming, and analysis its application in some domain. For example, find a latest paper about gpt-4 on arxiv and find its potential applications in software.\",\n\"agent_configs\": [\n{\n\"name\": \"...\",\n\"model\": \"...\",\n\"system_message\": \"...\",\n\"description\": \"...\"\n},\n...\n],\n\"manager_system_message\": \"...\",\n\"code_execution_config\": {...},\n\"default_llm_config\": {...}\n}"
+                    }
+                },
+                {
+                    "text": "You can provide a specific filename, otherwise, AgentBuilder will save config to the current path with the generated filename\nsave_config_TASK_MD5.json\n.\n\nYou can load the saved config and skip the building process. AgentBuilder will create agents with those information without prompting the build manager."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "new_builder\n=\nAgentBuilder\n(\nconfig_file_or_env\n=\nconfig_file_or_env\n)\nagent_list\n,\nagent_config\n=\nnew_builder\n.\nload\n(\nsaved_path\n)\nstart_task\n(\n.\n.\n.\n)\n# skip build()"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Use OpenAI Assistant\n​",
+            "content": [
+                {
+                    "text": "Assistants API\nallows you to build AI assistants within your own applications.\nAn Assistant has instructions and can leverage models, tools, and knowledge to respond to user queries.\nAutoBuild also supports the assistant API by adding\nuse_oai_assistant=True\nto\nbuild()\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Transfer to the OpenAI Assistant API.\nagent_list\n,\nagent_config\n=\nnew_builder\n.\nbuild\n(\nbuilding_task\n,\ndefault_llm_config\n,\nuse_oai_assistant\n=\nTrue\n)\n.\n.\n."
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "(Experimental) Use Open-source LLM\n​",
+            "content": [
+                {
+                    "text": "AutoBuild supports open-source LLM by\nvLLM\nand\nFastChat\n.\nCheck the supported model list\nhere\n.\nAfter satisfying the requirements, you can add an open-source LLM's huggingface repository to the config file,"
+                },
+                {
+                    "code": {
+                        "language": "json,",
+                        "script": "// Add the LLM's huggingface repo to your config file and use EMPTY as the api_key.\n[\n...\n{\n\"model\": \"meta-llama/Llama-2-13b-chat-hf\",\n\"api_key\": \"EMPTY\"\n}\n]"
+                    }
+                },
+                {
+                    "text": "and specify it when initializing AgentBuilder.\nAgentBuilder will automatically set up an endpoint server for open-source LLM. Make sure you have sufficient GPUs resources."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Future work/Roadmap\n​",
+            "content": [],
+            "subsections": []
+        },
+        {
+            "title": "Summary\n​",
+            "content": [
+                {
+                    "text": "We propose AutoBuild with a new class\nAgentBuilder\n.\nAutoBuild can help user solve their complex task with an automatically built multi-agent system.\nAutoBuild supports open-source LLMs and GPTs API, giving users more flexibility to choose their favorite models.\nMore advanced features are coming soon."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

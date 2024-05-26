@@ -1,0 +1,100 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2024/01/25/AutoGenBench",
+    "title": "AutoGenBench -- A Tool for Measuring and Evaluating AutoGen Agents",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nAutoGenBench is a standalone tool for evaluating AutoGen agents and\r\nworkflows on common benchmarks.\n\nAutoGenBench is a standalone tool for evaluating AutoGen agents and\r\nworkflows on common benchmarks."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "TL;DR\n​",
+            "content": [
+                {
+                    "text": "Today we are releasing AutoGenBench - a tool for evaluating AutoGen agents and workflows on established LLM and agentic benchmarks.\n\nAutoGenBench is a standalone command line tool, installable from PyPI, which handles downloading, configuring, running, and reporting supported benchmarks. AutoGenBench works best when run alongside Docker, since it uses Docker to isolate tests from one another."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "Measurement and evaluation are core components of every major AI or ML research project. The same is true for AutoGen. To this end, today we are releasing AutoGenBench, a standalone command line tool that we have been using to guide development of AutoGen. Conveniently, AutoGenBench handles: downloading, configuring, running, and reporting results of agents on various public benchmark datasets. In addition to reporting top-line numbers, each AutoGenBench run produces a comprehensive set of logs and telemetry that can be used for debugging, profiling, computing custom metrics, and as input to\nAgentEval\n. In the remainder of this blog post, we outline core design principles for AutoGenBench (key to understanding its operation); present a guide to installing and running AutoGenBench; outline a roadmap for evaluation; and conclude with an open call for contributions."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Design Principles\n​",
+            "content": [
+                {
+                    "text": "AutoGenBench is designed around three core design principles. Knowing these principles will help you understand the tool, its operation and its output. These three principles are:\n\nRepetition:\nLLMs are stochastic, and in many cases, so too is the code they write to solve problems. For example, a Python script might call an external search engine, and the results may vary run-to-run. This can lead to variance in agent performance. Repetition is key to measuring and understanding this variance. To this end, AutoGenBench is built from the ground up with an understanding that tasks may be run multiple times, and that variance is a metric we often want to measure.\n\nIsolation:\nAgents interact with their worlds in both subtle and overt ways. For example an agent may install a python library or write a file to disk. This can lead to ordering effects that can impact future measurements. Consider, for example, comparing two agents on a common benchmark. One agent may appear more efficient than the other simply because it ran second, and benefitted from the hard work the first agent did in installing and debugging necessary Python libraries. To address this, AutoGenBench isolates each task in its own Docker container. This ensures that all runs start with the same initial conditions. (Docker is also a\nmuch safer way to run agent-produced code\n, in general.)\n\nInstrumentation:\nWhile top-line metrics are great for comparing agents or models, we often want much more information about how the agents are performing, where they are getting stuck, and how they can be improved. We may also later think of new research questions that require computing a different set of metrics. To this end, AutoGenBench is designed to log everything, and to compute metrics from those logs. This ensures that one can always go back to the logs to answer questions about what happened, run profiling software, or feed the logs into tools like\nAgentEval\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Installing and Running AutoGenBench\n​",
+            "content": [
+                {
+                    "text": "As noted above, isolation is a key design principle, and so AutoGenBench must be run in an environment where Docker is available (desktop or Engine).\nIt will not run in GitHub codespaces\n, unless you opt for native execution (which is strongly discouraged). To install Docker Desktop see\nhttps://www.docker.com/products/docker-desktop/\n.\r\nOnce Docker is installed, AutoGenBench can then be installed as a standalone tool from PyPI. With\npip\n, installation can be achieved as follows:"
+                },
+                {
+                    "code": {
+                        "language": "sh",
+                        "script": "pip install autogenbench"
+                    }
+                },
+                {
+                    "text": "After installation, you must configure your API keys. As with other AutoGen applications, AutoGenBench will look for the OpenAI keys in the OAI_CONFIG_LIST file in the current working directory, or the OAI_CONFIG_LIST environment variable. This behavior can be overridden using a command-line parameter.\n\nIf you will be running multiple benchmarks, it is often most convenient to leverage the environment variable option. You can load your keys into the environment variable by executing:"
+                },
+                {
+                    "code": {
+                        "language": "sh",
+                        "script": "export OAI_CONFIG_LIST=$(cat ./OAI_CONFIG_LIST)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "A Typical Session\n​",
+            "content": [
+                {
+                    "text": "Once AutoGenBench and necessary keys are installed, a typical session will look as follows:"
+                },
+                {
+                    "text": "Where:\n\nAfter running the above\ntabulate\ncommand, you should see output similar to the following:"
+                },
+                {
+                    "text": "From this output we can see the results of the three separate repetitions of each task, and final summary statistics of each run. In this case, the results were generated via GPT-4 (as defined in the OAI_CONFIG_LIST that was provided), and used the\nTwoAgents\ntemplate.\nIt is important to remember that AutoGenBench evaluates\nspecific\nend-to-end configurations of agents (as opposed to evaluating a model or cognitive framework more generally).\n\nFinally, complete execution traces and logs can be found in the\nResults\nfolder. See the\nAutoGenBench README\nfor more details about command-line options and output formats. Each of these commands also offers extensive in-line help via:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Roadmap\n​",
+            "content": [
+                {
+                    "text": "While we are announcing AutoGenBench, we note that it is very much an evolving project in its own right. Over the next few weeks and months we hope to:\n\nFor an up to date tracking of our work items on this project, please see\nAutoGenBench Work Items"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Call for Participation\n​",
+            "content": [
+                {
+                    "text": "Finally, we want to end this blog post with an open call for contributions. AutoGenBench is still nascent, and has much opportunity for improvement. New benchmarks are constantly being published, and will need to be added. Everyone may have their own distinct set of metrics that they care most about optimizing, and these metrics should be onboarded. To this end, we welcome any and all contributions to this corner of the AutoGen project. If contributing is something that interests you, please see the\ncontributor’s guide\nand join our\nDiscord\ndiscussion in the\n#autogenbench\nchannel!"
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

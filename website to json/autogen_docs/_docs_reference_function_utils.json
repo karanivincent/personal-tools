@@ -1,0 +1,219 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/function_utils",
+    "title": "function_utils",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Get the type annotation of a parameter.\n\nArguments\n:\n\nReturns\n:\n\nThe type annotation of the parameter"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "get_typed_signature\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_typed_signature\n(\ncall\n:\nCallable\n[\n.\n.\n.\n,\nAny\n]\n)\n-\n>\ninspect\n.\nSignature"
+                            }
+                        },
+                        {
+                            "text": "Get the signature of a function with type annotations.\n\nArguments\n:\n\nReturns\n:\n\nThe signature of the function with type annotations"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_typed_return_annotation\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_typed_return_annotation\n(\ncall\n:\nCallable\n[\n.\n.\n.\n,\nAny\n]\n)\n-\n>\nAny"
+                            }
+                        },
+                        {
+                            "text": "Get the return annotation of a function.\n\nArguments\n:\n\nReturns\n:\n\nThe return annotation of the function"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Parameters\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nParameters\n(\nBaseModel\n)"
+                    }
+                },
+                {
+                    "text": "Parameters of a function as defined by the OpenAI API"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Function\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nFunction\n(\nBaseModel\n)"
+                    }
+                },
+                {
+                    "text": "A function as defined by the OpenAI API"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "ToolFunction\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nToolFunction\n(\nBaseModel\n)"
+                    }
+                },
+                {
+                    "text": "A function under tool as defined by the OpenAI API."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "get_parameter_json_schema\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_parameter_json_schema\n(\nk\n:\nstr\n,\nv\n:\nAny\n,\ndefault_values\n:\nDict\n[\nstr\n,\nAny\n]\n)\n-\n>\nJsonSchemaValue"
+                            }
+                        },
+                        {
+                            "text": "Get a JSON schema for a parameter as defined by the OpenAI API\n\nArguments\n:\n\nReturns\n:\n\nA Pydanitc model for the parameter"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_required_params\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_required_params\n(\ntyped_signature\n:\ninspect\n.\nSignature\n)\n-\n>\nList\n[\nstr\n]"
+                            }
+                        },
+                        {
+                            "text": "Get the required parameters of a function\n\nArguments\n:\n\nReturns\n:\n\nA list of the required parameters of the function"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_default_values\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_default_values\n(\ntyped_signature\n:\ninspect\n.\nSignature\n)\n-\n>\nDict\n[\nstr\n,\nAny\n]"
+                            }
+                        },
+                        {
+                            "text": "Get default values of parameters of a function\n\nArguments\n:\n\nReturns\n:\n\nA dictionary of the default values of the parameters of the function"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_parameters\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_parameters\n(\nrequired\n:\nList\n[\nstr\n]\n,\nparam_annotations\n:\nDict\n[\nstr\n,\nUnion\n[\nAnnotated\n[\nType\n[\nAny\n]\n,\nstr\n]\n,\nType\n[\nAny\n]\n]\n]\n,\ndefault_values\n:\nDict\n[\nstr\n,\nAny\n]\n)\n-\n>\nParameters"
+                            }
+                        },
+                        {
+                            "text": "Get the parameters of a function as defined by the OpenAI API\n\nArguments\n:\n\nReturns\n:\n\nA Pydantic model for the parameters of the function"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_missing_annotations\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_missing_annotations\n(\ntyped_signature\n:\ninspect\n.\nSignature\n,\nrequired\n:\nList\n[\nstr\n]\n)\n-\n>\nTuple\n[\nSet\n[\nstr\n]\n,\nSet\n[\nstr\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Get the missing annotations of a function\n\nIgnores the parameters with default values as they are not required to be annotated, but logs a warning.\n\nArguments\n:\n\nReturns\n:\n\nA set of the missing annotations of the function"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_function_schema\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_function_schema\n(\nf\n:\nCallable\n[\n.\n.\n.\n,\nAny\n]\n,\n*\n,\nname\n:\nOptional\n[\nstr\n]\n=\nNone\n,\ndescription\n:\nstr\n)\n-\n>\nDict\n[\nstr\n,\nAny\n]"
+                            }
+                        },
+                        {
+                            "text": "Get a JSON schema for a function as defined by the OpenAI API\n\nArguments\n:\n\nReturns\n:\n\nA JSON schema for the function\n\nRaises\n:\n\nExamples\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nf\n(\na\n:\nAnnotated\n[\nstr\n,\n\"Parameter a\"\n]\n,\nb\n:\nint\n=\n2\n,\nc\n:\nAnnotated\n[\nfloat\n,\n\"Parameter c\"\n]\n=\n0.1\n)\n-\n>\nNone\n:\npass\nget_function_schema\n(\nf\n,\ndescription\n=\n\"function f\"\n)\n#   {'type': 'function',\n#    'function': {'description': 'function f',\n#        'name': 'f',\n#        'parameters': {'type': 'object',\n#           'properties': {'a': {'type': 'str', 'description': 'Parameter a'},\n#               'b': {'type': 'int', 'description': 'b'},\n#               'c': {'type': 'float', 'description': 'Parameter c'}},\n#           'required': ['a']}}}"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_load_param_if_needed_function\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_load_param_if_needed_function\n(\nt\n:\nAny\n)\n-\n>\nOptional\n[\nCallable\n[\n[\nDict\n[\nstr\n,\nAny\n]\n,\nType\n[\nBaseModel\n]\n]\n,\nBaseModel\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Get a function to load a parameter if it is a Pydantic model\n\nArguments\n:\n\nReturns\n:\n\nA function to load the parameter if it is a Pydantic model, otherwise None"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "load_basemodels_if_needed\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nload_basemodels_if_needed\n(\nfunc\n:\nCallable\n[\n.\n.\n.\n,\nAny\n]\n)\n-\n>\nCallable\n[\n.\n.\n.\n,\nAny\n]"
+                            }
+                        },
+                        {
+                            "text": "A decorator to load the parameters of a function if they are Pydantic models\n\nArguments\n:\n\nReturns\n:\n\nA function that loads the parameters before calling the original function"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

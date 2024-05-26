@@ -1,0 +1,64 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/Research",
+    "title": "Research",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "For technical details, please check our technical report and research publications."
+                },
+                {
+                    "code": {
+                        "language": "bibtex",
+                        "script": "@inproceedings{wu2023autogen,\ntitle={AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation Framework},\nauthor={Qingyun Wu and Gagan Bansal and Jieyu Zhang and Yiran Wu and Shaokun Zhang and Erkang Zhu and Beibin Li and Li Jiang and Xiaoyun Zhang and Chi Wang},\nyear={2023},\neprint={2308.08155},\narchivePrefix={arXiv},\nprimaryClass={cs.AI}\n}"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "bibtex",
+                        "script": "@inproceedings{wang2023EcoOptiGen,\ntitle={Cost-Effective Hyperparameter Optimization for Large Language Model Generation Inference},\nauthor={Chi Wang and Susan Xueqing Liu and Ahmed H. Awadallah},\nyear={2023},\nbooktitle={AutoML'23},\n}"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "bibtex",
+                        "script": "@inproceedings{wu2023empirical,\ntitle={An Empirical Study on Challenging Math Problem Solving with GPT-4},\nauthor={Yiran Wu and Feiran Jia and Shaokun Zhang and Hangyu Li and Erkang Zhu and Yue Wang and Yin Tat Lee and Richard Peng and Qingyun Wu and Chi Wang},\nyear={2023},\nbooktitle={ArXiv preprint arXiv:2306.01337},\n}"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "bibtex",
+                        "script": "@inproceedings{zhang2023ecoassistant,\ntitle={EcoAssistant: Using LLM Assistant More Affordably and Accurately},\nauthor={Zhang, Jieyu and Krishna, Ranjay and Awadallah, Ahmed H and Wang, Chi},\nyear={2023},\nbooktitle={ArXiv preprint arXiv:2310.03046},\n}"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "bibtex",
+                        "script": "@misc{Kiseleva2024agenteval,\ntitle={Towards better Human-Agent Alignment: Assessing Task Utility in LLM-Powered Applications},\nauthor={Negar Arabzadeh and Julia Kiseleva and Qingyun Wu and Chi Wang and Ahmed Awadallah and Victor Dibia and Adam Fourney and Charles Clarke},\nyear={2024},\neprint={2402.09015},\narchivePrefix={arXiv},\nprimaryClass={cs.CL}\n}"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "bibtex",
+                        "script": "@misc{zhang2024agentoptimizer,\ntitle={Training Language Model Agents without Modifying Language Models},\nauthor={Shaokun Zhang and Jieyu Zhang and Jiale Liu and Linxin Song and Chi Wang and Ranjay Krishna and Qingyun Wu},\nyear={2024},\nbooktitle={ICML'24},\n}"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "bibtex",
+                        "script": "@misc{zeng2024autodefense,\ntitle={AutoDefense: Multi-Agent LLM Defense against Jailbreak Attacks},\nauthor={Yifan Zeng and Yiran Wu and Xiao Zhang and Huazheng Wang and Qingyun Wu},\nyear={2024},\neprint={2403.04783},\narchivePrefix={arXiv},\nprimaryClass={cs.LG}\n}"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "bibtex",
+                        "script": "@misc{wu2024stateflow,\ntitle={StateFlow: Enhancing LLM Task-Solving through State-Driven Workflows},\nauthor={Yiran Wu and Tianwei Yue and Shaokun Zhang and Chi Wang and Qingyun Wu},\nyear={2024},\neprint={2403.11322},\narchivePrefix={arXiv},\nprimaryClass={cs.CL}\n}"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

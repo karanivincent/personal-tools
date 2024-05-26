@@ -1,0 +1,85 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics/non-openai-models/cloud-togetherai",
+    "title": "Together AI",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "This cloud-based proxy server example, using\ntogether.ai\n, is a group chat between a Python developer\nand a code reviewer, who are given a coding task.\n\nStart by\ninstalling AutoGen\nand getting your\ntogether.ai API key\n.\n\nPut your together.ai API key in an environment variable, TOGETHER_API_KEY.\n\nLinux / Mac OSX:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "export TOGETHER_API_KEY=YourTogetherAIKeyHere"
+                    }
+                },
+                {
+                    "text": "Windows (command prompt):"
+                },
+                {
+                    "code": {
+                        "language": "powershell",
+                        "script": "set TOGETHER_API_KEY=YourTogetherAIKeyHere"
+                    }
+                },
+                {
+                    "text": "Create your LLM configuration, with the\nmodel you want\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nos\nconfig_list\n=\n[\n{\n# Available together.ai model strings:\n# https://docs.together.ai/docs/inference-models\n\"model\"\n:\n\"mistralai/Mistral-7B-Instruct-v0.1\"\n,\n\"api_key\"\n:\nos\n.\nenviron\n[\n'TOGETHER_API_KEY'\n]\n,\n\"base_url\"\n:\n\"https://api.together.xyz/v1\"\n}\n]"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Construct Agents\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\npathlib\nimport\nPath\nfrom\nautogen\nimport\nAssistantAgent\n,\nUserProxyAgent\nfrom\nautogen\n.\ncoding\nimport\nLocalCommandLineCodeExecutor\nwork_dir\n=\nPath\n(\n\"groupchat\"\n)\nwork_dir\n.\nmkdir\n(\nexist_ok\n=\nTrue\n)\n# Create local command line code executor.\ncode_executor\n=\nLocalCommandLineCodeExecutor\n(\nwork_dir\n=\nwork_dir\n)\n# User Proxy will execute code and finish the chat upon typing 'exit'\nuser_proxy\n=\nUserProxyAgent\n(\nname\n=\n\"UserProxy\"\n,\nsystem_message\n=\n\"A human admin\"\n,\ncode_execution_config\n=\n{\n\"last_n_messages\"\n:\n2\n,\n\"executor\"\n:\ncode_executor\n,\n}\n,\nhuman_input_mode\n=\n\"TERMINATE\"\n,\nis_termination_msg\n=\nlambda\nx\n:\n\"TERMINATE\"\nin\nx\n.\nget\n(\n\"content\"\n)\n,\n)\n# Python Coder agent\ncoder\n=\nAssistantAgent\n(\nname\n=\n\"softwareCoder\"\n,\ndescription\n=\n\"Software Coder, writes Python code as required and reiterates with feedback from the Code Reviewer.\"\n,\nsystem_message\n=\n\"You are a senior Python developer, a specialist in writing succinct Python functions.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n}\n,\n)\n# Code Reviewer agent\nreviewer\n=\nAssistantAgent\n(\nname\n=\n\"codeReviewer\"\n,\ndescription\n=\n\"Code Reviewer, reviews written code for correctness, efficiency, and security. Asks the Software Coder to address issues.\"\n,\nsystem_message\n=\n\"You are a Code Reviewer, experienced in checking code for correctness, efficiency, and security. Review and provide feedback to the Software Coder until you are satisfied, then return the word TERMINATE\"\n,\nis_termination_msg\n=\nlambda\nx\n:\n\"TERMINATE\"\nin\nx\n.\nget\n(\n\"content\"\n)\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n}\n,\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Establish the group chat\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nGroupChat\n,\nGroupChatManager\n# Establish the Group Chat and disallow a speaker being selected consecutively\ngroupchat\n=\nGroupChat\n(\nagents\n=\n[\nuser_proxy\n,\ncoder\n,\nreviewer\n]\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n12\n,\nallow_repeat_speaker\n=\nFalse\n)\n# Manages the group of multiple agents\nmanager\n=\nGroupChatManager\n(\ngroupchat\n=\ngroupchat\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n}\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Start Chat\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\n.\ncache\nimport\nCache\n# Cache LLM responses.\nwith\nCache\n.\ndisk\n(\n)\nas\ncache\n:\n# Start the chat with a request to write a function\nuser_proxy\n.\ninitiate_chat\n(\nmanager\n,\nmessage\n=\n\"Write a Python function for the Fibonacci sequence, the function will have one parameter for the number in the sequence, which the function will return the Fibonacci number for.\"\n,\ncache\n=\ncache\n,\n)\n# type exit to terminate the chat"
+                    }
+                },
+                {
+                    "text": "Output:"
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "UserProxy\n(\nto\nchat_manager\n)\n:\nWrite a Python function for the Fibonacci sequence, the function will have one parameter for the number in the sequence, which the function will return the Fibonacci number for.\n--------------------------------------------------------------------------------\nsoftwareCoder\n(\nto\nchat_manager\n)\n:\nSure, here is a simple Python function that uses recursion to calculate the Fibonacci number:\n```python\ndef fibonacci(n):\nif n <= 0:\nreturn \"Input should be a positive integer.\"\nelif n == 1:\nreturn 0\nelif n == 2:\nreturn 1\nelse:\nreturn fibonacci(n-1) + fibonacci(n-2)\n```\nThis function takes an integer `n` as input and returns the `n`th number in the Fibonacci sequence. The Fibonacci sequence is a series of numbers in which each number is the sum of the two preceding ones, usually starting with 0 and 1.\nNote that this implementation uses recursion and may not be efficient for large values of `n`. In such cases, an iterative approach or memoization would be more appropriate.\n--------------------------------------------------------------------------------\ncodeReviewer\n(\nto\nchat_manager\n)\n:\nI see a couple of issues with the current implementation of the `fibonacci` function:\n1. The function does not handle negative inputs correctly. Currently, it returns a string message for any input less than or equal to 0. It would be better to raise a `ValueError` or return a more informative message.\n2. The function uses recursion to calculate the Fibonacci number, which can be inefficient for large inputs. A more efficient approach would be to use an iterative approach or memoization.\nHere's an updated implementation that addresses these issues:\n```python\ndef fibonacci(n):\nif n <= 0:\nraise ValueError(\"Input should be a positive integer.\")\nelif n == 1:\nreturn 0\nelif n == 2:\nreturn 1\nelse:\na, b = 0, 1\nfor _ in range(n - 2):\na, b = b, a + b\nreturn b\n```\nThis implementation uses a loop to calculate the Fibonacci number iteratively, which is more efficient than the recursive approach. It also raises a `ValueError` for negative inputs, which is a more appropriate way to handle invalid inputs.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n>>>>>>>> EXECUTING CODE BLOCK 0 (inferred language is python)...\nUserProxy\n(\nto\nchat_manager\n)\n:\nexitcode: 0 (execution succeeded)\nCode output:\n--------------------------------------------------------------------------------\ncodeReviewer\n(\nto\nchat_manager\n)\n:\nI'm glad the updated implementation addresses the issues with the original code. Let me know if you have any further questions or if there's anything else I can help you with.\nTo terminate the conversation, please type \"\nTERMINATE\n\".\n--------------------------------------------------------------------------------\nPlease give feedback to chat_manager. Press enter or type 'exit' to stop the conversation: exit"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

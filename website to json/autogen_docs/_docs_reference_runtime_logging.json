@@ -1,0 +1,16 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/runtime_logging",
+    "title": "runtime_logging",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Start logging for the runtime.\n\nArguments\n:\n\nReturns\n:\n\nsession_id (str(uuid.uuid4)):       a unique id for the logging session"
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

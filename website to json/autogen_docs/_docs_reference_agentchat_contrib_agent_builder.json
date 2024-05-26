@@ -1,0 +1,128 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/agent_builder",
+    "title": "agentchat.contrib.agent_builder",
+    "sections": [
+        {
+            "title": "AgentBuilder\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nAgentBuilder\n(\n)"
+                    }
+                },
+                {
+                    "text": "AgentBuilder can help user build an automatic task solving process powered by multi-agent system.\nSpecifically, our building pipeline includes initialize and build.\nIn build(), we prompt a LLM to create multiple participant agents, and specify whether this task need programming to solve.\nUser can save the built agents' config by calling save(), and load the saved configs by load(), which can skip the\nbuilding process."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nconfig_file_or_env\n:\nOptional\n[\nstr\n]\n=\n\"OAI_CONFIG_LIST\"\n,\nconfig_file_location\n:\nOptional\n[\nstr\n]\n=\n\"\"\n,\nbuilder_model\n:\nOptional\n[\nstr\n]\n=\n\"gpt-4\"\n,\nagent_model\n:\nOptional\n[\nstr\n]\n=\n\"gpt-4\"\n,\nhost\n:\nOptional\n[\nstr\n]\n=\n\"localhost\"\n,\nendpoint_building_timeout\n:\nOptional\n[\nint\n]\n=\n600\n,\nmax_tokens\n:\nOptional\n[\nint\n]\n=\n945\n,\nmax_agents\n:\nOptional\n[\nint\n]\n=\n5\n)"
+                            }
+                        },
+                        {
+                            "text": "(These APIs are experimental and may change in the future.)\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "clear_agent\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nclear_agent\n(\nagent_name\n:\nstr\n,\nrecycle_endpoint\n:\nOptional\n[\nbool\n]\n=\nTrue\n)"
+                            }
+                        },
+                        {
+                            "text": "Clear a specific agent by name.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "clear_all_agents\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nclear_all_agents\n(\nrecycle_endpoint\n:\nOptional\n[\nbool\n]\n=\nTrue\n)"
+                            }
+                        },
+                        {
+                            "text": "Clear all cached agents."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "build\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nbuild\n(\nbuilding_task\n:\nstr\n,\ndefault_llm_config\n:\nDict\n,\ncoding\n:\nOptional\n[\nbool\n]\n=\nNone\n,\ncode_execution_config\n:\nOptional\n[\nDict\n]\n=\nNone\n,\nuse_oai_assistant\n:\nOptional\n[\nbool\n]\n=\nFalse\n,\n**\nkwargs\n)\n-\n>\nTuple\n[\nList\n[\nautogen\n.\nConversableAgent\n]\n,\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "Auto build agents based on the building task.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "build_from_library\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nbuild_from_library\n(\nbuilding_task\n:\nstr\n,\nlibrary_path_or_json\n:\nstr\n,\ndefault_llm_config\n:\nDict\n,\ncoding\n:\nOptional\n[\nbool\n]\n=\nTrue\n,\ncode_execution_config\n:\nOptional\n[\nDict\n]\n=\nNone\n,\nuse_oai_assistant\n:\nOptional\n[\nbool\n]\n=\nFalse\n,\nembedding_model\n:\nOptional\n[\nstr\n]\n=\nNone\n,\n**\nkwargs\n)\n-\n>\nTuple\n[\nList\n[\nautogen\n.\nConversableAgent\n]\n,\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "Build agents from a library.\nThe library is a list of agent configs, which contains the name and system_message for each agent.\nWe use a build manager to decide what agent in that library should be involved to the task.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "save\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nsave\n(\nfilepath\n:\nOptional\n[\nstr\n]\n=\nNone\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Save building configs. If the filepath is not specific, this function will create a filename by encrypt the\nbuilding_task string by md5 with \"save_config_\" prefix, and save config to the local path.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "load\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nload\n(\nfilepath\n:\nOptional\n[\nstr\n]\n=\nNone\n,\nconfig_json\n:\nOptional\n[\nstr\n]\n=\nNone\n,\nuse_oai_assistant\n:\nOptional\n[\nbool\n]\n=\nFalse\n,\n**\nkwargs\n)\n-\n>\nTuple\n[\nList\n[\nautogen\n.\nConversableAgent\n]\n,\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "Load building configs and call the build function to complete building without calling online LLMs' api.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

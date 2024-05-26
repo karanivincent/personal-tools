@@ -1,0 +1,164 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2023/10/18/RetrieveChat",
+    "title": "Retrieval-Augmented Generation (RAG) Applications with AutoGen",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Last update: April 4, 2024; AutoGen version: v0.2.21\n\n\n\nTL;DR:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "Retrieval augmentation has emerged as a practical and effective approach for mitigating the intrinsic\nlimitations of LLMs by incorporating external documents. In this blog post, we introduce RAG agents of\nAutoGen that allows retrieval-augmented generation. The system consists of two agents: a\nRetrieval-augmented User Proxy agent, called\nRetrieveUserProxyAgent\n, and a Retrieval-augmented Assistant\nagent, called\nRetrieveAssistantAgent\n, both of which are extended from built-in agents from AutoGen.\nThe overall architecture of the RAG agents is shown in the figure above.\n\nTo use Retrieval-augmented Chat, one needs to initialize two agents including Retrieval-augmented\nUser Proxy and Retrieval-augmented Assistant. Initializing the Retrieval-Augmented User Proxy\nnecessitates specifying a path to the document collection. Subsequently, the Retrieval-Augmented\nUser Proxy can download the documents, segment them into chunks of a specific size, compute\nembeddings, and store them in a vector database. Once a chat is initiated, the agents collaboratively\nengage in code generation or question-answering adhering to the procedures outlined below:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Basic Usage of RAG Agents\n​",
+            "content": [
+                {
+                    "text": "Please install pyautogen with the [retrievechat] option before using RAG agents."
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install \"pyautogen[retrievechat]\""
+                    }
+                },
+                {
+                    "text": "RetrieveChat can handle various types of documents. By default, it can process\nplain text and PDF files, including formats such as 'txt', 'json', 'csv', 'tsv',\n'md', 'html', 'htm', 'rtf', 'rst', 'jsonl', 'log', 'xml', 'yaml', 'yml' and 'pdf'.\nIf you install\nunstructured\n,\nadditional document types such as 'docx',\n'doc', 'odt', 'pptx', 'ppt', 'xlsx', 'eml', 'msg', 'epub' will also be supported."
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "sudo apt-get update\nsudo apt-get install -y tesseract-ocr poppler-utils\npip install unstructured[all-docs]"
+                    }
+                },
+                {
+                    "text": "You can find a list of all supported document types by using\nautogen.retrieve_utils.TEXT_FORMATS\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nautogen\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\nretrieve_assistant_agent\nimport\nRetrieveAssistantAgent\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\nretrieve_user_proxy_agent\nimport\nRetrieveUserProxyAgent"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant\n=\nRetrieveAssistantAgent\n(\nname\n=\n\"assistant\"\n,\nsystem_message\n=\n\"You are a helpful assistant.\"\n,\nllm_config\n=\nllm_config\n,\n)\nragproxyagent\n=\nRetrieveUserProxyAgent\n(\nname\n=\n\"ragproxyagent\"\n,\nretrieve_config\n=\n{\n\"task\"\n:\n\"qa\"\n,\n\"docs_path\"\n:\n\"https://raw.githubusercontent.com/microsoft/autogen/main/README.md\"\n,\n}\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant\n.\nreset\n(\n)\nragproxyagent\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\nragproxyagent\n.\nmessage_generator\n,\nproblem\n=\n\"What is autogen?\"\n)"
+                    }
+                },
+                {
+                    "text": "Output is like:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant\n.\nreset\n(\n)\nuserproxyagent\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"userproxyagent\"\n)\nuserproxyagent\n.\ninitiate_chat\n(\nassistant\n,\nmessage\n=\n\"What is autogen?\"\n)"
+                    }
+                },
+                {
+                    "text": "Output is like:"
+                },
+                {
+                    "text": "You can see that the output of\nUserProxyAgent\nis not related to our\nautogen\nsince the latest info of\nautogen\nis not in ChatGPT's training data. The output of\nRetrieveUserProxyAgent\nis correct as it can\nperform retrieval-augmented generation based on the given documentation file."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Customizing RAG Agents\n​",
+            "content": [
+                {
+                    "text": "RetrieveUserProxyAgent\nis customizable with\nretrieve_config\n. There are several parameters to configure\nbased on different use cases. In this section, we'll show how to customize embedding function, text split\nfunction and vector database."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Customizing Embedding Function\n​",
+                    "content": [
+                        {
+                            "text": "By default,\nSentence Transformers\nand its pretrained models will be used to\ncompute embeddings. It's possible that you want to use OpenAI, Cohere, HuggingFace or other embedding functions."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "from\nchromadb\n.\nutils\nimport\nembedding_functions\nopenai_ef\n=\nembedding_functions\n.\nOpenAIEmbeddingFunction\n(\napi_key\n=\n\"YOUR_API_KEY\"\n,\nmodel_name\n=\n\"text-embedding-ada-002\"\n)\nragproxyagent\n=\nRetrieveUserProxyAgent\n(\nname\n=\n\"ragproxyagent\"\n,\nretrieve_config\n=\n{\n\"task\"\n:\n\"qa\"\n,\n\"docs_path\"\n:\n\"https://raw.githubusercontent.com/microsoft/autogen/main/README.md\"\n,\n\"embedding_function\"\n:\nopenai_ef\n,\n}\n,\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "huggingface_ef\n=\nembedding_functions\n.\nHuggingFaceEmbeddingFunction\n(\napi_key\n=\n\"YOUR_API_KEY\"\n,\nmodel_name\n=\n\"sentence-transformers/all-MiniLM-L6-v2\"\n)"
+                            }
+                        },
+                        {
+                            "text": "More examples can be found\nhere\n."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Customizing Text Split Function\n​",
+                    "content": [
+                        {
+                            "text": "Before we can store the documents into a vector database, we need to split the texts into chunks. Although\nwe have implemented a flexible text splitter in autogen, you may still want to use different text splitters.\nThere are also some existing text split tools which are good to reuse.\n\nFor example, you can use all the text splitters in langchain."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "from\nlangchain\n.\ntext_splitter\nimport\nRecursiveCharacterTextSplitter\nrecur_spliter\n=\nRecursiveCharacterTextSplitter\n(\nseparators\n=\n[\n\"\\n\"\n,\n\"\\r\"\n,\n\"\\t\"\n]\n)\nragproxyagent\n=\nRetrieveUserProxyAgent\n(\nname\n=\n\"ragproxyagent\"\n,\nretrieve_config\n=\n{\n\"task\"\n:\n\"qa\"\n,\n\"docs_path\"\n:\n\"https://raw.githubusercontent.com/microsoft/autogen/main/README.md\"\n,\n\"custom_text_split_function\"\n:\nrecur_spliter\n.\nsplit_text\n,\n}\n,\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Advanced Usage of RAG Agents\n​",
+            "content": [],
+            "subsections": [
+                {
+                    "title": "Integrate with other agents in a group chat\n​",
+                    "content": [
+                        {
+                            "text": "To use\nRetrieveUserProxyAgent\nin a group chat is almost the same as you use it in a two agents chat. The only thing is that\nyou need to\ninitialize the chat with\nRetrieveUserProxyAgent\n. The\nRetrieveAssistantAgent\nis not necessary in a group chat.\n\nHowever, you may want to initialize the chat with another agent in some cases. To leverage the best of\nRetrieveUserProxyAgent\n,\nyou'll need to call it from a function."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "boss\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"Boss\"\n,\nis_termination_msg\n=\ntermination_msg\n,\nhuman_input_mode\n=\n\"TERMINATE\"\n,\nsystem_message\n=\n\"The boss who ask questions and give tasks.\"\n,\n)\nboss_aid\n=\nRetrieveUserProxyAgent\n(\nname\n=\n\"Boss_Assistant\"\n,\nis_termination_msg\n=\ntermination_msg\n,\nsystem_message\n=\n\"Assistant who has extra content retrieval power for solving difficult problems.\"\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nmax_consecutive_auto_reply\n=\n3\n,\nretrieve_config\n=\n{\n\"task\"\n:\n\"qa\"\n,\n}\n,\ncode_execution_config\n=\nFalse\n,\n# we don't want to execute code in this case.\n)\ncoder\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Senior_Python_Engineer\"\n,\nis_termination_msg\n=\ntermination_msg\n,\nsystem_message\n=\n\"You are a senior python engineer. Reply `TERMINATE` in the end when everything is done.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n60\n,\n\"temperature\"\n:\n0\n}\n,\n)\npm\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Product_Manager\"\n,\nis_termination_msg\n=\ntermination_msg\n,\nsystem_message\n=\n\"You are a product manager. Reply `TERMINATE` in the end when everything is done.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n60\n,\n\"temperature\"\n:\n0\n}\n,\n)\nreviewer\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Code_Reviewer\"\n,\nis_termination_msg\n=\ntermination_msg\n,\nsystem_message\n=\n\"You are a code reviewer. Reply `TERMINATE` in the end when everything is done.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n60\n,\n\"temperature\"\n:\n0\n}\n,\n)\ndef\nretrieve_content\n(\nmessage\n:\nAnnotated\n[\nstr\n,\n\"Refined message which keeps the original meaning and can be used to retrieve content for code generation and question answering.\"\n,\n]\n,\nn_results\n:\nAnnotated\n[\nint\n,\n\"number of results\"\n]\n=\n3\n,\n)\n-\n>\nstr\n:\nboss_aid\n.\nn_results\n=\nn_results\n# Set the number of results to be retrieved.\n# Check if we need to update the context.\nupdate_context_case1\n,\nupdate_context_case2\n=\nboss_aid\n.\n_check_update_context\n(\nmessage\n)\nif\n(\nupdate_context_case1\nor\nupdate_context_case2\n)\nand\nboss_aid\n.\nupdate_context\n:\nboss_aid\n.\nproblem\n=\nmessage\nif\nnot\nhasattr\n(\nboss_aid\n,\n\"problem\"\n)\nelse\nboss_aid\n.\nproblem\n_\n,\nret_msg\n=\nboss_aid\n.\n_generate_retrieve_user_reply\n(\nmessage\n)\nelse\n:\n_context\n=\n{\n\"problem\"\n:\nmessage\n,\n\"n_results\"\n:\nn_results\n}\nret_msg\n=\nboss_aid\n.\nmessage_generator\n(\nboss_aid\n,\nNone\n,\n_context\n)\nreturn\nret_msg\nif\nret_msg\nelse\nmessage\nfor\ncaller\nin\n[\npm\n,\ncoder\n,\nreviewer\n]\n:\nd_retrieve_content\n=\ncaller\n.\nregister_for_llm\n(\ndescription\n=\n\"retrieve content for code generation and question answering.\"\n,\napi_style\n=\n\"function\"\n)\n(\nretrieve_content\n)\nfor\nexecutor\nin\n[\nboss\n,\npm\n]\n:\nexecutor\n.\nregister_for_execution\n(\n)\n(\nd_retrieve_content\n)\ngroupchat\n=\nautogen\n.\nGroupChat\n(\nagents\n=\n[\nboss\n,\npm\n,\ncoder\n,\nreviewer\n]\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n12\n,\nspeaker_selection_method\n=\n\"round_robin\"\n,\nallow_repeat_speaker\n=\nFalse\n,\n)\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"timeout\"\n:\n60\n,\n\"temperature\"\n:\n0\n}\nmanager\n=\nautogen\n.\nGroupChatManager\n(\ngroupchat\n=\ngroupchat\n,\nllm_config\n=\nllm_config\n)\n# Start chatting with the boss as this is the user proxy agent.\nboss\n.\ninitiate_chat\n(\nmanager\n,\nmessage\n=\n\"How to use spark for parallel training in FLAML? Give me sample code.\"\n,\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Read More\n​",
+            "content": [
+                {
+                    "text": "You can check out more example notebooks for RAG use cases:"
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

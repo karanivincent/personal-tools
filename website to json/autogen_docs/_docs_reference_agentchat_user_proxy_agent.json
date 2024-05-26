@@ -1,0 +1,38 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/user_proxy_agent",
+    "title": "agentchat.user_proxy_agent",
+    "sections": [
+        {
+            "title": "UserProxyAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nUserProxyAgent\n(\nConversableAgent\n)"
+                    }
+                },
+                {
+                    "text": "(In preview) A proxy agent for the user, that can execute code and provide feedback to the other agents.\n\nUserProxyAgent is a subclass of ConversableAgent configured with\nhuman_input_mode\nto ALWAYS\nand\nllm_config\nto False. By default, the agent will prompt for human input every time a message is received.\nCode execution is enabled by default. LLM-based auto reply is disabled by default.\nTo modify auto reply, register a method with\nregister_reply\n.\nTo modify the way to get human input, override\nget_human_input\nmethod.\nTo modify the way to execute code blocks, single code block, or function call, override\nexecute_code_blocks\n,\nrun_code\n, and\nexecute_function\nmethods respectively."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nname\n:\nstr\n,\nis_termination_msg\n:\nOptional\n[\nCallable\n[\n[\nDict\n]\n,\nbool\n]\n]\n=\nNone\n,\nmax_consecutive_auto_reply\n:\nOptional\n[\nint\n]\n=\nNone\n,\nhuman_input_mode\n:\nLiteral\n[\n\"ALWAYS\"\n,\n\"TERMINATE\"\n,\n\"NEVER\"\n]\n=\n\"ALWAYS\"\n,\nfunction_map\n:\nOptional\n[\nDict\n[\nstr\n,\nCallable\n]\n]\n=\nNone\n,\ncode_execution_config\n:\nUnion\n[\nDict\n,\nLiteral\n[\nFalse\n]\n]\n=\n{\n}\n,\ndefault_auto_reply\n:\nOptional\n[\nUnion\n[\nstr\n,\nDict\n,\nNone\n]\n]\n=\n\"\"\n,\nllm_config\n:\nOptional\n[\nUnion\n[\nDict\n,\nLiteral\n[\nFalse\n]\n]\n]\n=\nFalse\n,\nsystem_message\n:\nOptional\n[\nUnion\n[\nstr\n,\nList\n]\n]\n=\n\"\"\n,\ndescription\n:\nOptional\n[\nstr\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,76 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2023/12/29/AgentDescriptions",
+    "title": "All About Agent Descriptions",
+    "sections": [
+        {
+            "title": "TL;DR\n​",
+            "content": [
+                {
+                    "text": "AutoGen 0.2.2 introduces a\ndescription\nfield to ConversableAgent (and all subclasses), and changes GroupChat so that it uses agent\ndescription\ns rather than\nsystem_message\ns when choosing which agents should speak next.\n\nThis is expected to simplify GroupChat’s job, improve orchestration, and make it easier to implement new GroupChat or GroupChat-like alternatives.\n\nIf you are a developer, and things were already working well for you, no action is needed -- backward compatibility is ensured because the\ndescription\nfield defaults to the\nsystem_message\nwhen no description is provided.\n\nHowever, if you were struggling with getting GroupChat to work, you can now try updating the\ndescription\nfield."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "As AutoGen matures and developers build increasingly complex combinations of agents, orchestration is becoming an important capability. At present,\nGroupChat\nand the\nGroupChatManager\nare the main built-in tools for orchestrating conversations between 3 or more agents. For orchestrators like GroupChat to work well, they need to know something about each agent so that they can decide who should speak and when. Prior to AutoGen 0.2.2, GroupChat relied on each agent's\nsystem_message\nand\nname\nto learn about each participating agent. This is likely fine when the system prompt is short and sweet, but can lead to problems when the instructions are very long (e.g., with the\nAssistantAgent\n), or non-existent (e.g., with the\nUserProxyAgent\n).\n\nAutoGen 0.2.2 introduces a\ndescription\nfield to all agents, and replaces the use of the\nsystem_message\nfor orchestration in GroupChat and all future orchestrators. The\ndescription\nfield defaults to the\nsystem_message\nto ensure backwards compatibility, so you may not need to change anything with your code if things are working well for you. However, if you were struggling with GroupChat, give setting the\ndescription\nfield a try.\n\nThe remainder of this post provides an example of how using the\ndescription\nfield simplifies GroupChat's job,  provides some evidence of its effectiveness, and provides tips for writing good descriptions."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example\n​",
+            "content": [
+                {
+                    "text": "The current GroupChat orchestration system prompt has the following template:"
+                },
+                {
+                    "text": "Suppose that you wanted to include 3 agents: A UserProxyAgent, an AssistantAgent, and perhaps a GuardrailsAgent.\n\nPrior to 0.2.2, this template would expand to:"
+                },
+                {
+                    "text": "As you can see, this description is super confusing:\n\nConsequently, it's not hard to see why the GroupChat manager sometimes struggles with this orchestration task.\n\nWith AutoGen 0.2.2 onward, GroupChat instead relies on the description field. With a description field the orchestration prompt becomes:"
+                },
+                {
+                    "text": "This is much easier to parse and understand, and it doesn't use nearly as many tokens. Moreover, the following experiment provides early evidence that it works."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "An Experiment with Distraction\n​",
+            "content": [
+                {
+                    "text": "To illustrate the impact of the\ndescription\nfield, we set up a three-agent experiment with a reduced 26-problem subset of the HumanEval benchmark. Here, three agents were added to a GroupChat to solve programming problems. The three agents were:\n\nThe Coder and UserProxy used the AssistantAgent and UserProxy defaults (provided above), while the ExecutiveChef was given the system prompt:"
+                },
+                {
+                    "text": "The ExecutiveChef is clearly the distractor here -- given that no HumanEval problems are food-related, the GroupChat should rarely consult with the chef. However, when configured with GPT-3.5-turbo-16k, we can clearly see the GroupChat struggling with orchestration:"
+                },
+                {
+                    "text": "Using the\ndescription\nfield doubles performance on this task and halves the incidence of calling upon the distractor agent."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Tips for Writing Good Descriptions\n​",
+            "content": [
+                {
+                    "text": "Since\ndescriptions\nserve a different purpose than\nsystem_message\ns, it is worth reviewing what makes a good agent description. While descriptions are new, the following tips appear to lead to good results:\n\nThe main thing to remember is that\nthe description is for the benefit of the GroupChatManager, not for the Agent's own use or instruction\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Conclusion\n​",
+            "content": [
+                {
+                    "text": "AutoGen 0.2.2 introduces a\ndescription\n, becoming the main way agents describe themselves to orchestrators like GroupChat. Since the\ndescription\ndefaults to the\nsystem_message\n, there's nothing you need to change if you were already satisfied with how your group chats were working. However, we expect this feature to generally improve orchestration, so please consider experimenting with the\ndescription\nfield if you are struggling with GroupChat or want to boost performance."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

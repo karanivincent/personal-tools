@@ -1,0 +1,154 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_websockets",
+    "title": "Websockets: Streaming input and output using websockets",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nThis notebook demonstrates how to use the\nIOStream\nclass to stream both input and output using websockets. The use of\nwebsockets allows you to build web clients that are more responsive than\nthe one using web methods. The main difference is that the webosockets\nallows you to push data while you need to poll the server for new\nresponse using web mothods.\n\nIn this guide, we explore the capabilities of the\nIOStream\nclass. It is specifically designed to enhance the development of clients\nsuch as web clients which use websockets for streaming both input and\noutput. The\nIOStream\nstands out by enabling a more dynamic and interactive user experience\nfor web applications.\n\nWebsockets technology is at the core of this functionality, offering a\nsignificant advancement over traditional web methods by allowing data to\nbe “pushed” to the client in real-time. This is a departure from the\nconventional approach where clients must repeatedly “poll” the server to\ncheck for any new responses. By employing the underlining\nwebsockets\nlibrary, the IOStream\nclass facilitates a continuous, two-way communication channel between\nthe server and client. This ensures that updates are received instantly,\nwithout the need for constant polling, thereby making web clients more\nefficient and responsive.\n\nThe real power of websockets, leveraged through the\nIOStream\nclass, lies in its ability to create highly responsive web clients. This\nresponsiveness is critical for applications requiring real-time data\nupdates such as chat applications. By integrating the\nIOStream\nclass into your web application, you not only enhance user experience\nthrough immediate data transmission but also reduce the load on your\nserver by eliminating unnecessary polling.\n\nIn essence, the transition to using websockets through the\nIOStream\nclass marks a significant enhancement in web client development. This\napproach not only streamlines the data exchange process between clients\nand servers but also opens up new possibilities for creating more\ninteractive and engaging web applications. By following this guide,\ndevelopers can harness the full potential of websockets and the\nIOStream\nclass to push the boundaries of what is possible with web client\nresponsiveness and interactivity."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Requirements\n​",
+            "content": [
+                {
+                    "text": "Some extra dependencies are needed for this notebook, which can be installed via pip:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen[websockets] fastapi uvicorn"
+                    }
+                },
+                {
+                    "text": "For more information, please refer to the\ninstallation guide\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Set your API Endpoint\n​",
+            "content": [
+                {
+                    "text": "The\nconfig_list_from_json\nfunction loads a list of configurations from an environment variable or\na json file."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\ndatetime\nimport\ndatetime\nfrom\ntempfile\nimport\nTemporaryDirectory\nfrom\nwebsockets\n.\nsync\n.\nclient\nimport\nconnect\nas\nws_connect\nimport\nautogen\nfrom\nautogen\n.\nio\n.\nwebsockets\nimport\nIOWebsockets\nconfig_list\n=\nautogen\n.\nconfig_list_from_json\n(\nenv_or_file\n=\n\"OAI_CONFIG_LIST\"\n,\nfilter_dict\n=\n{\n\"model\"\n:\n[\n\"gpt-4\"\n,\n\"gpt-3.5-turbo\"\n,\n\"gpt-3.5-turbo-16k\"\n]\n,\n}\n,\n)"
+                    }
+                },
+                {
+                    "text": "Learn more about configuring LLMs for agents\nhere\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Defining\non_connect\nfunction\n​",
+            "content": [
+                {
+                    "text": "An\non_connect\nfunction is a crucial part of applications that utilize\nwebsockets, acting as an event handler that is called whenever a new\nclient connection is established. This function is designed to initiate\nany necessary setup, communication protocols, or data exchange\nprocedures specific to the newly connected client. Essentially, it lays\nthe groundwork for the interactive session that follows, configuring how\nthe server and the client will communicate and what initial actions are\nto be taken once a connection is made. Now, let’s delve into the details\nof how to define this function, especially in the context of using the\nAutoGen framework with websockets.\n\nUpon a client’s connection to the websocket server, the server\nautomatically initiates a new instance of the\nIOWebsockets\nclass. This instance is crucial for managing the data flow between the\nserver and the client. The\non_connect\nfunction leverages this instance\nto set up the communication protocol, define interaction rules, and\ninitiate any preliminary data exchanges or configurations required for\nthe client-server interaction to proceed smoothly."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "def\non_connect\n(\niostream\n:\nIOWebsockets\n)\n-\n>\nNone\n:\nprint\n(\nf\" - on_connect(): Connected to client using IOWebsockets\n{\niostream\n}\n\"\n,\nflush\n=\nTrue\n)\nprint\n(\n\" - on_connect(): Receiving message from client.\"\n,\nflush\n=\nTrue\n)\n# 1. Receive Initial Message\ninitial_msg\n=\niostream\n.\ninput\n(\n)\n# 2. Instantiate ConversableAgent\nagent\n=\nautogen\n.\nConversableAgent\n(\nname\n=\n\"chatbot\"\n,\nsystem_message\n=\n\"Complete a task given to you and reply TERMINATE when the task is done. If asked about the weather, use tool 'weather_forecast(city)' to get the weather forecast for a city.\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nautogen\n.\nconfig_list_from_json\n(\nenv_or_file\n=\n\"OAI_CONFIG_LIST\"\n,\nfilter_dict\n=\n{\n\"model\"\n:\n[\n\"gpt-4\"\n,\n\"gpt-3.5-turbo\"\n,\n\"gpt-3.5-turbo-16k\"\n]\n,\n}\n,\n)\n,\n\"stream\"\n:\nTrue\n,\n}\n,\n)\n# 3. Define UserProxyAgent\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\nsystem_message\n=\n\"A proxy for the user.\"\n,\nis_termination_msg\n=\nlambda\nx\n:\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\nand\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\n.\nrstrip\n(\n)\n.\nendswith\n(\n\"TERMINATE\"\n)\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nmax_consecutive_auto_reply\n=\n10\n,\ncode_execution_config\n=\nFalse\n,\n)\n# 4. Define Agent-specific Functions\ndef\nweather_forecast\n(\ncity\n:\nstr\n)\n-\n>\nstr\n:\nreturn\nf\"The weather forecast for\n{\ncity\n}\nat\n{\ndatetime\n.\nnow\n(\n)\n}\nis sunny.\"\nautogen\n.\nregister_function\n(\nweather_forecast\n,\ncaller\n=\nagent\n,\nexecutor\n=\nuser_proxy\n,\ndescription\n=\n\"Weather forecast for a city\"\n)\n# 5. Initiate conversation\nprint\n(\nf\" - on_connect(): Initiating chat with agent\n{\nagent\n}\nusing message '\n{\ninitial_msg\n}\n'\"\n,\nflush\n=\nTrue\n,\n)\nuser_proxy\n.\ninitiate_chat\n(\n# noqa: F704\nagent\n,\nmessage\n=\ninitial_msg\n,\n)"
+                    }
+                },
+                {
+                    "text": "Here’s an explanation on how a typical\non_connect\nfunction such as the\none in the example above is defined:\n\nReceive Initial Message\n: Immediately after establishing a\nconnection, receive an initial message from the client. This step is\ncrucial for understanding the client’s request or initiating the\nconversation flow.\n\nInstantiate ConversableAgent\n: Create an instance of\nConversableAgent with a specific system message and the LLM\nconfiguration. If you need more than one agent, make sure they don’t\nshare the same\nllm_config\nas adding a function to one of them will\nalso attempt to add it to another.\n\nInstantiate UserProxyAgent\n: Similarly, create a UserProxyAgent\ninstance, defining its termination condition, human input mode, and\nother relevant parameters. There is no need to define\nllm_config\nas the UserProxyAgent does not use LLM.\n\nDefine Agent-specific Functions\n: If your conversable agent\nrequires executing specific tasks, such as fetching a weather\nforecast in the example above, define these functions within the\non_connect scope. Decorate these functions accordingly to link them\nwith your agents.\n\nInitiate Conversation\n: Finally, use the\ninitiate_chat\nmethod\nof your\nUserProxyAgent\nto start the interaction with the\nconversable agent, passing the initial message and a cache mechanism\nfor efficiency."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Testing websockets server with Python client\n​",
+            "content": [
+                {
+                    "text": "Testing an\non_connect\nfunction with a Python client involves\nsimulating a client-server interaction to ensure the setup, data\nexchange, and communication protocols function as intended. Here’s a\nbrief explanation on how to conduct this test using a Python client:\n\nStart the Websocket Server\n: Use the\nIOWebsockets.run_server_in_thread method\nto start the server in a\nseparate thread, specifying the on_connect function and the port.\nThis method returns the URI of the running websocket server.\n\nConnect to the Server\n: Open a connection to the server using the\nreturned URI. This simulates a client initiating a connection to\nyour websocket server.\n\nSend a Message to the Server\n: Once connected, send a message\nfrom the client to the server. This tests the server’s ability to\nreceive messages through the established websocket connection.\n\nReceive and Process Messages\n: Implement a loop to continuously\nreceive messages from the server. Decode the messages if necessary,\nand process them accordingly. This step verifies the server’s\nability to respond back to the client’s request.\n\nThis test scenario effectively evaluates the interaction between a\nclient and a server using the\non_connect\nfunction, by simulating a\nrealistic message exchange. It ensures that the server can handle\nincoming connections, process messages, and communicate responses back\nto the client, all critical functionalities for a robust websocket-based\napplication."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "with\nIOWebsockets\n.\nrun_server_in_thread\n(\non_connect\n=\non_connect\n,\nport\n=\n8765\n)\nas\nuri\n:\nprint\n(\nf\" - test_setup() with websocket server running on\n{\nuri\n}\n.\"\n,\nflush\n=\nTrue\n)\nwith\nws_connect\n(\nuri\n)\nas\nwebsocket\n:\nprint\n(\nf\" - Connected to server on\n{\nuri\n}\n\"\n,\nflush\n=\nTrue\n)\nprint\n(\n\" - Sending message to server.\"\n,\nflush\n=\nTrue\n)\n# websocket.send(\"2+2=?\")\nwebsocket\n.\nsend\n(\n\"Check out the weather in Paris and write a poem about it.\"\n)\nwhile\nTrue\n:\nmessage\n=\nwebsocket\n.\nrecv\n(\n)\nmessage\n=\nmessage\n.\ndecode\n(\n\"utf-8\"\n)\nif\nisinstance\n(\nmessage\n,\nbytes\n)\nelse\nmessage\nprint\n(\nmessage\n,\nend\n=\n\"\"\n,\nflush\n=\nTrue\n)\nif\n\"TERMINATE\"\nin\nmessage\n:\nprint\n(\n)\nprint\n(\n\" - Received TERMINATE message. Exiting.\"\n,\nflush\n=\nTrue\n)\nbreak"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "- test_setup() with websocket server running on ws://127.0.0.1:8765.\n- on_connect(): Connected to client using IOWebsockets <autogen.io.websockets.IOWebsockets object at 0x7b8fd65b3c10>\n- on_connect(): Receiving message from client.\n- Connected to server on ws://127.0.0.1:8765\n- Sending message to server.\n- on_connect(): Initiating chat with agent <autogen.agentchat.conversable_agent.ConversableAgent object at 0x7b909c086290> using message 'Check out the weather in Paris and write a poem about it.'\nuser_proxy\n(\nto\nchatbot\n)\n:\nCheck out the weather in Paris and write a poem about it.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nchatbot\n(\nto\nuser_proxy\n)\n:\n***** Suggested tool call (call_xFFWe52vwdpgZ8xTRV6adBdy): weather_forecast *****\nArguments:\n{\n\"city\": \"Paris\"\n}\n*********************************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING FUNCTION weather_forecast...\nuser_proxy\n(\nto\nchatbot\n)\n:\nuser_proxy\n(\nto\nchatbot\n)\n:\n***** Response from calling tool (call_xFFWe52vwdpgZ8xTRV6adBdy) *****\nThe weather forecast for Paris at 2024-04-05 12:00:06.206125 is sunny.\n**********************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nIn the heart of France, beneath the sun's warm glow,\nLies the city of Paris, where the Seine waters flow.\nBathed in sunlight, every street and spire,\nIlluminated each detail, just like a docile fire.\nOnce monochromatic cityscape, kissed by the sun's bright light,\nNow a kaleidoscope of colors, from morning till the night.\nThis sun-swept city sparkles, under the azure dome,\nHer inhabitants find comfort, for they call this city home.\nOne can wander in her sunshine, on this perfect weather day,\nAnd feel the warmth it brings, to chase your blues away.\nFor the weather in Paris, is more than just a forecast,\nIt is a stage setting for dwellers and tourists amassed.\nTERMINATE\nchatbot\n(\nto\nuser_proxy\n)\n:\nIn the heart of France, beneath the sun's warm glow,\nLies the city of Paris, where the Seine waters flow.\nBathed in sunlight, every street and spire,\nIlluminated each detail, just like a docile fire.\nOnce monochromatic cityscape, kissed by the sun's bright light,\nNow a kaleidoscope of colors, from morning till the night.\nThis sun-swept city sparkles, under the azure dome,\nHer inhabitants find comfort, for they call this city home.\nOne can wander in her sunshine, on this perfect weather day,\nAnd feel the warmth it brings, to chase your blues away.\nFor the weather in Paris, is more than just a forecast,\nIt is a stage setting for dwellers and tourists amassed.\nTERMINATE\n- Received\nTERMINATE\nmessage. Exiting."
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Testing websockets server running inside FastAPI server with HTML/JS client\n​",
+            "content": [
+                {
+                    "text": "The code snippets below outlines an approach for testing an\non_connect\nfunction in a web environment using\nFastAPI\nto serve a simple interactive\nHTML page. This method allows users to send messages through a web\ninterface, which are then processed by the server running the AutoGen\nframework via websockets. Here’s a step-by-step explanation:\n\nFastAPI Application Setup\n: The code initiates by importing\nnecessary libraries and setting up a FastAPI application. FastAPI is\na modern, fast web framework for building APIs with Python 3.7+\nbased on standard Python type hints.\n\nHTML Template for User Interaction\n: An HTML template is defined\nas a multi-line Python string, which includes a basic form for\nmessage input and a script for managing websocket communication.\nThis template creates a user interface where messages can be sent to\nthe server and responses are displayed dynamically.\n\nRunning the Websocket Server\n: The\nrun_websocket_server\nasync\ncontext manager starts the websocket server using\nIOWebsockets.run_server_in_thread\nwith the specified\non_connect\nfunction and port. This server listens for incoming websocket\nconnections.\n\nFastAPI Route for Serving HTML Page\n: A FastAPI route\n(\n@app.get(\"/\")\n) is defined to serve the HTML page to users. When a\nuser accesses the root URL, the HTML content for the websocket chat\nis returned, allowing them to interact with the websocket server.\n\nStarting the FastAPI Application\n: Lastly, the FastAPI\napplication is started using Uvicorn, an ASGI server, configured\nwith the app and additional parameters as needed. The server is then\nlaunched to serve the FastAPI application, making the interactive\nHTML page accessible to users.\n\nThis method of testing allows for interactive communication between the\nuser and the server, providing a practical way to demonstrate and\nevaluate the behavior of the on_connect function in real-time. Users can\nsend messages through the webpage, and the server processes these\nmessages as per the logic defined in the on_connect function, showcasing\nthe capabilities and responsiveness of the AutoGen framework’s websocket\nhandling in a user-friendly manner."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\ncontextlib\nimport\nasynccontextmanager\n# noqa: E402\nfrom\npathlib\nimport\nPath\n# noqa: E402\nfrom\nfastapi\nimport\nFastAPI\n# noqa: E402\nfrom\nfastapi\n.\nresponses\nimport\nHTMLResponse\n# noqa: E402\nPORT\n=\n8000\nhtml\n=\n\"\"\"\n<!DOCTYPE html>\n<html>\n<head>\n<title>Autogen websocket test</title>\n</head>\n<body>\n<h1>WebSocket Chat</h1>\n<form action=\"\" onsubmit=\"sendMessage(event)\">\n<input type=\"text\" id=\"messageText\" autocomplete=\"off\"/>\n<button>Send</button>\n</form>\n<ul id='messages'>\n</ul>\n<script>\nvar ws = new WebSocket(\"ws://localhost:8080/ws\");\nws.onmessage = function(event) {\nvar messages = document.getElementById('messages')\nvar message = document.createElement('li')\nvar content = document.createTextNode(event.data)\nmessage.appendChild(content)\nmessages.appendChild(message)\n};\nfunction sendMessage(event) {\nvar input = document.getElementById(\"messageText\")\nws.send(input.value)\ninput.value = ''\nevent.preventDefault()\n}\n</script>\n</body>\n</html>\n\"\"\"\n@asynccontextmanager\nasync\ndef\nrun_websocket_server\n(\napp\n)\n:\nwith\nIOWebsockets\n.\nrun_server_in_thread\n(\non_connect\n=\non_connect\n,\nport\n=\n8080\n)\nas\nuri\n:\nprint\n(\nf\"Websocket server started at\n{\nuri\n}\n.\"\n,\nflush\n=\nTrue\n)\nyield\napp\n=\nFastAPI\n(\nlifespan\n=\nrun_websocket_server\n)\n@app\n.\nget\n(\n\"/\"\n)\nasync\ndef\nget\n(\n)\n:\nreturn\nHTMLResponse\n(\nhtml\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nuvicorn\n# noqa: E402\nconfig\n=\nuvicorn\n.\nConfig\n(\napp\n)\nserver\n=\nuvicorn\n.\nServer\n(\nconfig\n)\nawait\nserver\n.\nserve\n(\n)\n# noqa: F704"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "INFO:     Started server process [5227]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)\nINFO:     Shutting down\nINFO:     Waiting for application shutdown.\nINFO:     Application shutdown complete.\nINFO:     Finished server process [5227]"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Websocket server started at ws://127.0.0.1:8080.\nINFO:     127.0.0.1:42548 - \"GET / HTTP/1.1\" 200 OK\nINFO:     127.0.0.1:42548 - \"GET /favicon.ico HTTP/1.1\" 404 Not Found\n- on_connect(): Connected to client using IOWebsockets <autogen.io.websockets.IOWebsockets object at 0x7b8fc6991420>\n- on_connect(): Receiving message from client.\n- on_connect(): Initiating chat with agent <autogen.agentchat.conversable_agent.ConversableAgent object at 0x7b909c0cab00> using message 'write a poem about lundon'"
+                    }
+                },
+                {
+                    "text": "The testing setup described above, leveraging FastAPI and websockets,\nnot only serves as a robust testing framework for the on_connect\nfunction but also lays the groundwork for developing real-world\napplications. This approach exemplifies how web-based interactions can\nbe made dynamic and real-time, a critical aspect of modern application\ndevelopment.\n\nFor instance, this setup can be directly applied or adapted to build\ninteractive chat applications, real-time data dashboards, or live\nsupport systems. The integration of websockets enables the server to\npush updates to clients instantly, a key feature for applications that\nrely on the timely delivery of information. For example, a chat\napplication built on this framework can support instantaneous messaging\nbetween users, enhancing user engagement and satisfaction.\n\nMoreover, the simplicity and interactivity of the HTML page used for\ntesting reflect how user interfaces can be designed to provide seamless\nexperiences. Developers can expand upon this foundation to incorporate\nmore sophisticated elements such as user authentication, message\nencryption, and custom user interactions, further tailoring the\napplication to meet specific use case requirements.\n\nThe flexibility of the FastAPI framework, combined with the real-time\ncommunication enabled by websockets, provides a powerful toolset for\ndevelopers looking to build scalable, efficient, and highly interactive\nweb applications. Whether it’s for creating collaborative platforms,\nstreaming services, or interactive gaming experiences, this testing\nsetup offers a glimpse into the potential applications that can be\ndeveloped with these technologies."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Testing websockets server with HTML/JS client\n​",
+            "content": [
+                {
+                    "text": "The provided code snippet below is an example of how to create an\ninteractive testing environment for an\non_connect\nfunction using\nPython’s built-in\nhttp.server\nmodule. This setup allows for real-time\ninteraction within a web browser, enabling developers to test the\nwebsocket functionality in a more user-friendly and practical manner.\nHere’s a breakdown of how this code operates and its potential\napplications:\n\nServing a Simple HTML Page\n: The code starts by defining an HTML\npage that includes a form for sending messages and a list to display\nincoming messages. JavaScript is used to handle the form submission\nand websocket communication.\n\nTemporary Directory for HTML File\n: A temporary directory is\ncreated to store the HTML file. This approach ensures that the\ntesting environment is clean and isolated, minimizing conflicts with\nexisting files or configurations.\n\nCustom HTTP Request Handler\n: A custom subclass of\nSimpleHTTPRequestHandler\nis defined to serve the HTML file. This\nhandler overrides the do_GET method to redirect the root path (\n/\n)\nto the\nchat.html\npage, ensuring that visitors to the server’s root\nURL are immediately presented with the chat interface.\n\nStarting the Websocket Server\n: Concurrently, a websocket server\nis started on a different port using the\nIOWebsockets.run_server_in_thread\nmethod, with the previously\ndefined\non_connect\nfunction as the callback for new connections.\n\nHTTP Server for the HTML Interface\n: An HTTP server is\ninstantiated to serve the HTML chat interface, enabling users to\ninteract with the websocket server through a web browser.\n\nThis setup showcases a practical application of integrating websockets\nwith a simple HTTP server to create a dynamic and interactive web\napplication. By using Python’s standard library modules, it demonstrates\na low-barrier entry to developing real-time applications such as chat\nsystems, live notifications, or interactive dashboards.\n\nThe key takeaway from this code example is how easily Python’s built-in\nlibraries can be leveraged to prototype and test complex web\nfunctionalities. For developers looking to build real-world\napplications, this approach offers a straightforward method to validate\nand refine websocket communication logic before integrating it into\nlarger frameworks or systems. The simplicity and accessibility of this\ntesting setup make it an excellent starting point for developing a wide\nrange of interactive web applications."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nhttp\n.\nserver\nimport\nHTTPServer\n,\nSimpleHTTPRequestHandler\n# noqa: E402\nPORT\n=\n8000\nhtml\n=\n\"\"\"\n<!DOCTYPE html>\n<html>\n<head>\n<title>Autogen websocket test</title>\n</head>\n<body>\n<h1>WebSocket Chat</h1>\n<form action=\"\" onsubmit=\"sendMessage(event)\">\n<input type=\"text\" id=\"messageText\" autocomplete=\"off\"/>\n<button>Send</button>\n</form>\n<ul id='messages'>\n</ul>\n<script>\nvar ws = new WebSocket(\"ws://localhost:8080/ws\");\nws.onmessage = function(event) {\nvar messages = document.getElementById('messages')\nvar message = document.createElement('li')\nvar content = document.createTextNode(event.data)\nmessage.appendChild(content)\nmessages.appendChild(message)\n};\nfunction sendMessage(event) {\nvar input = document.getElementById(\"messageText\")\nws.send(input.value)\ninput.value = ''\nevent.preventDefault()\n}\n</script>\n</body>\n</html>\n\"\"\"\nwith\nTemporaryDirectory\n(\n)\nas\ntemp_dir\n:\n# create a simple HTTP webpage\npath\n=\nPath\n(\ntemp_dir\n)\n/\n\"chat.html\"\nwith\nopen\n(\npath\n,\n\"w\"\n)\nas\nf\n:\nf\n.\nwrite\n(\nhtml\n)\n#\nclass\nMyRequestHandler\n(\nSimpleHTTPRequestHandler\n)\n:\ndef\n__init__\n(\nself\n,\n*\nargs\n,\n**\nkwargs\n)\n:\nsuper\n(\n)\n.\n__init__\n(\n*\nargs\n,\ndirectory\n=\ntemp_dir\n,\n**\nkwargs\n)\ndef\ndo_GET\n(\nself\n)\n:\nif\nself\n.\npath\n==\n\"/\"\n:\nself\n.\npath\n=\n\"/chat.html\"\nreturn\nSimpleHTTPRequestHandler\n.\ndo_GET\n(\nself\n)\nhandler\n=\nMyRequestHandler\nwith\nIOWebsockets\n.\nrun_server_in_thread\n(\non_connect\n=\non_connect\n,\nport\n=\n8080\n)\nas\nuri\n:\nprint\n(\nf\"Websocket server started at\n{\nuri\n}\n.\"\n,\nflush\n=\nTrue\n)\nwith\nHTTPServer\n(\n(\n\"\"\n,\nPORT\n)\n,\nhandler\n)\nas\nhttpd\n:\nprint\n(\n\"HTTP server started at http://localhost:\"\n+\nstr\n(\nPORT\n)\n)\ntry\n:\nhttpd\n.\nserve_forever\n(\n)\nexcept\nKeyboardInterrupt\n:\nprint\n(\n\" - HTTP server stopped.\"\n,\nflush\n=\nTrue\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Websocket server started at ws://127.0.0.1:8080.\nHTTP server started at http://localhost:8000\n- on_connect(): Connected to client using IOWebsockets <autogen.io.websockets.IOWebsockets object at 0x7b8fc69937f0>\n- on_connect(): Receiving message from client.\n- on_connect(): Initiating chat with agent <autogen.agentchat.conversable_agent.ConversableAgent object at 0x7b8fc6990310> using message 'write a poem about new york'\n- on_connect(): Connected to client using IOWebsockets <autogen.io.websockets.IOWebsockets object at 0x7b8fc68bdc90>\n- on_connect(): Receiving message from client.\n- on_connect(): Initiating chat with agent <autogen.agentchat.conversable_agent.ConversableAgent object at 0x7b8fc68be170> using message 'check the weather in london and write a poem about it'\n- HTTP server stopped."
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "127.0.0.1 - - [05/Apr/2024 12:01:51] \"GET / HTTP/1.1\" 200 -\n127.0.0.1 - - [05/Apr/2024 12:01:51] \"GET / HTTP/1.1\" 200 -\n127.0.0.1 - - [05/Apr/2024 12:02:27] \"GET / HTTP/1.1\" 304 -"
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

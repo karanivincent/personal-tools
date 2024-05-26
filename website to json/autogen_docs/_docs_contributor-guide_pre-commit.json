@@ -1,0 +1,16 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/contributor-guide/pre-commit",
+    "title": "Pre-commit",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Run\npre-commit install\nto install pre-commit into your git hooks. Before you commit, run\npre-commit run\nto check if you meet the pre-commit requirements. If you use Windows (without WSL) and can't commit after installing pre-commit, you can run\npre-commit uninstall\nto uninstall the hook. In WSL or Linux this is supposed to work."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

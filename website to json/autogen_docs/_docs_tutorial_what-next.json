@@ -1,0 +1,35 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/tutorial/what-next",
+    "title": "What Next?",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Now that you have learned the basics of AutoGen, you can start to build your own\nagents. Here are some ideas to get you started without going to the advanced\ntopics:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Dig Deeper\n​",
+            "content": [],
+            "subsections": []
+        },
+        {
+            "title": "Get Help\n​",
+            "content": [
+                {
+                    "text": "If you have any questions, you can ask in our\nGitHub\nDiscussions\n, or join\nour\nDiscord Server\n.\n\n"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Get Involved\n​",
+            "content": [],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

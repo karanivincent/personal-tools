@@ -1,0 +1,272 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/oai/openai_utils",
+    "title": "oai.openai_utils",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Get a unique identifier of a configuration.\n\nArguments\n:\n\nReturns\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "is_valid_api_key\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nis_valid_api_key\n(\napi_key\n:\nstr\n)\n-\n>\nbool"
+                            }
+                        },
+                        {
+                            "text": "Determine if input is valid OpenAI API key.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_config_list\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_config_list\n(\napi_keys\n:\nList\n[\nstr\n]\n,\nbase_urls\n:\nOptional\n[\nList\n[\nstr\n]\n]\n=\nNone\n,\napi_type\n:\nOptional\n[\nstr\n]\n=\nNone\n,\napi_version\n:\nOptional\n[\nstr\n]\n=\nNone\n)\n-\n>\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Get a list of configs for OpenAI API client.\n\nArguments\n:\n\nReturns\n:\n\nExample\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "# Define a list of API keys\napi_keys\n=\n[\n'key1'\n,\n'key2'\n,\n'key3'\n]\n# Optionally, define a list of base URLs corresponding to each API key\nbase_urls\n=\n[\n'https://api.service1.com'\n,\n'https://api.service2.com'\n,\n'https://api.service3.com'\n]\n# Optionally, define the API type and version if they are common for all keys\napi_type\n=\n'azure'\napi_version\n=\n'2024-02-15-preview'\n# Call the get_config_list function to get a list of configuration dictionaries\nconfig_list\n=\nget_config_list\n(\napi_keys\n,\nbase_urls\n,\napi_type\n,\napi_version\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "config_list_openai_aoai\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nconfig_list_openai_aoai\n(\nkey_file_path\n:\nOptional\n[\nstr\n]\n=\n\".\"\n,\nopenai_api_key_file\n:\nOptional\n[\nstr\n]\n=\n\"key_openai.txt\"\n,\naoai_api_key_file\n:\nOptional\n[\nstr\n]\n=\n\"key_aoai.txt\"\n,\nopenai_api_base_file\n:\nOptional\n[\nstr\n]\n=\n\"base_openai.txt\"\n,\naoai_api_base_file\n:\nOptional\n[\nstr\n]\n=\n\"base_aoai.txt\"\n,\nexclude\n:\nOptional\n[\nstr\n]\n=\nNone\n)\n-\n>\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Get a list of configs for OpenAI API client (including Azure or local model deployments that support OpenAI's chat completion API).\n\nThis function constructs configurations by reading API keys and base URLs from environment variables or text files.\nIt supports configurations for both OpenAI and Azure OpenAI services, allowing for the exclusion of one or the other.\nWhen text files are used, the environment variables will be overwritten.\nTo prevent text files from being used, set the corresponding file name to None.\nOr set key_file_path to None to disallow reading from text files.\n\nArguments\n:\n\nReturns\n:\n\nRaises\n:\n\nExample\n:\n\nconfigs = config_list_openai_aoai(exclude='aoai')\n\nFile samples:\n\nkey_aoai.txt"
+                        },
+                        {
+                            "text": "base_aoai.txt"
+                        },
+                        {
+                            "text": "Notes\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "config_list_from_models\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nconfig_list_from_models\n(\nkey_file_path\n:\nOptional\n[\nstr\n]\n=\n\".\"\n,\nopenai_api_key_file\n:\nOptional\n[\nstr\n]\n=\n\"key_openai.txt\"\n,\naoai_api_key_file\n:\nOptional\n[\nstr\n]\n=\n\"key_aoai.txt\"\n,\naoai_api_base_file\n:\nOptional\n[\nstr\n]\n=\n\"base_aoai.txt\"\n,\nexclude\n:\nOptional\n[\nstr\n]\n=\nNone\n,\nmodel_list\n:\nOptional\n[\nList\n[\nstr\n]\n]\n=\nNone\n)\n-\n>\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Get a list of configs for API calls with models specified in the model list.\n\nThis function extends\nconfig_list_openai_aoai\nby allowing to clone its' out for each of the models provided.\nEach configuration will have a 'model' key with the model name as its value. This is particularly useful when\nall endpoints have same set of models.\n\nArguments\n:\n\nReturns\n:\n\nExample\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "# Define the path where the API key files are located\nkey_file_path\n=\n'/path/to/key/files'\n# Define the file names for the OpenAI and Azure OpenAI API keys and bases\nopenai_api_key_file\n=\n'key_openai.txt'\naoai_api_key_file\n=\n'key_aoai.txt'\naoai_api_base_file\n=\n'base_aoai.txt'\n# Define the list of models for which to create configurations\nmodel_list\n=\n[\n'gpt-4'\n,\n'gpt-3.5-turbo'\n]\n# Call the function to get a list of configuration dictionaries\nconfig_list\n=\nconfig_list_from_models\n(\nkey_file_path\n=\nkey_file_path\n,\nopenai_api_key_file\n=\nopenai_api_key_file\n,\naoai_api_key_file\n=\naoai_api_key_file\n,\naoai_api_base_file\n=\naoai_api_base_file\n,\nmodel_list\n=\nmodel_list\n)\n# The `config_list` will contain configurations for the specified models, for example:\n# [\n#     {'api_key': '...', 'base_url': 'https://api.openai.com', 'model': 'gpt-4'},\n#     {'api_key': '...', 'base_url': 'https://api.openai.com', 'model': 'gpt-3.5-turbo'}\n# ]"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "config_list_gpt4_gpt35\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nconfig_list_gpt4_gpt35\n(\nkey_file_path\n:\nOptional\n[\nstr\n]\n=\n\".\"\n,\nopenai_api_key_file\n:\nOptional\n[\nstr\n]\n=\n\"key_openai.txt\"\n,\naoai_api_key_file\n:\nOptional\n[\nstr\n]\n=\n\"key_aoai.txt\"\n,\naoai_api_base_file\n:\nOptional\n[\nstr\n]\n=\n\"base_aoai.txt\"\n,\nexclude\n:\nOptional\n[\nstr\n]\n=\nNone\n)\n-\n>\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Get a list of configs for 'gpt-4' followed by 'gpt-3.5-turbo' API calls.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "filter_config\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nfilter_config\n(\nconfig_list\n:\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]\n,\nfilter_dict\n:\nOptional\n[\nDict\n[\nstr\n,\nUnion\n[\nList\n[\nUnion\n[\nstr\n,\nNone\n]\n]\n,\nSet\n[\nUnion\n[\nstr\n,\nNone\n]\n]\n]\n]\n]\n)\n-\n>\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "This function filters\nconfig_list\nby checking each configuration dictionary against the\ncriteria specified in\nfilter_dict\n. A configuration dictionary is retained if for every\nkey in\nfilter_dict\n, see example below.\n\nArguments\n:\n\nconfig_list\nlist of dict\n- A list of configuration dictionaries to be filtered.\n\nfilter_dict\ndict\n- A dictionary representing the filter criteria, where each key is a\nfield name to check within the configuration dictionaries, and the\ncorresponding value is a list of acceptable values for that field.\nIf the configuration's field's value is not a list, then a match occurs\nwhen it is found in the list of acceptable values. If the configuration's\nfield's value is a list, then a match occurs if there is a non-empty\nintersection with the acceptable values.\n\nReturns\n:\n\nlist of dict: A list of configuration dictionaries that meet all the criteria specified\nin\nfilter_dict\n.\n\nExample\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "# Example configuration list with various models and API types\nconfigs\n=\n[\n{\n'model'\n:\n'gpt-3.5-turbo'\n}\n,\n{\n'model'\n:\n'gpt-4'\n}\n,\n{\n'model'\n:\n'gpt-3.5-turbo'\n,\n'api_type'\n:\n'azure'\n}\n,\n{\n'model'\n:\n'gpt-3.5-turbo'\n,\n'tags'\n:\n[\n'gpt35_turbo'\n,\n'gpt-35-turbo'\n]\n}\n,\n]\n# Define filter criteria to select configurations for the 'gpt-3.5-turbo' model\n# that are also using the 'azure' API type\nfilter_criteria\n=\n{\n'model'\n:\n[\n'gpt-3.5-turbo'\n]\n,\n# Only accept configurations for 'gpt-3.5-turbo'\n'api_type'\n:\n[\n'azure'\n]\n# Only accept configurations for 'azure' API type\n}\n# Apply the filter to the configuration list\nfiltered_configs\n=\nfilter_config\n(\nconfigs\n,\nfilter_criteria\n)\n# The resulting `filtered_configs` will be:\n# [{'model': 'gpt-3.5-turbo', 'api_type': 'azure', ...}]\n# Define a filter to select a given tag\nfilter_criteria\n=\n{\n'tags'\n:\n[\n'gpt35_turbo'\n]\n,\n}\n# Apply the filter to the configuration list\nfiltered_configs\n=\nfilter_config\n(\nconfigs\n,\nfilter_criteria\n)\n# The resulting `filtered_configs` will be:\n# [{'model': 'gpt-3.5-turbo', 'tags': ['gpt35_turbo', 'gpt-35-turbo']}]"
+                            }
+                        },
+                        {
+                            "text": "Notes\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "config_list_from_json\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nconfig_list_from_json\n(\nenv_or_file\n:\nstr\n,\nfile_location\n:\nOptional\n[\nstr\n]\n=\n\"\"\n,\nfilter_dict\n:\nOptional\n[\nDict\n[\nstr\n,\nUnion\n[\nList\n[\nUnion\n[\nstr\n,\nNone\n]\n]\n,\nSet\n[\nUnion\n[\nstr\n,\nNone\n]\n]\n]\n]\n]\n=\nNone\n)\n-\n>\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Retrieves a list of API configurations from a JSON stored in an environment variable or a file.\n\nThis function attempts to parse JSON data from the given\nenv_or_file\nparameter. If\nenv_or_file\nis an\nenvironment variable containing JSON data, it will be used directly. Otherwise, it is assumed to be a filename,\nand the function will attempt to read the file from the specified\nfile_location\n.\n\nThe\nfilter_dict\nparameter allows for filtering the configurations based on specified criteria. Each key in the\nfilter_dict\ncorresponds to a field in the configuration dictionaries, and the associated value is a list or set\nof acceptable values for that field. If a field is missing in a configuration and\nNone\nis included in the list\nof acceptable values for that field, the configuration will still be considered a match.\n\nArguments\n:\n\nExample\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "# Suppose we have an environment variable 'CONFIG_JSON' with the following content:\n# '[{\"model\": \"gpt-3.5-turbo\", \"api_type\": \"azure\"}, {\"model\": \"gpt-4\"}]'\n# We can retrieve a filtered list of configurations like this:\nfilter_criteria\n=\n{\n\"model\"\n:\n[\n\"gpt-3.5-turbo\"\n]\n}\nconfigs\n=\nconfig_list_from_json\n(\n'CONFIG_JSON'\n,\nfilter_dict\n=\nfilter_criteria\n)\n# The 'configs' variable will now contain only the configurations that match the filter criteria."
+                            }
+                        },
+                        {
+                            "text": "Returns\n:\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_config\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_config\n(\napi_key\n:\nOptional\n[\nstr\n]\n,\nbase_url\n:\nOptional\n[\nstr\n]\n=\nNone\n,\napi_type\n:\nOptional\n[\nstr\n]\n=\nNone\n,\napi_version\n:\nOptional\n[\nstr\n]\n=\nNone\n)\n-\n>\nDict\n[\nstr\n,\nAny\n]"
+                            }
+                        },
+                        {
+                            "text": "Constructs a configuration dictionary for a single model with the provided API configurations.\n\nExample\n:"
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "config\n=\nget_config\n(\napi_key\n=\n\"sk-abcdef1234567890\"\n,\nbase_url\n=\n\"https://api.openai.com\"\n,\napi_version\n=\n\"v1\"\n)\n# The 'config' variable will now contain:\n# {\n#     \"api_key\": \"sk-abcdef1234567890\",\n#     \"base_url\": \"https://api.openai.com\",\n#     \"api_version\": \"v1\"\n# }"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "config_list_from_dotenv\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nconfig_list_from_dotenv\n(\ndotenv_file_path\n:\nOptional\n[\nstr\n]\n=\nNone\n,\nmodel_api_key_map\n:\nOptional\n[\nDict\n[\nstr\n,\nAny\n]\n]\n=\nNone\n,\nfilter_dict\n:\nOptional\n[\nDict\n[\nstr\n,\nUnion\n[\nList\n[\nUnion\n[\nstr\n,\nNone\n]\n]\n,\nSet\n[\nUnion\n[\nstr\n,\nNone\n]\n]\n]\n]\n]\n=\nNone\n)\n-\n>\nList\n[\nDict\n[\nstr\n,\nUnion\n[\nstr\n,\nSet\n[\nstr\n]\n]\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Load API configurations from a specified .env file or environment variables and construct a list of configurations.\n\nThis function will:\n\nmodel_api_key_map will default to\n{\"gpt-4\": \"OPENAI_API_KEY\", \"gpt-3.5-turbo\": \"OPENAI_API_KEY\"}\nif none\n\nArguments\n:\n\nReturns\n:\n\nList[Dict[str, Union[str, Set[str]]]]: A list of configuration dictionaries for each model.\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "retrieve_assistants_by_name\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nretrieve_assistants_by_name\n(\nclient\n:\nOpenAI\n,\nname\n:\nstr\n)\n-\n>\nList\n[\nAssistant\n]"
+                            }
+                        },
+                        {
+                            "text": "Return the assistants with the given name from OAI assistant API"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "detect_gpt_assistant_api_version\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ndetect_gpt_assistant_api_version\n(\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Detect the openai assistant API version"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "create_gpt_vector_store\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncreate_gpt_vector_store\n(\nclient\n:\nOpenAI\n,\nname\n:\nstr\n,\nfild_ids\n:\nList\n[\nstr\n]\n)\n-\n>\nAny"
+                            }
+                        },
+                        {
+                            "text": "Create a openai vector store for gpt assistant"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "create_gpt_assistant\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncreate_gpt_assistant\n(\nclient\n:\nOpenAI\n,\nname\n:\nstr\n,\ninstructions\n:\nstr\n,\nmodel\n:\nstr\n,\nassistant_config\n:\nDict\n[\nstr\n,\nAny\n]\n)\n-\n>\nAssistant"
+                            }
+                        },
+                        {
+                            "text": "Create a openai gpt assistant"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "update_gpt_assistant\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nupdate_gpt_assistant\n(\nclient\n:\nOpenAI\n,\nassistant_id\n:\nstr\n,\nassistant_config\n:\nDict\n[\nstr\n,\nAny\n]\n)\n-\n>\nAssistant"
+                            }
+                        },
+                        {
+                            "text": "Update openai gpt assistant"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

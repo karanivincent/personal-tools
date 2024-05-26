@@ -1,0 +1,174 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/agent",
+    "title": "agentchat.agent",
+    "sections": [
+        {
+            "title": "Agent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "@runtime_checkable\nclass\nAgent\n(\nProtocol\n)"
+                    }
+                },
+                {
+                    "text": "(In preview) A protocol for Agent.\n\nAn agent can communicate with other agents and perform actions.\nDifferent agents can differ in what actions they perform in the\nreceive\nmethod."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "name\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nname\n(\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "The name of the agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "description\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\ndescription\n(\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "The description of the agent. Used for the agent's introduction in\na group chat setting."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "send\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nsend\n(\nmessage\n:\nUnion\n[\nDict\n[\nstr\n,\nAny\n]\n,\nstr\n]\n,\nrecipient\n:\n\"Agent\"\n,\nrequest_reply\n:\nOptional\n[\nbool\n]\n=\nNone\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Send a message to another agent.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_send\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_send\n(\nmessage\n:\nUnion\n[\nDict\n[\nstr\n,\nAny\n]\n,\nstr\n]\n,\nrecipient\n:\n\"Agent\"\n,\nrequest_reply\n:\nOptional\n[\nbool\n]\n=\nNone\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "(Async) Send a message to another agent.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "receive\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nreceive\n(\nmessage\n:\nUnion\n[\nDict\n[\nstr\n,\nAny\n]\n,\nstr\n]\n,\nsender\n:\n\"Agent\"\n,\nrequest_reply\n:\nOptional\n[\nbool\n]\n=\nNone\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Receive a message from another agent.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "a_receive\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "async\ndef\na_receive\n(\nmessage\n:\nUnion\n[\nDict\n[\nstr\n,\nAny\n]\n,\nstr\n]\n,\nsender\n:\n\"Agent\"\n,\nrequest_reply\n:\nOptional\n[\nbool\n]\n=\nNone\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "(Async) Receive a message from another agent.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "generate_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n[\nstr\n,\nAny\n]\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\n\"Agent\"\n]\n=\nNone\n,\n**\nkwargs\n:\nAny\n)\n-\n>\nUnion\n[\nstr\n,\nDict\n[\nstr\n,\nAny\n]\n,\nNone\n]"
+                            }
+                        },
+                        {
+                            "text": "Generate a reply based on the received messages.\n\nArguments\n:\n\nReturns\n:\n\nstr or dict or None: the generated reply. If None, no reply is generated."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "LLMAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "@runtime_checkable\nclass\nLLMAgent\n(\nAgent\n,\nProtocol\n)"
+                    }
+                },
+                {
+                    "text": "(In preview) A protocol for an LLM agent."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "system_message\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@property\ndef\nsystem_message\n(\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "The system message of this agent."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "update_system_message\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nupdate_system_message\n(\nsystem_message\n:\nstr\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Update this agent's system message.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

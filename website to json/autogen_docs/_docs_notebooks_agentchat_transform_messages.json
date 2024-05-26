@@ -1,0 +1,175 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_transform_messages",
+    "title": "Preprocessing Chat History withTransformMessages",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": ""
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "This notebook illustrates how to use\nTransformMessages\ngive any\nConversableAgent\nthe ability to handle long contexts, sensitive data,\nand more.\n\nInstall\npyautogen\n:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen"
+                    }
+                },
+                {
+                    "text": "For more information, please refer to the\ninstallation guide\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\ncopy\nimport\npprint\nimport\nre\nfrom\ntyping\nimport\nDict\n,\nList\n,\nTuple\nimport\nautogen\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\ncapabilities\nimport\ntransform_messages\n,\ntransforms"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "config_list\n=\nautogen\n.\nconfig_list_from_json\n(\nenv_or_file\n=\n\"OAI_CONFIG_LIST\"\n,\n)\n# Define your llm config\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n}"
+                    }
+                },
+                {
+                    "text": "Learn more about configuring LLMs for agents\nhere\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Define your agent; the user proxy and an assistant\nassistant\n=\nautogen\n.\nAssistantAgent\n(\n\"assistant\"\n,\nllm_config\n=\nllm_config\n,\n)\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\n\"user_proxy\"\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nis_termination_msg\n=\nlambda\nx\n:\n\"TERMINATE\"\nin\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\n,\nmax_consecutive_auto_reply\n=\n10\n,\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Handling Long Contexts\n​",
+            "content": [
+                {
+                    "text": "Imagine a scenario where the LLM generates an extensive amount of text,\nsurpassing the token limit imposed by your API provider. To address this\nissue, you can leverage\nTransformMessages\nalong with its constituent\ntransformations,\nMessageHistoryLimiter\nand\nMessageTokenLimiter\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Limit the message history to the 3 most recent messages\nmax_msg_transfrom\n=\ntransforms\n.\nMessageHistoryLimiter\n(\nmax_messages\n=\n3\n)\n# Limit the token limit per message to 10 tokens\ntoken_limit_transform\n=\ntransforms\n.\nMessageTokenLimiter\n(\nmax_tokens_per_message\n=\n3\n,\nmin_tokens\n=\n10\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example 1: Limiting number of messages\n​",
+            "content": [
+                {
+                    "text": "Let’s take a look at how these transformations will effect the messages.\nBelow we see that by applying the\nMessageHistoryLimiter\n, we can see\nthat we limited the context history to the 3 most recent messages."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "messages\n=\n[\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"hello\"\n}\n,\n{\n\"role\"\n:\n\"assistant\"\n,\n\"content\"\n:\n[\n{\n\"type\"\n:\n\"text\"\n,\n\"text\"\n:\n\"there\"\n}\n]\n}\n,\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"how\"\n}\n,\n{\n\"role\"\n:\n\"assistant\"\n,\n\"content\"\n:\n[\n{\n\"type\"\n:\n\"text\"\n,\n\"text\"\n:\n\"are you doing?\"\n}\n]\n}\n,\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"very very very very very very long string\"\n}\n,\n]\nprocessed_messages\n=\nmax_msg_transfrom\n.\napply_transform\n(\ncopy\n.\ndeepcopy\n(\nmessages\n)\n)\npprint\n.\npprint\n(\nprocessed_messages\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "[{'content': 'how', 'role': 'user'},\n{'content': [{'text': 'are you doing?', 'type': 'text'}], 'role': 'assistant'},\n{'content': 'very very very very very very long string', 'role': 'user'}]"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example 2: Limiting number of tokens\n​",
+            "content": [
+                {
+                    "text": "Now let’s test limiting the number of tokens in messages. We can see\nthat we can limit the number of tokens to 3, which is equivalent to 3\nwords in this instance."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "processed_messages\n=\ntoken_limit_transform\n.\napply_transform\n(\ncopy\n.\ndeepcopy\n(\nmessages\n)\n)\npprint\n.\npprint\n(\nprocessed_messages\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "[{'content': 'hello', 'role': 'user'},\n{'content': [{'text': 'there', 'type': 'text'}], 'role': 'assistant'},\n{'content': 'how', 'role': 'user'},\n{'content': [{'text': 'are you doing', 'type': 'text'}], 'role': 'assistant'},\n{'content': 'very very very', 'role': 'user'}]"
+                    }
+                },
+                {
+                    "text": "Also, the\nmin_tokens\nthreshold is set to 10, indicating that the\ntransformation will not be applied if the total number of tokens in the\nmessages is less than that. This is especially beneficial when the\ntransformation should only occur after a certain number of tokens has\nbeen reached, such as in the context window of the model. An example is\nprovided below."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "short_messages\n=\n[\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"hello there, how are you?\"\n}\n,\n{\n\"role\"\n:\n\"assistant\"\n,\n\"content\"\n:\n[\n{\n\"type\"\n:\n\"text\"\n,\n\"text\"\n:\n\"hello\"\n}\n]\n}\n,\n]\nprocessed_short_messages\n=\ntoken_limit_transform\n.\napply_transform\n(\ncopy\n.\ndeepcopy\n(\nshort_messages\n)\n)\npprint\n.\npprint\n(\nprocessed_short_messages\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "[{'content': 'hello there, how are you?', 'role': 'user'},\n{'content': [{'text': 'hello', 'type': 'text'}], 'role': 'assistant'}]"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Example 3: Combining transformations\n​",
+            "content": [
+                {
+                    "text": "Let’s test these transforms with agents (the upcoming test is replicated\nfrom the agentchat_capability_long_context_handling notebook). We will\nsee that the agent without the capability to handle long context will\nresult in an error, while the agent with that capability will have no\nissues."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant_base\n=\nautogen\n.\nAssistantAgent\n(\n\"assistant\"\n,\nllm_config\n=\nllm_config\n,\n)\nassistant_with_context_handling\n=\nautogen\n.\nAssistantAgent\n(\n\"assistant\"\n,\nllm_config\n=\nllm_config\n,\n)\n# suppose this capability is not available\ncontext_handling\n=\ntransform_messages\n.\nTransformMessages\n(\ntransforms\n=\n[\ntransforms\n.\nMessageHistoryLimiter\n(\nmax_messages\n=\n10\n)\n,\ntransforms\n.\nMessageTokenLimiter\n(\nmax_tokens\n=\n1000\n,\nmax_tokens_per_message\n=\n50\n,\nmin_tokens\n=\n500\n)\n,\n]\n)\ncontext_handling\n.\nadd_to_agent\n(\nassistant_with_context_handling\n)\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\n\"user_proxy\"\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nis_termination_msg\n=\nlambda\nx\n:\n\"TERMINATE\"\nin\nx\n.\nget\n(\n\"content\"\n,\n\"\"\n)\n,\ncode_execution_config\n=\n{\n\"work_dir\"\n:\n\"coding\"\n,\n\"use_docker\"\n:\nFalse\n,\n}\n,\nmax_consecutive_auto_reply\n=\n2\n,\n)\n# suppose the chat history is large\n# Create a very long chat history that is bound to cause a crash\n# for gpt 3.5\nfor\ni\nin\nrange\n(\n1000\n)\n:\n# define a fake, very long messages\nassitant_msg\n=\n{\n\"role\"\n:\n\"assistant\"\n,\n\"content\"\n:\n\"test \"\n*\n1000\n}\nuser_msg\n=\n{\n\"role\"\n:\n\"user\"\n,\n\"content\"\n:\n\"\"\n}\nassistant_base\n.\nsend\n(\nassitant_msg\n,\nuser_proxy\n,\nrequest_reply\n=\nFalse\n,\nsilent\n=\nTrue\n)\nassistant_with_context_handling\n.\nsend\n(\nassitant_msg\n,\nuser_proxy\n,\nrequest_reply\n=\nFalse\n,\nsilent\n=\nTrue\n)\nuser_proxy\n.\nsend\n(\nuser_msg\n,\nassistant_base\n,\nrequest_reply\n=\nFalse\n,\nsilent\n=\nTrue\n)\nuser_proxy\n.\nsend\n(\nuser_msg\n,\nassistant_with_context_handling\n,\nrequest_reply\n=\nFalse\n,\nsilent\n=\nTrue\n)\ntry\n:\nuser_proxy\n.\ninitiate_chat\n(\nassistant_base\n,\nmessage\n=\n\"plot and save a graph of x^2 from -10 to 10\"\n,\nclear_history\n=\nFalse\n)\nexcept\nException\nas\ne\n:\nprint\n(\n\"Encountered an error with the base assistant\"\n)\nprint\n(\ne\n)\nprint\n(\n\"\\n\\n\"\n)\ntry\n:\nuser_proxy\n.\ninitiate_chat\n(\nassistant_with_context_handling\n,\nmessage\n=\n\"plot and save a graph of x^2 from -10 to 10\"\n,\nclear_history\n=\nFalse\n)\nexcept\nException\nas\ne\n:\nprint\n(\ne\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "user_proxy\n(\nto\nassistant\n)\n:\nplot and save a graph of x^2 from -10 to 10\n--------------------------------------------------------------------------------\nEncountered an error with the base assistant\nError code: 400 - {'error': {'message': \"This model's maximum context length is 16385 tokens. However, your messages resulted in 1009487 tokens. Please reduce the length of the messages.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}\nuser_proxy\n(\nto\nassistant\n)\n:\nplot and save a graph of x^2 from -10 to 10\n--------------------------------------------------------------------------------\nRemoved 1991 messages. Number of messages reduced from 2001 to 10.\nTruncated 3804 tokens. Number of tokens reduced from 4019 to 215\nassistant\n(\nto\nuser_proxy\n)\n:\n```python\n# filename: plot_x_squared.py\nimport matplotlib.pyplot as plt\nimport numpy as np\n# Generate an array of x values from -10 to 10\nx = np.linspace(-10, 10, 400)\n# Calculate the y values by squaring the x values\ny = x**2\n# Create the plot\nplt.figure()\nplt.plot(x, y)\n# Title and labels\nplt.title('Graph of y = x^2')\nplt.xlabel('x')\nplt.ylabel('y')\n# Save the plot as a file\nplt.savefig('x_squared_plot.png')\n# Show the plot\nplt.show()\n```\nPlease save the above code into a file named `plot_x_squared.py`. After saving the code, you can execute it to generate and save the graph of y = x^2 from -10 to 10. The graph will also be displayed to you and the file `x_squared_plot.png` will be created in the current directory. Make sure you have `matplotlib` and `numpy` libraries installed in your Python environment before executing the code. If they are not installed, you can install them using `pip`:\n```sh\npip install matplotlib numpy\n```\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING CODE BLOCK 0 (inferred language is python)...\n>>>>>>>> EXECUTING CODE BLOCK 1 (inferred language is sh)...\nuser_proxy\n(\nto\nassistant\n)\n:\nexitcode: 0 (execution succeeded)\nCode output:\nFigure(640x480)\nRequirement already satisfied: matplotlib in c:\\users\\bt314mc\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (3.8.0)\nRequirement already satisfied: numpy in c:\\users\\bt314mc\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (1.26.0)\nRequirement already satisfied: contourpy>=1.0.1 in c:\\users\\bt314mc\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from matplotlib) (1.1.1)\nRequirement already satisfied: cycler>=0.10 in c:\\users\\bt314mc\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from matplotlib) (0.11.0)\nRequirement already satisfied: fonttools>=4.22.0 in c:\\users\\bt314mc\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from matplotlib) (4.42.1)\nRequirement already satisfied: kiwisolver>=1.0.1 in c:\\users\\bt314mc\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from matplotlib) (1.4.5)\nRequirement already satisfied: packaging>=20.0 in c:\\users\\bt314mc\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from matplotlib) (23.2)\nRequirement already satisfied: pillow>=6.2.0 in c:\\users\\bt314mc\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from matplotlib) (10.0.1)\nRequirement already satisfied: pyparsing>=2.3.1 in c:\\users\\bt314mc\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from matplotlib) (3.1.1)\nRequirement already satisfied: python-dateutil>=2.7 in c:\\users\\bt314mc\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from matplotlib) (2.8.2)\nRequirement already satisfied: six>=1.5 in c:\\users\\bt314mc\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from python-dateutil>=2.7->matplotlib) (1.16.0)\n--------------------------------------------------------------------------------\nRemoved 1993 messages. Number of messages reduced from 2003 to 10.\nTruncated 3523 tokens. Number of tokens reduced from 3788 to 265\nassistant\n(\nto\nuser_proxy\n)\n:\nIt appears that the matplotlib library is already installed on your system, and the previous script started successfully but did not finish because the plotting code was incomplete.\nI will provide you with the full code to plot and save the graph of \\( x^2 \\) from -10 to 10.\n```python\n# filename: plot_x_squared.py\nimport matplotlib.pyplot as plt\nimport numpy as np\n# Generate an array of x values from -10 to 10\nx = np.linspace(-10, 10, 400)\n# Calculate the y values based on the x values\ny = x**2\n# Create the plot\nplt.figure(figsize=(8, 6))\nplt.plot(x, y, label='y = x^2')\n# Add a title and labels\nplt.title('Plot of y = x^2')\nplt.xlabel('x')\nplt.ylabel('y')\n# Add a legend\nplt.legend()\n# Save the figure\nplt.savefig('plot_x_squared.png')\n# Show the plot\nplt.show()\n```\nPlease execute this Python code in its entirety. It will create a graph of \\( y = x^2 \\) with x values ranging from -10 to 10, and then it will save the graph as a PNG file named 'plot_x_squared.png' in the current working directory. It will also display the plot window with the graph.\n--------------------------------------------------------------------------------\n>>>>>>>> EXECUTING CODE BLOCK 0 (inferred language is python)...\nuser_proxy\n(\nto\nassistant\n)\n:\nexitcode: 0 (execution succeeded)\nCode output:\nFigure(800x600)\n--------------------------------------------------------------------------------\nRemoved 1995 messages. Number of messages reduced from 2005 to 10.\nTruncated 2802 tokens. Number of tokens reduced from 3086 to 284\nassistant\n(\nto\nuser_proxy\n)\n:\nIt seems the graph has been generated, but the output doesn't tell us if the graph was saved. The expected behavior was to have a file saved in the current working directory. Can you please check in your current directory for a file named `plot_x_squared.png`? If it exists, then the task is complete.\nIf you don't find the file, let me know, and I will troubleshoot further.\n--------------------------------------------------------------------------------"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Handling Sensitive Data\n​",
+            "content": [
+                {
+                    "text": "You can use the\nMessageTransform\nprotocol to create custom message\ntransformations that redact sensitive data from the chat history. This\nis particularly useful when you want to ensure that sensitive\ninformation, such as API keys, passwords, or personal data, is not\nexposed in the chat history or logs.\n\nNow, we will create a custom message transform to detect any OpenAI API\nkey and redact it."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# The transform must adhere to transform_messages.MessageTransform protocol.\nclass\nMessageRedact\n:\ndef\n__init__\n(\nself\n)\n:\nself\n.\n_openai_key_pattern\n=\nr\"sk-([a-zA-Z0-9]{48})\"\nself\n.\n_replacement_string\n=\n\"REDACTED\"\ndef\napply_transform\n(\nself\n,\nmessages\n:\nList\n[\nDict\n]\n)\n-\n>\nList\n[\nDict\n]\n:\ntemp_messages\n=\ncopy\n.\ndeepcopy\n(\nmessages\n)\nfor\nmessage\nin\ntemp_messages\n:\nif\nisinstance\n(\nmessage\n[\n\"content\"\n]\n,\nstr\n)\n:\nmessage\n[\n\"content\"\n]\n=\nre\n.\nsub\n(\nself\n.\n_openai_key_pattern\n,\nself\n.\n_replacement_string\n,\nmessage\n[\n\"content\"\n]\n)\nelif\nisinstance\n(\nmessage\n[\n\"content\"\n]\n,\nlist\n)\n:\nfor\nitem\nin\nmessage\n[\n\"content\"\n]\n:\nif\nitem\n[\n\"type\"\n]\n==\n\"text\"\n:\nitem\n[\n\"text\"\n]\n=\nre\n.\nsub\n(\nself\n.\n_openai_key_pattern\n,\nself\n.\n_replacement_string\n,\nitem\n[\n\"text\"\n]\n)\nreturn\ntemp_messages\ndef\nget_logs\n(\nself\n,\npre_transform_messages\n:\nList\n[\nDict\n]\n,\npost_transform_messages\n:\nList\n[\nDict\n]\n)\n-\n>\nTuple\n[\nstr\n,\nbool\n]\n:\nkeys_redacted\n=\nself\n.\n_count_redacted\n(\npost_transform_messages\n)\n-\nself\n.\n_count_redacted\n(\npre_transform_messages\n)\nif\nkeys_redacted\n>\n0\n:\nreturn\nf\"Redacted\n{\nkeys_redacted\n}\nOpenAI API keys.\"\n,\nTrue\nreturn\n\"\"\n,\nFalse\ndef\n_count_redacted\n(\nself\n,\nmessages\n:\nList\n[\nDict\n]\n)\n-\n>\nint\n:\n# counts occurrences of \"REDACTED\" in message content\ncount\n=\n0\nfor\nmessage\nin\nmessages\n:\nif\nisinstance\n(\nmessage\n[\n\"content\"\n]\n,\nstr\n)\n:\nif\n\"REDACTED\"\nin\nmessage\n[\n\"content\"\n]\n:\ncount\n+=\n1\nelif\nisinstance\n(\nmessage\n[\n\"content\"\n]\n,\nlist\n)\n:\nfor\nitem\nin\nmessage\n[\n\"content\"\n]\n:\nif\nisinstance\n(\nitem\n,\ndict\n)\nand\n\"text\"\nin\nitem\n:\nif\n\"REDACTED\"\nin\nitem\n[\n\"text\"\n]\n:\ncount\n+=\n1\nreturn\ncount"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "assistant_with_redact\n=\nautogen\n.\nAssistantAgent\n(\n\"assistant\"\n,\nllm_config\n=\nllm_config\n,\nmax_consecutive_auto_reply\n=\n1\n,\n)\n# suppose this capability is not available\nredact_handling\n=\ntransform_messages\n.\nTransformMessages\n(\ntransforms\n=\n[\nMessageRedact\n(\n)\n]\n)\nredact_handling\n.\nadd_to_agent\n(\nassistant_with_redact\n)\nuser_proxy\n=\nautogen\n.\nUserProxyAgent\n(\n\"user_proxy\"\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nmax_consecutive_auto_reply\n=\n1\n,\n)\nmessages\n=\n[\n{\n\"content\"\n:\n\"api key 1 = sk-7nwt00xv6fuegfu3gnwmhrgxvuc1cyrhxcq1quur9zvf05fy\"\n}\n,\n# Don't worry, randomly generated\n{\n\"content\"\n:\n[\n{\n\"type\"\n:\n\"text\"\n,\n\"text\"\n:\n\"API key 2 = sk-9wi0gf1j2rz6utaqd3ww3o6c1h1n28wviypk7bd81wlj95an\"\n}\n]\n}\n,\n]\nfor\nmessage\nin\nmessages\n:\nuser_proxy\n.\nsend\n(\nmessage\n,\nassistant_with_redact\n,\nrequest_reply\n=\nFalse\n,\nsilent\n=\nTrue\n)\nresult\n=\nuser_proxy\n.\ninitiate_chat\n(\nassistant_with_redact\n,\nmessage\n=\n\"What are the two API keys that I just provided\"\n,\nclear_history\n=\nFalse\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "user_proxy\n(\nto\nassistant\n)\n:\nWhat are the two API keys that I just provided\n--------------------------------------------------------------------------------\nRedacted 2 OpenAI API keys.\nassistant\n(\nto\nuser_proxy\n)\n:\nAs an AI, I must inform you that it is not safe to share API keys publicly as they can be used to access your private data or services that can incur costs. Given that you've typed \"REDACTED\" instead of the actual keys, it seems you are aware of the privacy concerns and are likely testing my response or simulating an exchange without exposing real credentials, which is a good practice for privacy and security reasons.\nTo respond directly to your direct question: The two API keys you provided are both placeholders indicated by the text \"REDACTED\", and not actual API keys. If these were real keys, I would have reiterated the importance of keeping them secure and would not display them here.\nRemember to keep your actual API keys confidential to prevent unauthorized use. If you've accidentally exposed real API keys, you should revoke or regenerate them as soon as possible through the corresponding service's API management console.\n--------------------------------------------------------------------------------\nuser_proxy\n(\nto\nassistant\n)\n:\n--------------------------------------------------------------------------------\nRedacted 2 OpenAI API keys."
+                    }
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,53 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/capabilities/text_compressors",
+    "title": "agentchat.contrib.capabilities.text_compressors",
+    "sections": [
+        {
+            "title": "TextCompressor\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nTextCompressor\n(\nProtocol\n)"
+                    }
+                },
+                {
+                    "text": "Defines a protocol for text compression to optimize agent interactions."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "LLMLingua\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nLLMLingua\n(\n)"
+                    }
+                },
+                {
+                    "text": "Compresses text messages using LLMLingua for improved efficiency in processing and response generation.\n\nNOTE: The effectiveness of compression and the resultant token savings can vary based on the content of the messages\nand the specific configurations used for the PromptCompressor."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nprompt_compressor_kwargs\n:\nDict\n=\ndict\n(\nmodel_name\n=\n\"microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank\"\n,\nuse_llmlingua2\n=\nTrue\n,\ndevice_map\n=\n\"cpu\"\n,\n)\n,\nstructured_compression\n:\nbool\n=\nFalse\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

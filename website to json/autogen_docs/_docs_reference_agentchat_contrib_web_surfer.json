@@ -1,0 +1,38 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/web_surfer",
+    "title": "agentchat.contrib.web_surfer",
+    "sections": [
+        {
+            "title": "WebSurferAgent\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nWebSurferAgent\n(\nConversableAgent\n)"
+                    }
+                },
+                {
+                    "text": "(In preview) An agent that acts as a basic web surfer that can search the web and visit web pages."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "generate_surfer_reply\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_surfer_reply\n(\nmessages\n:\nOptional\n[\nList\n[\nDict\n[\nstr\n,\nstr\n]\n]\n]\n=\nNone\n,\nsender\n:\nOptional\n[\nAgent\n]\n=\nNone\n,\nconfig\n:\nOptional\n[\nOpenAIWrapper\n]\n=\nNone\n)\n-\n>\nTuple\n[\nbool\n,\nOptional\n[\nUnion\n[\nstr\n,\nDict\n[\nstr\n,\nstr\n]\n]\n]\n]"
+                            }
+                        },
+                        {
+                            "text": "Generate a reply using autogen.oai."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

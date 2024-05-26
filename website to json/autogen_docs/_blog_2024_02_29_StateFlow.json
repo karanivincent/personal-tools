@@ -1,0 +1,75 @@
+{
+    "url": "https://microsoft.github.io/autogen/blog/2024/02/29/StateFlow",
+    "title": "StateFlow - Build State-Driven Workflows with Customized Speaker Selection in GroupChat",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "TL;DR:\nIntroduce Stateflow, a task-solving paradigm that conceptualizes complex task-solving processes backed by LLMs as state machines.\nIntroduce how to use GroupChat to realize such an idea with a customized speaker selection function."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Introduction\n​",
+            "content": [
+                {
+                    "text": "It is a notable trend to use Large Language Models (LLMs) to tackle complex tasks, e.g., tasks that require a sequence of actions and dynamic interaction with tools and external environments.\nIn this paper, we propose\nStateFlow\n, a novel LLM-based task-solving paradigm that conceptualizes complex task-solving processes as state machines.\nIn\nStateFlow\n, we distinguish between \"process grounding” (via state and state transitions) and \"sub-task solving” (through actions within a state), enhancing control and interpretability of the task-solving procedure.\nA state represents the status of a running process. The transitions between states are controlled by heuristic rules or decisions made by the LLM, allowing for a dynamic and adaptive progression.\nUpon entering a state, a series of actions is executed, involving not only calling LLMs guided by different prompts, but also the utilization of external tools as needed."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "StateFlow\n​",
+            "content": [
+                {
+                    "text": "Finite State machines (FSMs) are used as control systems to monitor practical applications, such as traffic light control.\nA defined state machine is a model of behavior that decides what to do based on current status. A state represents one situation that the FSM might be in.\nDrawing from this concept, we want to use FSMs to model the task-solving process of LLMs. When using LLMs to solve a task with multiple steps, each step of the task-solving process can be mapped to a state.\n\nLet's take an example of an SQL task (See the figure below).\nFor this task, a desired procedure is:\n\nFor each step, we create a corresponding state. Also, we define an error state to handle failures.\nIn the figure, execution outcomes are indicated by red arrows for failures and green for successes.\nTransition to different states is based on specific rules. For example, at a successful \"Submit\" command, the model transits to the\nEnd\nstate.\nWhen reaching a state, a sequence of output functions defined is executed (e.g., M_i -> E means to first call the model and then execute the SQL command)."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Experiments\n​",
+            "content": [
+                {
+                    "text": "InterCode:\nWe evaluate StateFlow on the SQL task and Bash task from the InterCode benchmark, with both GTP-3.5-Turbo and GPT-4-Turbo.\nWe record different metrics for a comprehensive comparison. The 'SR' (success rate) measures the performance,\n'Turns' represents the number of interactions with the environment, and 'Error Rate' represents the percentage of errors of the commands executed.\nWe also record the cost of the LLM usage.\n\nWe compare with the following baselines:\n(1) ReAct: a few-shot prompting method that prompts the model to generate thoughts and actions.\n(2) Plan & Solve: A two-step prompting strategy to first ask the model to propose a plan and then execute it.\n\nThe results of the Bash task are presented below:\n\n\n\nALFWorld:\nWe also experiment with the ALFWorld benchmark, a synthetic text-based game implemented in the TextWorld environments.\nWe tested with GPT-3.5-Turbo and took an average of 3 attempts.\n\nWe evaluate with:\n(1) ReAct: We use the two-shot prompt from the ReAct. Note there is a specific prompt for each type of task.\n(2) ALFChat (2 agents): A two-agent system setting from AutoGen consisting of an assistant agent and an executor agent. ALFChat is based on ReAct, which modifies the ReAct prompt to follow a conversational manner.\n(3) ALFChat (3 agents): Based on the 2-agent system, it introduces a grounding agent to provide commonsense facts whenever the assistant outputs the same action three times in a row.\n\n\n\nFor both tasks,\nStateFlow\nachieves the best performance with the lowest cost. For more details, please refer to our\npaper\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Implement StateFlow With GroupChat\n​",
+            "content": [
+                {
+                    "text": "We illustrate how to build\nStateFlow\nwith GroupChat. Previous blog\nFSM Group Chat\nintroduces a new feature of GroupChat that allows us to input a transition graph to constrain agent transitions.\nIt requires us to use natural language to describe the transition conditions of the FSM in the agent's\ndescription\nparameter, and then use an LLM to take in the description and make decisions for the next agent.\nIn this blog, we take advantage of a customized speaker selection function passed to the\nspeaker_selection_method\nof the\nGroupChat\nobject.\nThis function allows us to customize the transition logic between agents and can be used together with the transition graph introduced in FSM Group Chat. The current StateFlow implementation also allows the user to override the transition graph.\nThese transitions can be based on the current speaker and static checking of the context history (for example, checking if 'Error' is in the last message).\n\nWe present an example of how to build a state-oriented workflow using GroupChat.\nWe define a custom speaker selection function to be passed into the\nspeaker_selection_method\nparameter of the GroupChat.\nHere, the task is to retrieve research papers related to a given topic and create a markdown table for these papers.\n\n\n\nWe define the following agents:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Define the agents, the code is for illustration purposes and is not executable.\ninitializer\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"Init\"\n)\ncoder\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Coder\"\n,\nsystem_message\n=\n\"\"\"You are the Coder. Write Python Code to retrieve papers from arxiv.\"\"\"\n)\nexecutor\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"Executor\"\n,\nsystem_message\n=\n\"Executor. Execute the code written by the Coder and report the result.\"\n,\n)\nscientist\n=\nautogen\n.\nAssistantAgent\n(\nname\n=\n\"Scientist\"\n,\nsystem_message\n=\n\"\"\"You are the Scientist. Please categorize papers after seeing their abstracts printed and create a markdown table with Domain, Title, Authors, Summary and Link. Return 'TERMINATE' in the end.\"\"\"\n,\n)"
+                    }
+                },
+                {
+                    "text": "In the Figure, we define a simple workflow for research with 4 states: Init, Retrieve, Reserach, and End. Within each state, we will call different agents to perform the tasks.\n\nThen we define a customized function to control the transition between states:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "def\nstate_transition\n(\nlast_speaker\n,\ngroupchat\n)\n:\nmessages\n=\ngroupchat\n.\nmessages\nif\nlast_speaker\nis\ninitializer\n:\n# init -> retrieve\nreturn\ncoder\nelif\nlast_speaker\nis\ncoder\n:\n# retrieve: action 1 -> action 2\nreturn\nexecutor\nelif\nlast_speaker\nis\nexecutor\n:\nif\nmessages\n[\n-\n1\n]\n[\n\"content\"\n]\n==\n\"exitcode: 1\"\n:\n# retrieve --(execution failed)--> retrieve\nreturn\ncoder\nelse\n:\n# retrieve --(execution success)--> research\nreturn\nscientist\nelif\nlast_speaker\n==\n\"Scientist\"\n:\n# research -> end\nreturn\nNone\ngroupchat\n=\nautogen\n.\nGroupChat\n(\nagents\n=\n[\ninitializer\n,\ncoder\n,\nexecutor\n,\nscientist\n]\n,\nmessages\n=\n[\n]\n,\nmax_round\n=\n20\n,\nspeaker_selection_method\n=\nstate_transition\n,\n)"
+                    }
+                },
+                {
+                    "text": "We recommend implementing the transition logic for each speaker in the customized function. In analogy to a state machine, a state transition function determines the next state based on the current state and input.\nInstead of returning an\nAgent\nclass representing the next speaker, we can also return a string from\n['auto', 'manual', 'random', 'round_robin']\nto select a default method to use.\nFor example, we can always default to the built-in\nauto\nmethod to employ an LLM-based group chat manager to select the next speaker.\nWhen returning\nNone\n, the group chat will terminate. Note that some of the transitions, such as \"initializer\" -> \"coder\" can be defined with the transition graph."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "For Further Reading\n​",
+            "content": [],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

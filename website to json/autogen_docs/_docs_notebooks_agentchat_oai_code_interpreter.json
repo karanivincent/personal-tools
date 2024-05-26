@@ -1,0 +1,146 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/notebooks/agentchat_oai_code_interpreter",
+    "title": "Auto Generated Agent Chat: GPTAssistant with Code Interpreter",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nThe latest released Assistants API by OpenAI allows users to build AI\nassistants within their own applications. The Assistants API currently\nsupports three types of tools: Code Interpreter, Retrieval, and Function\ncalling. In this notebook, we demonstrate how to enable\nGPTAssistantAgent\nto use code interpreter."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Requirements\n​",
+            "content": [
+                {
+                    "text": "AutoGen requires\nPython>=3.8\n. To run this notebook example, please\ninstall:\n\nInstall\npyautogen\n:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "pip install pyautogen"
+                    }
+                },
+                {
+                    "text": "For more information, please refer to the\ninstallation guide\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Set your API Endpoint\n​",
+            "content": [
+                {
+                    "text": "The\nconfig_list_from_json\nfunction loads a list of configurations from an environment variable or\na json file."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nio\nfrom\nIPython\n.\ndisplay\nimport\ndisplay\nfrom\nPIL\nimport\nImage\nimport\nautogen\nfrom\nautogen\n.\nagentchat\nimport\nAssistantAgent\n,\nUserProxyAgent\nfrom\nautogen\n.\nagentchat\n.\ncontrib\n.\ngpt_assistant_agent\nimport\nGPTAssistantAgent\nconfig_list\n=\nautogen\n.\nconfig_list_from_json\n(\n\"OAI_CONFIG_LIST\"\n,\nfile_location\n=\n\".\"\n,\nfilter_dict\n=\n{\n\"model\"\n:\n[\n\"gpt-3.5-turbo\"\n,\n\"gpt-35-turbo\"\n,\n\"gpt-4\"\n,\n\"gpt4\"\n,\n\"gpt-4-32k\"\n,\n\"gpt-4-turbo\"\n]\n,\n}\n,\n)"
+                    }
+                },
+                {
+                    "text": "Learn more about configuring LLMs for agents\nhere\n."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Perform Tasks Using Code Interpreter\n​",
+            "content": [
+                {
+                    "text": "We demonstrate task solving using\nGPTAssistantAgent\nwith code\ninterpreter. Pass\ncode_interpreter\nin\ntools\nparameter to enable\nGPTAssistantAgent\nwith code interpreter. It will write code and\nautomatically execute it in a sandbox. The agent will receive the\nresults from the sandbox environment and act accordingly."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Example 1: Math Problem Solving\n​",
+                    "content": [
+                        {
+                            "text": "In this example, we demonstrate how to use code interpreter to solve\nmath problems."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "# Initiate an agent equipped with code interpreter\ngpt_assistant\n=\nGPTAssistantAgent\n(\nname\n=\n\"Coder Assistant\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n}\n,\nassistant_config\n=\n{\n\"tools\"\n:\n[\n{\n\"type\"\n:\n\"code_interpreter\"\n}\n]\n,\n}\n,\ninstructions\n=\n\"You are an expert at solving math questions. Write code and run it to solve math problems. Reply TERMINATE when the task is solved and there is no problem.\"\n,\n)\nuser_proxy\n=\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\nis_termination_msg\n=\nlambda\nmsg\n:\n\"TERMINATE\"\nin\nmsg\n[\n\"content\"\n]\n,\ncode_execution_config\n=\n{\n\"work_dir\"\n:\n\"coding\"\n,\n\"use_docker\"\n:\nFalse\n,\n# Please set use_docker=True if docker is available to run the generated code. Using docker is safer than running the generated code directly.\n}\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\n)\n# When all is set, initiate the chat.\nuser_proxy\n.\ninitiate_chat\n(\ngpt_assistant\n,\nmessage\n=\n\"If $725x + 727y = 1500$ and $729x+ 731y = 1508$, what is the value of $x - y$ ?\"\n)\ngpt_assistant\n.\ndelete_assistant\n(\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "OpenAI client config of GPTAssistantAgent(Coder Assistant) - model: gpt-4-turbo\nMatching assistant found, using the first matching assistant: {'id': 'asst_xBMxObFj0TzDex04NAKbBCmP', 'created_at': 1710321320, 'description': None, 'file_ids': [], 'instructions': 'You are an expert at solving math questions. Write code and run it to solve math problems. Reply\nTERMINATE\nwhen the task is solved and there is no problem.', 'metadata': {}, 'model': 'gpt-4-turbo', 'name': 'Coder Assistant', 'object': 'assistant', 'tools': [ToolCodeInterpreter(type='code_interpreter')]}\nPermanently deleting assistant..."
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "user_proxy (to Coder Assistant):\nIf $725x + 727y = 1500$ and $729x+ 731y = 1508$, what is the value of $x - y$ ?\n--------------------------------------------------------------------------------\nCoder\nAssistant\n(\nto\nuser_proxy\n)\n:\nThe value of \\( x - y \\) is \\(-48\\).\n--------------------------------------------------------------------------------\nuser_proxy (to Coder Assistant):\n--------------------------------------------------------------------------------\nCoder\nAssistant\n(\nto\nuser_proxy\n)\n:\nIt seems you have no further inquiries. If you have more questions in the future, feel free to ask. Goodbye!\nTERMINATE\n--------------------------------------------------------------------------------"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Example 2: Plotting with Code Interpreter\n​",
+                    "content": [
+                        {
+                            "text": "Code Interpreter can outputs files, such as generating image diagrams.\nIn this example, we demonstrate how to draw figures and download it."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "gpt_assistant\n=\nGPTAssistantAgent\n(\nname\n=\n\"Coder Assistant\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n}\n,\nassistant_config\n=\n{\n\"tools\"\n:\n[\n{\n\"type\"\n:\n\"code_interpreter\"\n}\n]\n,\n}\n,\ninstructions\n=\n\"You are an expert at writing python code to solve problems. Reply TERMINATE when the task is solved and there is no problem.\"\n,\n)\nuser_proxy\n.\ninitiate_chat\n(\ngpt_assistant\n,\nmessage\n=\n\"Draw a line chart to show the population trend in US. Show how you solved it with code.\"\n,\nis_termination_msg\n=\nlambda\nmsg\n:\n\"TERMINATE\"\nin\nmsg\n[\n\"content\"\n]\n,\nhuman_input_mode\n=\n\"NEVER\"\n,\nclear_history\n=\nTrue\n,\nmax_consecutive_auto_reply\n=\n1\n,\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "OpenAI client config of GPTAssistantAgent(Coder Assistant) - model: gpt-4-turbo\nNo matching assistant found, creating a new assistant"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "user_proxy (to Coder Assistant):\nDraw a line chart to show the population trend in US. Show how you solved it with code.\n--------------------------------------------------------------------------------\nCoder\nAssistant\n(\nto\nuser_proxy\n)\n:\nTo draw a line chart showing the population trend in the US, we first need to obtain the data that contains the population figures over a range of years. As I don't have access to the internet in this environment, I cannot download the data directly. However, if you can provide the data, I can proceed to create a line chart for you.\nFor the purpose of this demonstration, let's assume we have some hypothetical US population data for a few years. I'll generate some sample data and create a line chart using the `matplotlib` library in Python.\nHere's how we can do it:\nReceived file id=assistant-tvLtfOn6uAJ9kxmnxgK2OXID\nHere is a line chart that illustrates the hypothetical US population trend from 2010 to 2020. The data used here is for demonstration purposes only. If you have actual population data, you can provide it, and I will update the chart accordingly.\nTERMINATE\n--------------------------------------------------------------------------------"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "ChatResult(chat_id=None, chat_history=[{'content': 'Draw a line chart to show the population trend in US. Show how you solved it with code.', 'role': 'assistant'}, {'content': \"To draw a line chart showing the population trend in the US, we first need to obtain the data that contains the population figures over a range of years. As I don't have access to the internet in this environment, I cannot download the data directly. However, if you can provide the data, I can proceed to create a line chart for you.\\n\\nFor the purpose of this demonstration, let's assume we have some hypothetical US population data for a few years. I'll generate some sample data and create a line chart using the `matplotlib` library in Python.\\n\\nHere's how we can do it:\\n\\n\\nReceived file id=assistant-tvLtfOn6uAJ9kxmnxgK2OXID\\n\\nHere is a line chart that illustrates the hypothetical US population trend from 2010 to 2020. The data used here is for demonstration purposes only. If you have actual population data, you can provide it, and I will update the chart accordingly.\\n\\nTERMINATE\\n\", 'role': 'user'}], summary=\"To draw a line chart showing the population trend in the US, we first need to obtain the data that contains the population figures over a range of years. As I don't have access to the internet in this environment, I cannot download the data directly. However, if you can provide the data, I can proceed to create a line chart for you.\\n\\nFor the purpose of this demonstration, let's assume we have some hypothetical US population data for a few years. I'll generate some sample data and create a line chart using the `matplotlib` library in Python.\\n\\nHere's how we can do it:\\n\\n\\nReceived file id=assistant-tvLtfOn6uAJ9kxmnxgK2OXID\\n\\nHere is a line chart that illustrates the hypothetical US population trend from 2010 to 2020. The data used here is for demonstration purposes only. If you have actual population data, you can provide it, and I will update the chart accordingly.\\n\\n\\n\", cost=({'total_cost': 0}, {'total_cost': 0}), human_input=[])"
+                            }
+                        },
+                        {
+                            "text": "Now we have the file id. We can download and display it."
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "api_response\n=\ngpt_assistant\n.\nopenai_client\n.\nfiles\n.\nwith_raw_response\n.\nretrieve_content\n(\n\"assistant-tvLtfOn6uAJ9kxmnxgK2OXID\"\n)\nif\napi_response\n.\nstatus_code\n==\n200\n:\ncontent\n=\napi_response\n.\ncontent\nimage_data_bytes\n=\nio\n.\nBytesIO\n(\ncontent\n)\nimage\n=\nImage\n.\nopen\n(\nimage_data_bytes\n)\ndisplay\n(\nimage\n)"
+                            }
+                        },
+                        {
+                            "text": ""
+                        },
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "gpt_assistant\n.\ndelete_assistant\n(\n)"
+                            }
+                        },
+                        {
+                            "code": {
+                                "language": "text",
+                                "script": "Permanently deleting assistant..."
+                            }
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

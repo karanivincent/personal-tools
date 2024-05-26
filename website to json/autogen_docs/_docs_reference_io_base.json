@@ -1,0 +1,107 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/io/base",
+    "title": "io.base",
+    "sections": [
+        {
+            "title": "OutputStream\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "@runtime_checkable\nclass\nOutputStream\n(\nProtocol\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "InputStream\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "@runtime_checkable\nclass\nInputStream\n(\nProtocol\n)"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "IOStream\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "@runtime_checkable\nclass\nIOStream\n(\nInputStream\n,\nOutputStream\n,\nProtocol\n)"
+                    }
+                },
+                {
+                    "text": "A protocol for input/output streams."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "set_global_default\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\nset_global_default\n(\nstream\n:\n\"IOStream\"\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Set the default input/output stream.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_global_default\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\nget_global_default\n(\n)\n-\n>\n\"IOStream\""
+                            }
+                        },
+                        {
+                            "text": "Get the default input/output stream.\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_default\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\nget_default\n(\n)\n-\n>\n\"IOStream\""
+                            }
+                        },
+                        {
+                            "text": "Get the default input/output stream.\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "set_default\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\n@contextmanager\ndef\nset_default\n(\nstream\n:\nOptional\n[\n\"IOStream\"\n]\n)\n-\n>\nIterator\n[\nNone\n]"
+                            }
+                        },
+                        {
+                            "text": "Set the default input/output stream.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

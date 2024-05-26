@@ -1,0 +1,146 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/capabilities/transforms",
+    "title": "agentchat.contrib.capabilities.transforms",
+    "sections": [
+        {
+            "title": "MessageTransform\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nMessageTransform\n(\nProtocol\n)"
+                    }
+                },
+                {
+                    "text": "Defines a contract for message transformation.\n\nClasses implementing this protocol should provide an\napply_transform\nmethod\nthat takes a list of messages and returns the transformed list."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "apply_transform\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\napply_transform\n(\nmessages\n:\nList\n[\nDict\n]\n)\n-\n>\nList\n[\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "Applies a transformation to a list of messages.\n\nArguments\n:\n\nReturns\n:\n\nA new list of dictionaries containing the transformed messages."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "MessageHistoryLimiter\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nMessageHistoryLimiter\n(\n)"
+                    }
+                },
+                {
+                    "text": "Limits the number of messages considered by an agent for response generation.\n\nThis transform keeps only the most recent messages up to the specified maximum number of messages (max_messages).\nIt trims the conversation history by removing older messages, retaining only the most recent messages."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nmax_messages\n:\nOptional\n[\nint\n]\n=\nNone\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:\n\nmax_messages Optional[int]: Maximum number of messages to keep in the context. Must be greater than 0 if not None."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "MessageTokenLimiter\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nMessageTokenLimiter\n(\n)"
+                    }
+                },
+                {
+                    "text": "Truncates messages to meet token limits for efficient processing and response generation.\n\nThis transformation applies two levels of truncation to the conversation history:\n\nNOTE: Tokens are counted using the encoder for the specified model. Different models may yield different token\ncounts for the same text.\n\nNOTE: For multimodal LLMs, the token count may be inaccurate as it does not account for the non-text input\n(e.g images).\n\nThe truncation process follows these steps in order:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nmax_tokens_per_message\n:\nOptional\n[\nint\n]\n=\nNone\n,\nmax_tokens\n:\nOptional\n[\nint\n]\n=\nNone\n,\nmin_tokens\n:\nOptional\n[\nint\n]\n=\nNone\n,\nmodel\n:\nstr\n=\n\"gpt-3.5-turbo-0613\"\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "TextMessageCompressor\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nTextMessageCompressor\n(\n)"
+                    }
+                },
+                {
+                    "text": "A transform for compressing text messages in a conversation history.\n\nIt uses a specified text compression method to reduce the token count of messages, which can lead to more efficient\nprocessing and response generation by downstream models."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\ntext_compressor\n:\nOptional\n[\nTextCompressor\n]\n=\nNone\n,\nmin_tokens\n:\nOptional\n[\nint\n]\n=\nNone\n,\ncompression_params\n:\nDict\n=\ndict\n(\n)\n,\ncache\n:\nOptional\n[\nAbstractCache\n]\n=\nCache\n.\ndisk\n(\n)\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "apply_transform\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\napply_transform\n(\nmessages\n:\nList\n[\nDict\n]\n)\n-\n>\nList\n[\nDict\n]"
+                            }
+                        },
+                        {
+                            "text": "Applies compression to messages in a conversation history based on the specified configuration.\n\nThe function processes each message according to the\ncompression_args\nand\nmin_tokens\nsettings, applying\nthe specified compression configuration and returning a new list of messages with reduced token counts\nwhere possible.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

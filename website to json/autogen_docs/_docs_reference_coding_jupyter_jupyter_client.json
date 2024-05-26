@@ -1,0 +1,50 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/coding/jupyter/jupyter_client",
+    "title": "coding.jupyter.jupyter_client",
+    "sections": [
+        {
+            "title": "JupyterClient\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nJupyterClient\n(\n)"
+                    }
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nconnection_info\n:\nJupyterConnectionInfo\n)"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) A client for communicating with a Jupyter gateway server.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "JupyterKernelClient\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nJupyterKernelClient\n(\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) A client for communicating with a Jupyter kernel."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

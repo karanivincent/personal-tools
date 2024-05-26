@@ -1,0 +1,113 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/cache/redis_cache",
+    "title": "cache.redis_cache",
+    "sections": [
+        {
+            "title": "RedisCache\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nRedisCache\n(\nAbstractCache\n)"
+                    }
+                },
+                {
+                    "text": "Implementation of AbstractCache using the Redis database.\n\nThis class provides a concrete implementation of the AbstractCache\ninterface using the Redis database for caching data.\n\nAttributes\n:\n\nMethods\n:\n\ninit\n(self, seed, redis_url): Initializes the RedisCache with the given seed and Redis URL.\n_prefixed_key(self, key): Internal method to get a namespaced cache key.\nget(self, key, default=None): Retrieves an item from the cache.\nset(self, key, value): Sets an item in the cache."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nseed\n:\nUnion\n[\nstr\n,\nint\n]\n,\nredis_url\n:\nstr\n)"
+                            }
+                        },
+                        {
+                            "text": "Initialize the RedisCache instance.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget\n(\nkey\n:\nstr\n,\ndefault\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nOptional\n[\nAny\n]"
+                            }
+                        },
+                        {
+                            "text": "Retrieve an item from the Redis cache.\n\nArguments\n:\n\nReturns\n:\n\nThe deserialized value associated with the key if found, else the default value."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "set\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nset\n(\nkey\n:\nstr\n,\nvalue\n:\nAny\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Set an item in the Redis cache.\n\nArguments\n:\n\nNotes\n:\n\nThe value is serialized using pickle before being stored in Redis."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "close\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nclose\n(\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Close the Redis client.\n\nPerform any necessary cleanup, such as closing network connections."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "__enter__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__enter__\n(\n)\n-\n>\nSelf"
+                            }
+                        },
+                        {
+                            "text": "Enter the runtime context related to the object.\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "__exit__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__exit__\n(\nexc_type\n:\nOptional\n[\nType\n[\nBaseException\n]\n]\n,\nexc_val\n:\nOptional\n[\nBaseException\n]\n,\nexc_tb\n:\nOptional\n[\nTracebackType\n]\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Exit the runtime context related to the object.\n\nPerform cleanup actions such as closing the Redis client.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

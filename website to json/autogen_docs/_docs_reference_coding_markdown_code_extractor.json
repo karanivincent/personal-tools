@@ -1,0 +1,38 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/coding/markdown_code_extractor",
+    "title": "coding.markdown_code_extractor",
+    "sections": [
+        {
+            "title": "MarkdownCodeExtractor\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nMarkdownCodeExtractor\n(\nCodeExtractor\n)"
+                    }
+                },
+                {
+                    "text": "(Experimental) A class that extracts code blocks from a message using Markdown syntax."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "extract_code_blocks\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nextract_code_blocks\n(\nmessage\n:\nUnion\n[\nstr\n,\nList\n[\nUnion\n[\nUserMessageTextContentPart\n,\nUserMessageImageContentPart\n]\n]\n,\nNone\n]\n)\n-\n>\nList\n[\nCodeBlock\n]"
+                            }
+                        },
+                        {
+                            "text": "(Experimental) Extract code blocks from a message. If no code blocks are found,\nreturn an empty list.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,53 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/io/console",
+    "title": "io.console",
+    "sections": [
+        {
+            "title": "IOConsole\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nIOConsole\n(\nIOStream\n)"
+                    }
+                },
+                {
+                    "text": "A console input/output stream."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "print\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nprint\n(\n*\nobjects\n:\nAny\n,\nsep\n:\nstr\n=\n\" \"\n,\nend\n:\nstr\n=\n\"\\n\"\n,\nflush\n:\nbool\n=\nFalse\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Print data to the output stream.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "input\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ninput\n(\nprompt\n:\nstr\n=\n\"\"\n,\n*\n,\npassword\n:\nbool\n=\nFalse\n)\n-\n>\nstr"
+                            }
+                        },
+                        {
+                            "text": "Read a line from the input stream.\n\nArguments\n:\n\nReturns\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

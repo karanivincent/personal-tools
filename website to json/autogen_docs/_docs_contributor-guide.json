@@ -1,0 +1,79 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/contributor-guide",
+    "title": "Contributor Guide",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "Learn how to contribute to AutoGen"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nContributing to AutoGen",
+            "content": [
+                {
+                    "text": "This project welcomes and encourages all forms of contributions, including but not limited to:"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nDocker for Development",
+            "content": [
+                {
+                    "text": "For developers contributing to the AutoGen project, we offer a specialized Docker environment. This setup is designed to streamline the development process, ensuring that all contributors work within a consistent and well-equipped environment."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nDocumentation",
+            "content": [
+                {
+                    "text": "How to get a notebook rendered on the website"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nFile A Bug Report",
+            "content": [
+                {
+                    "text": "When you submit an issue to GitHub, please do your best to"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nGuidance for Maintainers",
+            "content": [
+                {
+                    "text": "General"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nPre-commit",
+            "content": [
+                {
+                    "text": "Run pre-commit install to install pre-commit into your git hooks. Before you commit, run"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nTests",
+            "content": [
+                {
+                    "text": "Tests are automatically run via GitHub actions. There are two workflows:"
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

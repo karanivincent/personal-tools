@@ -1,0 +1,286 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/FAQ",
+    "title": "Frequently Asked Questions",
+    "sections": [
+        {
+            "title": "Install the correct package -\npyautogen\n​",
+            "content": [
+                {
+                    "text": "The name of Autogen package at PyPI is\npyautogen\n:"
+                },
+                {
+                    "text": "Typical errors that you might face when using the wrong package are\nAttributeError: module 'autogen' has no attribute 'Agent'\n,\nAttributeError: module 'autogen' has no attribute 'config_list_from_json'\netc."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Set your API endpoints\n​",
+            "content": [
+                {
+                    "text": "This documentation has been moved\nhere\n."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Use the constructed configuration list in agents\n​",
+                    "content": [
+                        {
+                            "text": "This documentation has been moved\nhere\n."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "How does an agent decide which model to pick out of the list?\n​",
+                    "content": [
+                        {
+                            "text": "This documentation has been moved\nhere\n."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "Unexpected keyword argument 'base_url'\n​",
+                    "content": [
+                        {
+                            "text": "In version >=1, OpenAI renamed their\napi_base\nparameter to\nbase_url\n. So for older versions, use\napi_base\nbut for newer versions use\nbase_url\n."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Handle Rate Limit Error and Timeout Error\n​",
+            "content": [
+                {
+                    "text": "You can set\nmax_retries\nto handle rate limit error. And you can set\ntimeout\nto handle timeout error. They can all be specified in\nllm_config\nfor an agent, which will be used in the OpenAI client for LLM inference. They can be set differently for different clients if they are set in the\nconfig_list\n.\n\nPlease refer to the\ndocumentation\nfor more info."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "How to continue a finished conversation\n​",
+            "content": [
+                {
+                    "text": "When you call\ninitiate_chat\nthe conversation restarts by default. You can use\nsend\nor\ninitiate_chat(clear_history=False)\nto continue the conversation."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "max_consecutive_auto_reply\nvs\nmax_turn\nvs\nmax_round\n​",
+            "content": [],
+            "subsections": []
+        },
+        {
+            "title": "How do we decide what LLM is used for each agent? How many agents can be used? How do we decide how many agents in the group?\n​",
+            "content": [
+                {
+                    "text": "Each agent can be customized. You can use LLMs, tools, or humans behind each agent. If you use an LLM for an agent, use the one best suited for its role. There is no limit of the number of agents, but start from a small number like 2, 3. The more capable is the LLM and the fewer roles you need, the fewer agents you need.\n\nThe default user proxy agent doesn't use LLM. If you'd like to use an LLM in UserProxyAgent, the use case could be to simulate user's behavior.\n\nThe default assistant agent is instructed to use both coding and language skills. It doesn't have to do coding, depending on the tasks. And you can customize the system message. So if you want to use it for coding, use a model that's good at coding."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Why is code not saved as file?\n​",
+            "content": [
+                {
+                    "text": "If you are using a custom system message for the coding agent, please include something like:\nIf you want the user to save the code in a file before executing it, put # filename: <filename> inside the code block as the first line.\nin the system message. This line is in the default system message of the\nAssistantAgent\n.\n\nIf the\n# filename\ndoesn't appear in the suggested code still, consider adding explicit instructions such as \"save the code to disk\" in the initial user message in\ninitiate_chat\n.\nThe\nAssistantAgent\ndoesn't save all the code by default, because there are cases in which one would just like to finish a task without saving the code."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Legacy code executor\n​",
+            "content": [
+                {
+                    "text": "The new code executors offers more choices of execution backend.\nRead more about\ncode executors\n.\n\nThe legacy code executor is used by specifying the\ncode_execution_config\nin the agent's constructor."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nUserProxyAgent\nuser_proxy\n=\nUserProxyAgent\n(\nname\n=\n\"user_proxy\"\n,\ncode_execution_config\n=\n{\n\"work_dir\"\n:\n\"_output\"\n,\n\"use_docker\"\n:\n\"python:3\"\n}\n,\n)"
+                    }
+                },
+                {
+                    "text": "In this example, the\ncode_execution_config\nspecifies that the code will be\nexecuted in a docker container with the image\npython:3\n.\nBy default, the image name is\npython:3-slim\nif not specified.\nThe\nwork_dir\nspecifies the directory where the code will be executed.\nIf you have problems with agents running\npip install\nor get errors similar to\nError while fetching server API version: ('Connection aborted.', FileNotFoundError(2, 'No such file or directory')\n,\nyou can choose\n'python:3'\nas image as shown in the code example above and\nthat should solve the problem.\n\nBy default it runs code in a docker container. If you want to run code locally\n(not recommended) then\nuse_docker\ncan be set to\nFalse\nin\ncode_execution_config\nfor each code-execution agent, or set\nAUTOGEN_USE_DOCKER\nto\nFalse\nas an\nenvironment variable.\n\nYou can also develop your AutoGen application in a docker container.\nFor example, when developing in\nGitHub codespace\n,\nAutoGen runs in a docker container.\nIf you are not developing in GitHub Codespaces,\nfollow instructions\nhere\nto install and run AutoGen in docker."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Agents keep thanking each other when using\ngpt-3.5-turbo\n​",
+            "content": [
+                {
+                    "text": "When using\ngpt-3.5-turbo\nyou may often encounter agents going into a \"gratitude loop\", meaning when they complete a task they will begin congratulating and thanking each other in a continuous loop. This is a limitation in the performance of\ngpt-3.5-turbo\n, in contrast to\ngpt-4\nwhich has no problem remembering instructions. This can hinder the experimentation experience when trying to test out your own use case with cheaper models.\n\nA workaround is to add an additional termination notice to the prompt. This acts a \"little nudge\" for the LLM to remember that they need to terminate the conversation when their task is complete. You can do this by appending a string such as the following to your user input string:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "prompt\n=\n\"Some user query\"\ntermination_notice\n=\n(\n'\\n\\nDo not show appreciation in your responses, say only what is necessary. '\n'if \"Thank you\" or \"You\\'re welcome\" are said in the conversation, then say TERMINATE '\n'to indicate the conversation is finished and this is your last message.'\n)\nprompt\n+=\ntermination_notice"
+                    }
+                },
+                {
+                    "text": "Note\n: This workaround gets the job done around 90% of the time, but there are occurrences where the LLM still forgets to terminate the conversation."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "ChromaDB fails in codespaces because of old version of sqlite3\n​",
+            "content": [
+                {
+                    "text": "(from\nissue #251\n)\n\nCode examples that use chromadb (like retrieval) fail in codespaces due to a sqlite3 requirement."
+                },
+                {
+                    "text": "Workaround:\n\nExplanation: Per\nthis gist\n, linked from the official\nchromadb docs\n, adding this folder triggers chromadb to use pysqlite3 instead of the default."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "How to register a reply function\n​",
+            "content": [
+                {
+                    "text": "(from\nissue #478\n)\n\nSee here\nhttps://microsoft.github.io/autogen/docs/reference/agentchat/conversable_agent/#register_reply\n\nFor example, you can register a reply function that gets called when\ngenerate_reply\nis called for an agent."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "def\nprint_messages\n(\nrecipient\n,\nmessages\n,\nsender\n,\nconfig\n)\n:\nif\n\"callback\"\nin\nconfig\nand\nconfig\n[\n\"callback\"\n]\nis\nnot\nNone\n:\ncallback\n=\nconfig\n[\n\"callback\"\n]\ncallback\n(\nsender\n,\nrecipient\n,\nmessages\n[\n-\n1\n]\n)\nprint\n(\nf\"Messages sent to:\n{\nrecipient\n.\nname\n}\n| num messages:\n{\nlen\n(\nmessages\n)\n}\n\"\n)\nreturn\nFalse\n,\nNone\n# required to ensure the agent communication flow continues\nuser_proxy\n.\nregister_reply\n(\n[\nautogen\n.\nAgent\n,\nNone\n]\n,\nreply_func\n=\nprint_messages\n,\nconfig\n=\n{\n\"callback\"\n:\nNone\n}\n,\n)\nassistant\n.\nregister_reply\n(\n[\nautogen\n.\nAgent\n,\nNone\n]\n,\nreply_func\n=\nprint_messages\n,\nconfig\n=\n{\n\"callback\"\n:\nNone\n}\n,\n)"
+                    }
+                },
+                {
+                    "text": "In the above, we register a\nprint_messages\nfunction that is called each time the agent's\ngenerate_reply\nis triggered after receiving a message."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "How to get last message ?\n​",
+            "content": [
+                {
+                    "text": "Refer to\nhttps://microsoft.github.io/autogen/docs/reference/agentchat/conversable_agent/#last_message"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "How to get each agent message ?\n​",
+            "content": [
+                {
+                    "text": "Please refer to\nhttps://microsoft.github.io/autogen/docs/reference/agentchat/conversable_agent#chat_messages"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "When using autogen docker, is it always necessary to reinstall modules?\n​",
+            "content": [
+                {
+                    "text": "The \"use_docker\" arg in an agent's code_execution_config will be set to the name of the image containing the change after execution, when the conversation finishes.\nYou can save that image name. For a new conversation, you can set \"use_docker\" to the saved name of the image to start execution there."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Database locked error\n​",
+            "content": [
+                {
+                    "text": "When using VMs such as Azure Machine Learning compute instances,\nyou may encounter a \"database locked error\". This is because the\nLLM cache\nis trying to write to a location that the application does not have access to.\n\nYou can set the\ncache_path_root\nto a location where the application has access.\nFor example,"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nCache\nwith\nCache\n.\ndisk\n(\ncache_path_root\n=\n\"/tmp/.cache\"\n)\nas\ncache\n:\nagent_a\n.\ninitate_chat\n(\nagent_b\n,\n.\n.\n.\n,\ncache\n=\ncache\n)"
+                    }
+                },
+                {
+                    "text": "You can also use Redis cache instead of disk cache. For example,"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nCache\nwith\nCache\n.\nredis\n(\nredis_url\n=\n.\n.\n.\n)\nas\ncache\n:\nagent_a\n.\ninitate_chat\n(\nagent_b\n,\n.\n.\n.\n,\ncache\n=\ncache\n)"
+                    }
+                },
+                {
+                    "text": "You can also disable the cache. See\nhere\nfor details."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Agents are throwing due to docker not running, how can I resolve this?\n​",
+            "content": [
+                {
+                    "text": "If running AutoGen locally the default for agents who execute code is for them to try and perform code execution within a docker container. If docker is not running, this will cause the agent to throw an error. To resolve this you have some options."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "If you want to disable code execution entirely\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "user_proxy\n=\nautogen\n.\nUserProxyAgent\n(\nname\n=\n\"agent\"\n,\nllm_config\n=\nllm_config\n,\ncode_execution_config\n=\nFalse\n)"
+                            }
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "If you want to run code execution in docker\n​",
+                    "content": [],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Migrating from\nCompressibleAgent\nand\nTransformChatHistory\nto\nTransformMessages\n​",
+            "content": [],
+            "subsections": [
+                {
+                    "title": "Why migrate to\nTransformMessages\n?\n​",
+                    "content": [
+                        {
+                            "text": "Migrating enhances flexibility, modularity, and customization in handling chat message transformations.\nTransformMessages\nintroduces an improved, extensible approach for pre-processing messages for conversational agents."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "How to migrate?\n​",
+                    "content": [
+                        {
+                            "text": "To ensure a smooth migration process, simply follow the detailed guide provided in\nIntroduction to TransformMessages\n."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "None of the devcontainers are building due to \"Hash sum mismatch\", what should I do?\n​",
+            "content": [
+                {
+                    "text": "This is an intermittent issue that appears to be caused by some combination of mirror and proxy issues.\nIf it arises, try to replace the\napt-get update\nstep with the following:"
+                },
+                {
+                    "code": {
+                        "language": "bash",
+                        "script": "RUN echo \"Acquire::http::Pipeline-Depth 0;\" > /etc/apt/apt.conf.d/99custom && \\\necho \"Acquire::http::No-Cache true;\" >> /etc/apt/apt.conf.d/99custom && \\\necho \"Acquire::BrokenProxy    true;\" >> /etc/apt/apt.conf.d/99custom\nRUN apt-get clean && \\\nrm -r /var/lib/apt/lists/* && \\\napt-get update -o Acquire::CompressionTypes::Order::=gz && \\\napt-get -y update && \\\napt-get install sudo git npm # and whatever packages need to be installed in this specific version of the devcontainer"
+                    }
+                },
+                {
+                    "text": "This is a combination of StackOverflow suggestions\nhere\nand\nhere\n."
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

@@ -1,0 +1,97 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/Examples",
+    "title": "Examples",
+    "sections": [
+        {
+            "title": "Automated Multi Agent Chat\n​",
+            "content": [
+                {
+                    "text": "AutoGen offers conversable agents powered by LLM, tool or human, which can be used to perform tasks collectively via automated chat. This framework allows tool use and human participation via multi-agent conversation.\nPlease find documentation about this feature\nhere\n.\n\nLinks to notebook examples:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "Code Generation, Execution, and Debugging\n​",
+                    "content": [],
+                    "subsections": []
+                },
+                {
+                    "title": "Multi-Agent Collaboration (>3 Agents)\n​",
+                    "content": [],
+                    "subsections": []
+                },
+                {
+                    "title": "Sequential Multi-Agent Chats\n​",
+                    "content": [],
+                    "subsections": []
+                },
+                {
+                    "title": "Nested Chats\n​",
+                    "content": [],
+                    "subsections": []
+                },
+                {
+                    "title": "Applications\n​",
+                    "content": [],
+                    "subsections": []
+                },
+                {
+                    "title": "Tool Use\n​",
+                    "content": [],
+                    "subsections": []
+                },
+                {
+                    "title": "Human Involvement\n​",
+                    "content": [],
+                    "subsections": []
+                },
+                {
+                    "title": "Agent Teaching and Learning\n​",
+                    "content": [],
+                    "subsections": []
+                },
+                {
+                    "title": "Multi-Agent Chat with OpenAI Assistants in the loop\n​",
+                    "content": [],
+                    "subsections": []
+                },
+                {
+                    "title": "Multimodal Agent\n​",
+                    "content": [],
+                    "subsections": []
+                },
+                {
+                    "title": "Long Context Handling\n​",
+                    "content": [],
+                    "subsections": []
+                },
+                {
+                    "title": "Evaluation and Assessment\n​",
+                    "content": [],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "Enhanced Inferences\n​",
+            "content": [],
+            "subsections": [
+                {
+                    "title": "Utilities\n​",
+                    "content": [],
+                    "subsections": []
+                },
+                {
+                    "title": "Inference Hyperparameters Tuning\n​",
+                    "content": [
+                        {
+                            "text": "AutoGen offers a cost-effective hyperparameter optimization technique\nEcoOptiGen\nfor tuning Large Language Models. The research study finds that tuning hyperparameters can significantly improve the utility of them.\nPlease find documentation about this feature\nhere\n.\n\nLinks to notebook examples:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

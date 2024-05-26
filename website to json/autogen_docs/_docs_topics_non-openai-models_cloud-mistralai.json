@@ -1,0 +1,127 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics/non-openai-models/cloud-mistralai",
+    "title": "Mistral AI",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "\n\nMistral AI\nis a cloud based platform serving\nMistral’s own LLMs. You can use AutoGen with Mistral AI’s API directly.\n\nFirst you need to install the\npyautogen\npackage to use AutoGen."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "! pip install pyautogen"
+                    }
+                },
+                {
+                    "text": "Now you can set up the Mistral model you want to use. See the list of\nmodels here\n."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nos\nconfig_list\n=\n[\n{\n# Choose your model name.\n\"model\"\n:\n\"mistral-large-latest\"\n,\n\"base_url\"\n:\n\"https://api.mistral.ai/v1\"\n,\n# You need to provide your API key here.\n\"api_key\"\n:\nos\n.\nenviron\n.\nget\n(\n\"MISTRAL_API_KEY\"\n)\n,\n}\n]"
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Two-Agent Coding Example\n​",
+            "content": [
+                {
+                    "text": "In this example, we run a two-agent chat to count the number of prime\nnumbers between 1 and 10,000 using coding."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\npathlib\nimport\nPath\nfrom\nautogen\nimport\nAssistantAgent\n,\nUserProxyAgent\nfrom\nautogen\n.\ncoding\nimport\nLocalCommandLineCodeExecutor\n# Setting up the code executor.\nworkdir\n=\nPath\n(\n\"coding\"\n)\nworkdir\n.\nmkdir\n(\nexist_ok\n=\nTrue\n)\ncode_executor\n=\nLocalCommandLineCodeExecutor\n(\nwork_dir\n=\nworkdir\n)\n# Setting up the agents.\nuser_proxy_agent\n=\nUserProxyAgent\n(\nname\n=\n\"User\"\n,\ncode_execution_config\n=\n{\n\"executor\"\n:\ncode_executor\n}\n,\nis_termination_msg\n=\nlambda\nmsg\n:\n\"TERMINATE\"\nin\nmsg\n.\nget\n(\n\"content\"\n)\n,\n)\nassistant_agent\n=\nAssistantAgent\n(\nname\n=\n\"Mistral Assistant\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n}\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "chat_result\n=\nuser_proxy_agent\n.\ninitiate_chat\n(\nassistant_agent\n,\nmessage\n=\n\"Count how many prime numbers from 1 to 10000.\"\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "User (to Mistral Assistant):\nCount how many prime numbers from 1 to 10000.\n--------------------------------------------------------------------------------\nMistral\nAssistant\n(\nto\nUser\n)\n:\nSure, I can help with that. Here's a Python code snippet that counts the number of prime numbers from 1 to 10000.\n```python\n# filename: prime_counter.py\ndef is_prime(n):\nif n <= 1:\nreturn False\nif n <= 3:\nreturn True\nif n % 2 == 0 or n % 3 == 0:\nreturn False\ni = 5\nwhile i * i <= n:\nif n % i == 0 or n % (i + 2) == 0:\nreturn False\ni += 6\nreturn True\ncount = 0\nfor num in range(1, 10001):\nif is_prime(num):\ncount += 1\nprint(count)\n```\nPlease save this code in a file named `prime_counter.py` and run it. The output will be the count of prime numbers from 1 to 10000.\n--------------------------------------------------------------------------------\n>>>>>>>> NO HUMAN INPUT RECEIVED.\n>>>>>>>> USING AUTO REPLY...\n>>>>>>>> EXECUTING CODE BLOCK (inferred language is python)...\nUser (to Mistral Assistant):\nexitcode: 0 (execution succeeded)\nCode output: 1229\n--------------------------------------------------------------------------------\nMistral\nAssistant\n(\nto\nUser\n)\n:\nBased on the output, the code I provided earlier has successfully executed and found that there are 1229 prime numbers between 1 and 10000. Here's how I approached this task step by step:\n1. I wrote a Python function `is_prime(n)` to check if a given number `n` is prime. This function returns `True` if `n` is prime and `False` otherwise.\n2. I used a for loop to iterate through numbers from 1 to 10000, then called the `is_prime` function to determine if the current number is prime. If it is, I incremented a counter variable `count` by 1.\n3. I printed the value of `count` after the loop to display the total number of prime numbers in the given range.\nThe output `1229` confirms that there are indeed 1229 prime numbers between 1 and 10000.\nTERMINATE\n--------------------------------------------------------------------------------\n>>>>>>>> NO HUMAN INPUT RECEIVED."
+                    }
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Tool Call Example\n​",
+            "content": [
+                {
+                    "text": "In this example, instead of writing code, we will have two agents\nplaying chess against each other using tool calling to make moves.\n\nFirst install the\nchess\npackage by running the following command:"
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "! pip install chess"
+                    }
+                },
+                {
+                    "text": "Write the function for making a move."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "import\nrandom\nimport\nchess\nimport\nchess\n.\nsvg\nfrom\nIPython\n.\ndisplay\nimport\ndisplay\nfrom\ntyping_extensions\nimport\nAnnotated\nboard\n=\nchess\n.\nBoard\n(\n)\ndef\nmake_move\n(\n)\n-\n>\nAnnotated\n[\nstr\n,\n\"A move in UCI format\"\n]\n:\nmoves\n=\nlist\n(\nboard\n.\nlegal_moves\n)\nmove\n=\nrandom\n.\nchoice\n(\nmoves\n)\nboard\n.\npush\n(\nmove\n)\n# Display the board.\ndisplay\n(\nchess\n.\nsvg\n.\nboard\n(\nboard\n,\nsize\n=\n400\n)\n)\nreturn\nstr\n(\nmove\n)"
+                    }
+                },
+                {
+                    "text": "Let’s create the agents. We have three different agents: -\nplayer_white\nis the agent that plays white. -\nplayer_black\nis the\nagent that plays black. -\nboard_proxy\nis the agent that moves the\npieces on the board."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "from\nautogen\nimport\nConversableAgent\n,\nregister_function\nplayer_white\n=\nConversableAgent\n(\nname\n=\n\"Player White\"\n,\nsystem_message\n=\n\"You are a chess player and you play as white. \"\n\"Always call make_move() to make a move\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"cache_seed\"\n:\nNone\n}\n,\n)\nplayer_black\n=\nConversableAgent\n(\nname\n=\n\"Player Black\"\n,\nsystem_message\n=\n\"You are a chess player and you play as black. \"\n\"Always call make_move() to make a move\"\n,\nllm_config\n=\n{\n\"config_list\"\n:\nconfig_list\n,\n\"cache_seed\"\n:\nNone\n}\n,\n)\nboard_proxy\n=\nConversableAgent\n(\nname\n=\n\"Board Proxy\"\n,\nllm_config\n=\nFalse\n,\n# The board proxy will only respond to the make_move function.\nis_termination_msg\n=\nlambda\nmsg\n:\n\"tool_calls\"\nnot\nin\nmsg\n,\n)"
+                    }
+                },
+                {
+                    "text": "Register tools for the agents. See the\ntutorial chapter on tool\nuse\nfor more information."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "register_function\n(\nmake_move\n,\ncaller\n=\nplayer_white\n,\nexecutor\n=\nboard_proxy\n,\nname\n=\n\"make_move\"\n,\ndescription\n=\n\"Make a move.\"\n,\n)\nregister_function\n(\nmake_move\n,\ncaller\n=\nplayer_black\n,\nexecutor\n=\nboard_proxy\n,\nname\n=\n\"make_move\"\n,\ndescription\n=\n\"Make a move.\"\n,\n)"
+                    }
+                },
+                {
+                    "text": "Register nested chats for the player agents. Nested chats allows each\nplayer agent to chat with the board proxy agent to make a move, before\ncommunicating with the other player agent. See the\nnested chats\ntutorial\nchapter\nfor\nmore information."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "player_white\n.\nregister_nested_chats\n(\ntrigger\n=\nplayer_black\n,\nchat_queue\n=\n[\n{\n\"sender\"\n:\nboard_proxy\n,\n\"recipient\"\n:\nplayer_white\n,\n}\n]\n,\n)\nplayer_black\n.\nregister_nested_chats\n(\ntrigger\n=\nplayer_white\n,\nchat_queue\n=\n[\n{\n\"sender\"\n:\nboard_proxy\n,\n\"recipient\"\n:\nplayer_black\n,\n}\n]\n,\n)"
+                    }
+                },
+                {
+                    "text": "Start the chess game."
+                },
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "# Clear the board.\nboard\n=\nchess\n.\nBoard\n(\n)\nchat_result\n=\nplayer_white\n.\ninitiate_chat\n(\nplayer_black\n,\nmessage\n=\n\"Let's play chess! Your move.\"\n,\nmax_turns\n=\n4\n,\n)"
+                    }
+                },
+                {
+                    "code": {
+                        "language": "text",
+                        "script": "Player White (to Player Black):\nLet's play chess! Your move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n********************************************************************************\nStarting a new chat....\nMessage:\nLet's play chess! Your move.\nCarryover:\n********************************************************************************\nBoard Proxy (to Player Black):\nLet's play chess! Your move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer Black (to Board Proxy):\n***** Suggested tool call (No tool call id found): make_move *****\nArguments:\n{}\n******************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n>>>>>>>> EXECUTING FUNCTION make_move...\nBoard Proxy (to Player Black):\nBoard Proxy (to Player Black):\n***** Response from calling tool (No id found) *****\na2a3\n****************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer Black (to Board Proxy):\nYou made a move: a2a3. It's my turn now.\ne2e4\nYour move.\n--------------------------------------------------------------------------------\n>>>>>>>> NO HUMAN INPUT RECEIVED.\nPlayer Black (to Player White):\nYou made a move: a2a3. It's my turn now.\ne2e4\nYour move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n********************************************************************************\nStarting a new chat....\nMessage:\nYou made a move: a2a3. It's my turn now.\ne2e4\nYour move.\nCarryover:\n********************************************************************************\nBoard Proxy (to Player White):\nYou made a move: a2a3. It's my turn now.\ne2e4\nYour move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer White (to Board Proxy):\n***** Suggested tool call (No tool call id found): make_move *****\nArguments:\n{}\n******************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n>>>>>>>> EXECUTING FUNCTION make_move...\nBoard Proxy (to Player White):\nBoard Proxy (to Player White):\n***** Response from calling tool (No id found) *****\ne7e5\n****************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer White (to Board Proxy):\nI made a move: e7e5. It's your turn now.\nYour move.\n--------------------------------------------------------------------------------\n>>>>>>>> NO HUMAN INPUT RECEIVED.\nPlayer White (to Player Black):\nI made a move: e7e5. It's your turn now.\nYour move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n********************************************************************************\nStarting a new chat....\nMessage:\nI made a move: e7e5. It's your turn now.\nYour move.\nCarryover:\n********************************************************************************\nBoard Proxy (to Player Black):\nI made a move: e7e5. It's your turn now.\nYour move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer Black (to Board Proxy):\n***** Suggested tool call (No tool call id found): make_move *****\nArguments:\n{}\n******************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n>>>>>>>> EXECUTING FUNCTION make_move...\nBoard Proxy (to Player Black):\nBoard Proxy (to Player Black):\n***** Response from calling tool (No id found) *****\nh2h4\n****************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer Black (to Board Proxy):\nI made a move: h2h4. It's your turn now.\nYour move.\n--------------------------------------------------------------------------------\n>>>>>>>> NO HUMAN INPUT RECEIVED.\nPlayer Black (to Player White):\nI made a move: h2h4. It's your turn now.\nYour move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n********************************************************************************\nStarting a new chat....\nMessage:\nI made a move: h2h4. It's your turn now.\nYour move.\nCarryover:\n********************************************************************************\nBoard Proxy (to Player White):\nI made a move: h2h4. It's your turn now.\nYour move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer White (to Board Proxy):\n***** Suggested tool call (No tool call id found): make_move *****\nArguments:\n{}\n******************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n>>>>>>>> EXECUTING FUNCTION make_move...\nBoard Proxy (to Player White):\nBoard Proxy (to Player White):\n***** Response from calling tool (No id found) *****\ng8h6\n****************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer White (to Board Proxy):\nYou moved g8h6. I made a move: g1g3. It's your turn now.\nYour move.\n--------------------------------------------------------------------------------\n>>>>>>>> NO HUMAN INPUT RECEIVED.\nPlayer White (to Player Black):\nYou moved g8h6. I made a move: g1g3. It's your turn now.\nYour move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n********************************************************************************\nStarting a new chat....\nMessage:\nYou moved g8h6. I made a move: g1g3. It's your turn now.\nYour move.\nCarryover:\n********************************************************************************\nBoard Proxy (to Player Black):\nYou moved g8h6. I made a move: g1g3. It's your turn now.\nYour move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer Black (to Board Proxy):\n***** Suggested tool call (No tool call id found): make_move *****\nArguments:\n{}\n******************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n>>>>>>>> EXECUTING FUNCTION make_move...\nBoard Proxy (to Player Black):\nBoard Proxy (to Player Black):\n***** Response from calling tool (No id found) *****\ng1h3\n****************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer Black (to Board Proxy):\nYou moved g8h6. I made a move: g1h3. You moved g1h3. It's my turn now.\nI made a move: d2d4. Your move.\n--------------------------------------------------------------------------------\n>>>>>>>> NO HUMAN INPUT RECEIVED.\nPlayer Black (to Player White):\nYou moved g8h6. I made a move: g1h3. You moved g1h3. It's my turn now.\nI made a move: d2d4. Your move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n********************************************************************************\nStarting a new chat....\nMessage:\nYou moved g8h6. I made a move: g1h3. You moved g1h3. It's my turn now.\nI made a move: d2d4. Your move.\nCarryover:\n********************************************************************************\nBoard Proxy (to Player White):\nYou moved g8h6. I made a move: g1h3. You moved g1h3. It's my turn now.\nI made a move: d2d4. Your move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer White (to Board Proxy):\n***** Suggested tool call (No tool call id found): make_move *****\nArguments:\n{}\n******************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n>>>>>>>> EXECUTING FUNCTION make_move...\nBoard Proxy (to Player White):\nBoard Proxy (to Player White):\n***** Response from calling tool (No id found) *****\nd8h4\n****************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer White (to Board Proxy):\nYou moved d8h4. I made a move: d4d5. Your move.\n--------------------------------------------------------------------------------\n>>>>>>>> NO HUMAN INPUT RECEIVED.\nPlayer White (to Player Black):\nYou moved d8h4. I made a move: d4d5. Your move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n********************************************************************************\nStarting a new chat....\nMessage:\nYou moved d8h4. I made a move: d4d5. Your move.\nCarryover:\n********************************************************************************\nBoard Proxy (to Player Black):\nYou moved d8h4. I made a move: d4d5. Your move.\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer Black (to Board Proxy):\n***** Suggested tool call (No tool call id found): make_move *****\nArguments:\n{}\n******************************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\n>>>>>>>> EXECUTING FUNCTION make_move...\nBoard Proxy (to Player Black):\nBoard Proxy (to Player Black):\n***** Response from calling tool (No id found) *****\ne2e4\n****************************************************\n--------------------------------------------------------------------------------\n>>>>>>>> USING AUTO REPLY...\nPlayer Black (to Board Proxy):\nYou made a move: e2e4. I made a move: d5e4. Your move.\n--------------------------------------------------------------------------------\n>>>>>>>> NO HUMAN INPUT RECEIVED.\nPlayer Black (to Player White):\nYou made a move: e2e4. I made a move: d5e4. Your move.\n--------------------------------------------------------------------------------"
+                    }
+                },
+                {
+                    "text": "\n\n\n\n\n\n\n\n\n\n\n\n"
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

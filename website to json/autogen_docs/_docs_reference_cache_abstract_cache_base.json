@@ -1,0 +1,98 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/cache/abstract_cache_base",
+    "title": "cache.abstract_cache_base",
+    "sections": [
+        {
+            "title": "AbstractCache\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nAbstractCache\n(\nProtocol\n)"
+                    }
+                },
+                {
+                    "text": "This protocol defines the basic interface for cache operations.\nImplementing classes should provide concrete implementations for\nthese methods to handle caching mechanisms."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "get\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget\n(\nkey\n:\nstr\n,\ndefault\n:\nOptional\n[\nAny\n]\n=\nNone\n)\n-\n>\nOptional\n[\nAny\n]"
+                            }
+                        },
+                        {
+                            "text": "Retrieve an item from the cache.\n\nArguments\n:\n\nReturns\n:\n\nThe value associated with the key if found, else the default value."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "set\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nset\n(\nkey\n:\nstr\n,\nvalue\n:\nAny\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Set an item in the cache.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "close\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nclose\n(\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Close the cache. Perform any necessary cleanup, such as closing network connections or\nreleasing resources."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "__enter__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__enter__\n(\n)\n-\n>\nSelf"
+                            }
+                        },
+                        {
+                            "text": "Enter the runtime context related to this object.\n\nThe with statement will bind this method's return value to the target(s)\nspecified in the as clause of the statement, if any."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "__exit__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__exit__\n(\nexc_type\n:\nOptional\n[\nType\n[\nBaseException\n]\n]\n,\nexc_value\n:\nOptional\n[\nBaseException\n]\n,\ntraceback\n:\nOptional\n[\nTracebackType\n]\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Exit the runtime context and close the cache.\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

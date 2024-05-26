@@ -1,0 +1,97 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/topics",
+    "title": "User Guide",
+    "sections": [
+        {
+            "title": "🗃️\nCode Execution",
+            "content": [
+                {
+                    "text": "4 items"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "🗃️\nOpenAI Assistant",
+            "content": [
+                {
+                    "text": "1 items"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "🗃️\nGroupChat",
+            "content": [
+                {
+                    "text": "2 items"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "🗃️\nUsing Non-OpenAI Models",
+            "content": [
+                {
+                    "text": "9 items"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "🗃️\nHandling Long Contexts",
+            "content": [
+                {
+                    "text": "2 items"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nLLM Caching",
+            "content": [
+                {
+                    "text": "AutoGen supports caching API requests so that they can be reused when the same request is issued. This is useful when repeating or continuing experiments for reproducibility and cost saving."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nLLM Configuration",
+            "content": [
+                {
+                    "text": "Open In Colab"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "🗃️\nPrompting and Reasoning",
+            "content": [
+                {
+                    "text": "2 items"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nRetrieval Augmentation",
+            "content": [
+                {
+                    "text": "Retrieval Augmented Generation (RAG) is a powerful technique that combines language models with external knowledge retrieval to improve the quality and relevance of generated responses."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "📄️\nTask Decomposition",
+            "content": [
+                {
+                    "text": "Open In Colab"
+                }
+            ],
+            "subsections": []
+        }
+    ],
+    "images": []
+}

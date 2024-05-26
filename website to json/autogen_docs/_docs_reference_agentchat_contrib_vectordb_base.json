@@ -1,0 +1,183 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/vectordb/base",
+    "title": "agentchat.contrib.vectordb.base",
+    "sections": [
+        {
+            "title": "",
+            "content": [
+                {
+                    "text": "chromadb doesn't support int ids, VikingDB does"
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "Document\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nDocument\n(\nTypedDict\n)"
+                    }
+                },
+                {
+                    "text": "A Document is a record in the vector database.\n\nid: ItemID | the unique identifier of the document.\ncontent: str | the text content of the chunk.\nmetadata: Metadata, Optional | contains additional information about the document such as source, date, etc.\nembedding: Vector, Optional | the vector representation of the content."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "VectorDB\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "@runtime_checkable\nclass\nVectorDB\n(\nProtocol\n)"
+                    }
+                },
+                {
+                    "text": "Abstract class for vector database. A vector database is responsible for storing and retrieving documents.\n\nAttributes\n:\n\nMethods\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "create_collection\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ncreate_collection\n(\ncollection_name\n:\nstr\n,\noverwrite\n:\nbool\n=\nFalse\n,\nget_or_create\n:\nbool\n=\nTrue\n)\n-\n>\nAny"
+                            }
+                        },
+                        {
+                            "text": "Create a collection in the vector database.\nCase 1. if the collection does not exist, create the collection.\nCase 2. the collection exists, if overwrite is True, it will overwrite the collection.\nCase 3. the collection exists and overwrite is False, if get_or_create is True, it will get the collection,\notherwise it raise a ValueError.\n\nArguments\n:\n\nReturns\n:\n\nAny | The collection object."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "get_collection\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nget_collection\n(\ncollection_name\n:\nstr\n=\nNone\n)\n-\n>\nAny"
+                            }
+                        },
+                        {
+                            "text": "Get the collection from the vector database.\n\nArguments\n:\n\nReturns\n:\n\nAny | The collection object."
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "delete_collection\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ndelete_collection\n(\ncollection_name\n:\nstr\n)\n-\n>\nAny"
+                            }
+                        },
+                        {
+                            "text": "Delete the collection from the vector database.\n\nArguments\n:\n\nReturns\n:\n\nAny"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "insert_docs\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ninsert_docs\n(\ndocs\n:\nList\n[\nDocument\n]\n,\ncollection_name\n:\nstr\n=\nNone\n,\nupsert\n:\nbool\n=\nFalse\n,\n**\nkwargs\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Insert documents into the collection of the vector database.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "update_docs\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nupdate_docs\n(\ndocs\n:\nList\n[\nDocument\n]\n,\ncollection_name\n:\nstr\n=\nNone\n,\n**\nkwargs\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Update documents in the collection of the vector database.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "delete_docs\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ndelete_docs\n(\nids\n:\nList\n[\nItemID\n]\n,\ncollection_name\n:\nstr\n=\nNone\n,\n**\nkwargs\n)\n-\n>\nNone"
+                            }
+                        },
+                        {
+                            "text": "Delete documents from the collection of the vector database.\n\nArguments\n:\n\nReturns\n:\n\nNone"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "retrieve_docs\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nretrieve_docs\n(\nqueries\n:\nList\n[\nstr\n]\n,\ncollection_name\n:\nstr\n=\nNone\n,\nn_results\n:\nint\n=\n10\n,\ndistance_threshold\n:\nfloat\n=\n-\n1\n,\n**\nkwargs\n)\n-\n>\nQueryResults"
+                            }
+                        },
+                        {
+                            "text": "Retrieve documents from the collection of the vector database based on the queries.\n\nArguments\n:\n\nReturns\n:\n\nQueryResults | The query results. Each query result is a list of list of tuples containing the document and\nthe distance."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "VectorDBFactory\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nVectorDBFactory\n(\n)"
+                    }
+                },
+                {
+                    "text": "Factory class for creating vector databases."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "create_vector_db\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "@staticmethod\ndef\ncreate_vector_db\n(\ndb_type\n:\nstr\n,\n**\nkwargs\n)\n-\n>\nVectorDB"
+                            }
+                        },
+                        {
+                            "text": "Create a vector database.\n\nArguments\n:\n\nReturns\n:\n\nVectorDB | The vector database."
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}

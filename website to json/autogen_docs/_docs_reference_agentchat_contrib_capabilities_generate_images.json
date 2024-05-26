@@ -1,0 +1,99 @@
+{
+    "url": "https://microsoft.github.io/autogen/docs/reference/agentchat/contrib/capabilities/generate_images",
+    "title": "agentchat.contrib.capabilities.generate_images",
+    "sections": [
+        {
+            "title": "ImageGenerator\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nImageGenerator\n(\nProtocol\n)"
+                    }
+                },
+                {
+                    "text": "This class defines an interface for image generators.\n\nConcrete implementations of this protocol must provide a\ngenerate_image\nmethod that takes a string prompt as\ninput and returns a PIL Image object.\n\nNOTE: Current implementation does not allow you to edit a previously existing image."
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "generate_image\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\ngenerate_image\n(\nprompt\n:\nstr\n)\n-\n>\nImage"
+                            }
+                        },
+                        {
+                            "text": "Generates an image based on the provided prompt.\n\nArguments\n:\n\nReturns\n:\n\nA PIL Image object representing the generated image.\n\nRaises\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        },
+        {
+            "title": "DalleImageGenerator\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nDalleImageGenerator\n(\n)"
+                    }
+                },
+                {
+                    "text": "Generates images using OpenAI's DALL-E models.\n\nThis class provides a convenient interface for generating images based on textual prompts using OpenAI's DALL-E\nmodels. It allows you to specify the DALL-E model, resolution, quality, and the number of images to generate.\n\nNote: Current implementation does not allow you to edit a previously existing image."
+                }
+            ],
+            "subsections": []
+        },
+        {
+            "title": "ImageGeneration\n​",
+            "content": [
+                {
+                    "code": {
+                        "language": "python",
+                        "script": "class\nImageGeneration\n(\nAgentCapability\n)"
+                    }
+                },
+                {
+                    "text": "This capability allows a ConversableAgent to generate images based on the message received from other Agents.\n\nNOTE: This capability increases the token usage of the agent, as it uses TextAnalyzerAgent to analyze every\nmessage received by the agent.\n\nExample\n:"
+                }
+            ],
+            "subsections": [
+                {
+                    "title": "__init__\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\n__init__\n(\nimage_generator\n:\nImageGenerator\n,\ncache\n:\nOptional\n[\nAbstractCache\n]\n=\nNone\n,\ntext_analyzer_llm_config\n:\nOptional\n[\nDict\n]\n=\nNone\n,\ntext_analyzer_instructions\n:\nstr\n=\nPROMPT_INSTRUCTIONS\n,\nverbosity\n:\nint\n=\n0\n,\nregister_reply_position\n:\nint\n=\n2\n)"
+                            }
+                        },
+                        {
+                            "text": "Arguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                },
+                {
+                    "title": "add_to_agent\n​",
+                    "content": [
+                        {
+                            "code": {
+                                "language": "python",
+                                "script": "def\nadd_to_agent\n(\nagent\n:\nConversableAgent\n)"
+                            }
+                        },
+                        {
+                            "text": "Adds the Image Generation capability to the specified ConversableAgent.\n\nThis function performs the following modifications to the agent:\n\nArguments\n:"
+                        }
+                    ],
+                    "subsections": []
+                }
+            ]
+        }
+    ],
+    "images": []
+}
